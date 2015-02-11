@@ -6,9 +6,10 @@ public class controller {
 	
 	public static void main(String [ ] args) {
 		SatProblem problem = new SatProblem();
-		problem.readSatFile();
-		problem.getProblem();
-		problem.evaluateCandidate();
+		String infile = "/Users/zackleman/Desktop/brock200_1.clq.cnf";
+		problem.readSatFile(infile);
+		//problem.getProblem();
+		//problem.evaluateCandidate();
 		int popSize = 10;
 		int literalNumber = 15 ;
 		Genetic pop = new Genetic(popSize,literalNumber);
