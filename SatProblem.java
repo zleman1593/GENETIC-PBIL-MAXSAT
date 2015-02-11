@@ -31,14 +31,13 @@ public class SatProblem {
 		for (int i = 0; i < satProblem.size() ;i++){
 			//Look at every literal
 			for (int j = 0; j < satProblem.size() ;j++){
-				//If literal is not same value as truth condition then...   (i.e true false, false true)
-				if(satProblem.get(i).get(j) != values.get(j)){
-					//Don't count clause as satisfied
-					break;
-				} else if ((j == satProblem.size() -1) && satProblem.get(i).get(j) != values.get(j)){
-					//If at last literal in clause and it is true true or false false then count clauses as satisfied
+				//If 
+				int literalTruth = satProblem.get(i).get(j);
+				if(((literalTruth < 0) && values.get(Math.abs(literalTruth)) == 0)   || ((literalTruth >= 0) && values.get(Math.abs(literalTruth)) == 1) ){
+					//Count clause as satisfied
 					fitness++;
-				}
+					break;
+				} 
 			}
 		}
 		return fitness;
