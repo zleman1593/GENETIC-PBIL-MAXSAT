@@ -40,7 +40,6 @@ public class SatProblem {
 					this.numLiterals = Integer.parseInt(values[2]);
 					this.numClauses = Integer.parseInt(values[3]);
 				}else{
-
 					ArrayList<Integer> clause = new ArrayList<Integer>();
 					String[] literalsInAClause = choppedCNF.get(i).split(" ");
 					for (int j = 0; j < literalsInAClause.length - 1; j++){
@@ -65,16 +64,21 @@ public class SatProblem {
 		return this.numClauses;
 	}
 
-
+/*Fitness Function*/
 	public int  evaluateCandidate(ArrayList<Integer> values){
+
 		int fitness = 0;
 		//Look at every clause
-		for (int i = 0; i < satProblem.size() ;i++){
+		for (int i = 0; i < satProblem.size();i++){
 			//Look at every literal
-			for (int j = 0; j < satProblem.size() ;j++){
-				//If 
+			
+		
+			
+			for (int j = 0; j <  this.satProblem.get(i).size();j++){
+			
 				int literalTruth = satProblem.get(i).get(j);
-				if(((literalTruth < 0) && values.get(Math.abs(literalTruth)) == 0)   || ((literalTruth >= 0) && values.get(Math.abs(literalTruth)) == 1) ){
+				
+				if(((literalTruth < 0) && values.get(Math.abs(literalTruth) -1 ) == 0)   || ((literalTruth >= 0) && values.get(Math.abs(literalTruth) -1 ) == 1) ){
 					//Count clause as satisfied
 					fitness++;
 					break;
