@@ -1,11 +1,11 @@
 import java.util.ArrayList;
 
 
-public class genetic {
+public class Genetic {
 	ArrayList<ArrayList<Integer>> population = new ArrayList<ArrayList<Integer>>();
 
 
-	public genetic(int popSize, int startSpeed, int startGear) {
+	public Genetic(int popSize) {
 		population = initPopulation(popSize);
 		//cadence = startCadence;
 		//speed = startSpeed;
