@@ -8,13 +8,12 @@ public class controller {
 		SatProblem problem = new SatProblem();
 		String infile = "/Users/zackleman/Desktop/brock200_1.clq.cnf";
 		problem.readSatFile(infile);
-		//problem.getProblem();
+		int numberOfLiterals = problem.getNumLiterals();
+		
 		//problem.evaluateCandidate();
 		int popSize = 10;
-		int literalNumber = 15 ;
-		Genetic pop = new Genetic(popSize,literalNumber);
+		Genetic pop = new Genetic(popSize,numberOfLiterals);
 		ArrayList<ArrayList<Integer>> current = pop.getPopulation();
-		 popSize = 11;
 		
 	}
 }
