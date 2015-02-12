@@ -19,20 +19,39 @@ public class Genetic {
 		this.mutateProb = mutateProb;
 	}
 
-	
-	public void evolve(ArrayList<ArrayList<Integer>> popToEvolve){
+
+	public void evolve(ArrayList<ArrayList<Integer>> popToEvolve, String selectionMethod){
 		boolean foundSATSolution = false;
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++){
-			
+			foundSATSolution = select(popToEvolve,selectionMethod);
+			if(foundSATSolution){
+				System.out.println("Fully Satisfied Clauses");
+				break;
+			}
 			singlePointCrossover(crossOverProb, popToEvolve);
 			mutate(mutateProb, popToEvolve);
-			
-		
-			
 		}
 	}
+
+	private boolean select(ArrayList<ArrayList<Integer>> popToEvolve, String selectionMethod){
+		boolean foundSATSolution = false;
+		if (selectionMethod.equalsIgnoreCase("rank")){
+			popToEvolve = rankSelect(popToEvolve);
+		}else if(selectionMethod.equalsIgnoreCase("boltzman")){
+			popToEvolve = boltzmanSelect(popToEvolve);
+		}else{
+			popToEvolve = tournamentSelect(popToEvolve);
+		}
+		return foundSATSolution;
+	}
+
 	
 	
+	
+	
+	
+	
+
 	private void mutate(double mutateProb,ArrayList<ArrayList<Integer>> popToMutate ) {
 		for (int i = 0; i < popToMutate.size() ;i++){
 			for (int j = 0; j < popToMutate.get(i).size() ;j++){
@@ -89,7 +108,7 @@ public class Genetic {
 
 		return winnerPool;
 	}*/
-	
+
 	public ArrayList<ArrayList<Integer>> initPopulation(int popSize,int literalNumber){
 		ArrayList<ArrayList<Integer>> population = new ArrayList<ArrayList<Integer>>();
 		for (int i = 0; i < popSize ;i++){

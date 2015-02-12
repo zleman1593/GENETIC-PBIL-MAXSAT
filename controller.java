@@ -20,7 +20,7 @@ public class controller {
 		Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIteration, crossOverProb, mutateProb,problem.getProblem());
 		
 		ArrayList<ArrayList<Integer>>  pop = geneticAlgo.population;
-		geneticAlgo.evolve(pop);
+		geneticAlgo.evolve(pop,"tournament");
 		//geneticAlgo.singlePointCrossover(1, pop);
 //int test = 0;
 		
