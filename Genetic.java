@@ -36,21 +36,59 @@ public class Genetic {
 	private boolean select(ArrayList<ArrayList<Integer>> popToEvolve, String selectionMethod){
 		boolean foundSATSolution = false;
 		if (selectionMethod.equalsIgnoreCase("rank")){
-			popToEvolve = rankSelect(popToEvolve);
+			//foundSATSolution = rankSelect(popToEvolve);
 		}else if(selectionMethod.equalsIgnoreCase("boltzman")){
-			popToEvolve = boltzmanSelect(popToEvolve);
+			//foundSATSolution = boltzmanSelect(popToEvolve);
 		}else{
-			popToEvolve = tournamentSelect(popToEvolve);
+			foundSATSolution = tournamentSelect(popToEvolve,1,5);//Todo make variables
 		}
 		return foundSATSolution;
 	}
 
-	
-	
-	
-	
-	
-	
+
+
+
+	private boolean tournamentSelect(ArrayList<ArrayList<Integer>> popToEvolve,int winners, int sample) {
+		boolean foundSATSolution = false;
+		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
+
+		while( winnerPool.size() < population.size()){
+			//Get array of random numbers
+			ArrayList<Integer> randomNumbers  = new ArrayList<Integer>();
+			while(randomNumbers.size() < sample){
+				int number;
+				do
+				{
+					number = random.nextInt(popToEvolve.size());
+				} while (randomNumbers.contains(number));
+				randomNumbers.add(number);
+			}
+			ArrayList<ArrayWithFitness> withFitness = new ArrayList<ArrayWithFitness>();
+			for (int i = 0; i < randomNumbers.size(); i++){
+				// Pass in each individual and get back a fitness and merge with individual
+				ArrayWithFitness memberWithFitness = new ArrayWithFitness(popToEvolve.get(i));
+				memberWithFitness.fitness = evaluateCandidate(popToEvolve.get(i));
+				withFitness.add(memberWithFitness);
+			}
+
+			//Sort
+			Collections.sort(withFitness);
+			
+			//Pick top x individuals and add to winnerPool until it is full
+			for (int i = 0; i < winners && ( winnerPool.size() < population.size()) ; i++){
+			winnerPool.add(withFitness.get(i).individual);	
+			}
+			
+		}
+
+
+		popToEvolve = winnerPool;//Replace current population with the breeding pool
+		return foundSATSolution;//Return whether all clauses have been satisfied by any candidate
+	}
+
+
+
+
 
 	private void mutate(double mutateProb,ArrayList<ArrayList<Integer>> popToMutate ) {
 		for (int i = 0; i < popToMutate.size() ;i++){
@@ -90,24 +128,6 @@ public class Genetic {
 
 		}
 	}
-
-	/*
-	public ArrayList<ArrayList<Integer>> tournament(int winners, int sample) {
-		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
-		while( winnerPool.size() < population.size()){
-
-			ArrayList<Integer> individual = new ArrayList<Integer>();
-			winnerPool.add(individual);
-		}
-		Random random = new Random;
-		int number;
-		do
-		{
-			number = random.Next();
-		} while (randomNumbers.Contains(number));
-
-		return winnerPool;
-	}*/
 
 	public ArrayList<ArrayList<Integer>> initPopulation(int popSize,int literalNumber){
 		ArrayList<ArrayList<Integer>> population = new ArrayList<ArrayList<Integer>>();

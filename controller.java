@@ -22,7 +22,7 @@ public class controller {
 		ArrayList<ArrayList<Integer>>  pop = geneticAlgo.population;
 		geneticAlgo.evolve(pop,"tournament");
 		//geneticAlgo.singlePointCrossover(1, pop);
-//int test = 0;
+
 		
 	}
 }
