@@ -20,9 +20,6 @@ public int compareTo(ArrayWithFitness compareObject) {
 	 
 	int compareQuantity = ((ArrayWithFitness) compareObject).fitness; 
 
-	//ascending order
-	//return this.quantity - compareQuantity;
-
 	//descending order
 	return compareQuantity - this.fitness;
 

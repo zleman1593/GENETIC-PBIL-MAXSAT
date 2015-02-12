@@ -5,12 +5,12 @@ public class controller {
 
 	
 	public static void main(String [ ] args) {
-		String infile = "/Users/zackleman/Desktop/brock200_1.clq.cnf";
-		int numberOfLiterals = 10;
-		int popSize = 10;
-		int maxIteration = 10;
-		double crossOverProb = 0.5; 
-	    double mutateProb = 0.5; 
+		String infile = "/Users/zackleman/Desktop/test.cnf";
+		int numberOfLiterals;
+		int popSize = 100;
+		int maxIteration = 1000;
+		double crossOverProb = 0.7; 
+	    double mutateProb = 0.01; 
 		
 		SatProblem problem = new SatProblem();
 		problem.createSatProblemFromFile(infile);

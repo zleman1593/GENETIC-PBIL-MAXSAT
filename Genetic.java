@@ -6,6 +6,8 @@ public class Genetic {
 	private ArrayList<ArrayList<Integer>> satProblem = new ArrayList<ArrayList<Integer>>();
 	private Random random; 
 	private int maxIteration;
+	private int maxFitnessSoFar = 0;
+	public ArrayList<Integer> bestSolution; 
 	private double crossOverProb; 
 	private double mutateProb; 
 
@@ -31,6 +33,8 @@ public class Genetic {
 			singlePointCrossover(crossOverProb, popToEvolve);
 			mutate(mutateProb, popToEvolve);
 		}
+		System.out.println( "Max Fitness so far:"+ maxFitnessSoFar);
+		System.out.println("Best Solution" +bestSolution);
 	}
 
 	private boolean select(ArrayList<ArrayList<Integer>> popToEvolve, String selectionMethod){
@@ -152,11 +156,22 @@ public class Genetic {
 			//Look at every literal
 			for (int j = 0; j <  satProblem.get(i).size();j++){
 				int literalTruth = satProblem.get(i).get(j);
-				if(((literalTruth < 0) && values.get(Math.abs(literalTruth) -1 ) == 0)  || ((literalTruth >= 0) && values.get(Math.abs(literalTruth) -1 ) == 1) ){
+				if(((literalTruth < 0) && values.get(Math.abs(literalTruth) -1 ) == 0)  || ((literalTruth > 0) && values.get(Math.abs(literalTruth) -1 ) == 1) ){
 					//Count clause as satisfied
 					fitness++;
 					break;
 				} 
+			}
+		}
+		if(fitness > this.maxFitnessSoFar){
+			maxFitnessSoFar = fitness;
+			 
+			bestSolution = (ArrayList<Integer>)values.clone();;
+			//System.out.println(fitness);
+			//System.out.println(values);
+			//System.out.println( satProblem.size()-1);
+			if(fitness == satProblem.size()){
+				System.out.println("Fully Satisfied");
 			}
 		}
 		return fitness;
