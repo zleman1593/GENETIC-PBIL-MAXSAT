@@ -5,16 +5,19 @@ public class controller {
 
 	
 	public static void main(String [ ] args) {
-		SatProblem problem = new SatProblem();
 		String infile = "/Users/zackleman/Desktop/brock200_1.clq.cnf";
-		problem.createSatProblemFromFile(infile);
-		int numberOfLiterals = problem.getNumLiterals();
-		
-		
+		int numberOfLiterals = 0;
 		int popSize = 10;
-		Genetic pop = new Genetic(popSize,numberOfLiterals);
-		ArrayList<ArrayList<Integer>> current = pop.getPopulation();
-		int test = problem.evaluateCandidate(current.get(0));
-		System.out.println(test);
+		
+		SatProblem problem = new SatProblem();
+		problem.createSatProblemFromFile(infile);
+		numberOfLiterals = problem.getNumLiterals();
+		
+		
+		Genetic geneticAlgo = new Genetic(popSize,numberOfLiterals,problem.getProblem());
+		//ArrayList<ArrayList<Integer>>  pop = geneticAlgo.population;
+		//geneticAlgo.mutate(0.5, pop);
+
+		
 	}
 }
