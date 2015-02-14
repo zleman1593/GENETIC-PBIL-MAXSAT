@@ -17,6 +17,7 @@ public class Genetic extends EvolAlgorithms {
 	//Probabilities
 	private double crossOverProb; 
 	private double mutateProb; 
+	private double boltzmannSum; 
 	//Keeps track of whether a full solution has been found
 	boolean foundSATSolution = false;
 
@@ -45,15 +46,14 @@ public class Genetic extends EvolAlgorithms {
 
 	public void evolve(String selectionMethod) {
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++){
-			
-			if (selectionMethod.equalsIgnoreCase("rank")){
-				  rankSelect();
-			}else if(selectionMethod.equalsIgnoreCase("boltzman")){
-				//  boltzmanSelect(popToEvolve);
+
+			if (selectionMethod.equalsIgnoreCase("rank") || selectionMethod.equalsIgnoreCase("boltzmann")){
+				rankBoltzSelect(selectionMethod);
+				
 			}else{
-				  tournamentSelect(1,5);//Todo make variables
+				tournamentSelect(1,5);//Todo make variables
 			}
-			
+
 			if(foundSATSolution){
 				System.out.println("Fully Satisfied Clauses");
 				break;
@@ -104,10 +104,10 @@ public class Genetic extends EvolAlgorithms {
 	}
 
 
-	private void rankSelect() {
+	private void rankBoltzSelect(String option) {
 		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
 		ArrayList<ArrayWithFitness> withFitness = new ArrayList<ArrayWithFitness>();
-		
+
 		// Pass in each individual and get back a fitness and merge with individual
 		for (int i = 0; i < this.population.size(); i++){
 			ArrayWithFitness memberWithFitness = new ArrayWithFitness(this.population.get(i));
@@ -115,6 +115,8 @@ public class Genetic extends EvolAlgorithms {
 			updateMaxFitness(memberWithFitness.fitness, this.population.get(i));
 			withFitness.add(memberWithFitness);
 		}
+
+		 calcboltzmannSum(withFitness);
 		
 		//Sort so  that position zero has individual with highest fitness
 		Collections.sort(withFitness);
@@ -125,26 +127,38 @@ public class Genetic extends EvolAlgorithms {
 		for (int i = 0; i < this.population.size() ;i++){
 			probability[i] = random.nextDouble();
 		}
-		
+
 		//Sort ascending
 		Arrays.sort(probability);
 
 		int pickUpFrom = 0;
+		int indexOfIndividual = 1;
 		double cumulativeProbabilityLag = 0;
-		double cumulativeProbabilityLead = probFromRank((double) this.population.size() ,(double) this.population.size());
-		
-		for (int i = 0; i < this.population.size();i++){
-			for (int j = pickUpFrom; j < probability.length;j++){
-				if ((probability[j] >= cumulativeProbabilityLag) && (probability[j] < cumulativeProbabilityLead) ){
+		double cumulativeProbabilityLead;
+		if(option.equalsIgnoreCase("rank")){
+			cumulativeProbabilityLead = probFromRank((double) this.population.size() ,(double) this.population.size());
+		}else{
+			cumulativeProbabilityLead = probFromBoltz(0, withFitness);
+		}
+
+		for (int i = 0; i < this.population.size(); i++) {
+			
+			for (int j = pickUpFrom; j < probability.length;j++) {
+				if ((probability[j] >= cumulativeProbabilityLag) && (probability[j] < cumulativeProbabilityLead) ) {
 					winnerPool.add((ArrayList<Integer>)withFitness.get(i).individual.clone());
-				}else{
+				} else {
 					pickUpFrom = j;
 					break;
 				}
 			}
 
 			cumulativeProbabilityLag = cumulativeProbabilityLead;
-			cumulativeProbabilityLead += probFromRank((double) (this.population.size() - (i+1)),(double) this.population.size());
+			if(option.equalsIgnoreCase("rank")){
+				cumulativeProbabilityLead += probFromRank((double) this.population.size() ,(double) this.population.size());
+			}else if (i < population.size() - 1){
+				cumulativeProbabilityLead +=probFromBoltz(indexOfIndividual ,withFitness);
+			}
+			indexOfIndividual++;
 		}
 		this.population = winnerPool;//Replace current population with the breeding pool
 	}
@@ -153,7 +167,21 @@ public class Genetic extends EvolAlgorithms {
 		return  rank / ((popsize*(popsize+1)/2));
 	}
 
+	private double probFromBoltz (int index, ArrayList<ArrayWithFitness> popWithFitness){
+		return  Math.exp(popWithFitness.get(index ).fitness / boltzmannSum);
+	}
+	
+	
+	private void calcboltzmannSum (ArrayList<ArrayWithFitness> popWithFitness){
+		double sum = 0;
+		for (int i = 0; i < popWithFitness.size() ;i++){
+			sum =+ Math.exp((popWithFitness.get(i).fitness));
+		}
+		boltzmannSum = sum;
+	}
 
+	
+	
 
 	private void mutate(double mutateProb) {
 		for (int i = 0; i < this.population.size() ;i++){
