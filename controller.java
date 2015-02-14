@@ -17,6 +17,13 @@ public class controller {
 		numberOfLiterals = problem.getNumLiterals();
 		
 		
+		PBIL test = new PBIL(10, 0.2, 0.2, numberOfLiterals,mutateProb, mutateProb, maxIteration,problem.getProblem()); 
+		
+		test.initProbVector();
+		double[] prob = test.iteratePBIL();
+		
+		
+		
 		Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIteration, crossOverProb, mutateProb,problem.getProblem());
 		
 		ArrayList<ArrayList<Integer>>  pop = geneticAlgo.population;
