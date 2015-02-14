@@ -39,11 +39,11 @@ public class Controller {
 		double[] prob = test.iteratePBIL();
 		
 		// Run Genetic Algorithms.
-//		Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIteration, 
-//				crossOverProb, mutateProb, satProblem);
-//		
-//		ArrayList<ArrayList<Integer>>  pop = geneticAlgo.population;
-//		geneticAlgo.evolve(pop,"rank");
-		//geneticAlgo.singlePointCrossover(1, pop);		
+		Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIteration, 
+				crossOverProb, mutateProb, satProblem);
+		
+		ArrayList<ArrayList<Integer>>  pop = geneticAlgo.population;
+		geneticAlgo.evolve(pop,"rank");
+//		geneticAlgo.singlePointCrossover(1, pop);		
 	}
 }
