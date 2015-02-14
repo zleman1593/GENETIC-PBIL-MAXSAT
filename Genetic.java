@@ -1,17 +1,25 @@
 import java.util.*;
 
 public class Genetic extends GAAlgorithms {
+	//Population that is evolved
 	public ArrayList<ArrayList<Integer>> population = new ArrayList<ArrayList<Integer>>();
+	//The MAXSAT problem
 	private ArrayList<ArrayList<Integer>> satProblem = new ArrayList<ArrayList<Integer>>();
+	//Random Number generator
 	private Random random; 
+	//Maximum iterations allowed
 	private int maxIteration;
+	//Maximum fitness found so far in any generation
 	private int maxFitnessSoFar = 0;
+	//Individual Solution with Maximum fitness found so far in any generation
 	public ArrayList<Integer> bestSolution; 
+	//Probabilities
 	private double crossOverProb; 
 	private double mutateProb; 
+	//Keeps track of whether a full solution has been found
 	boolean foundSATSolution = false;
 
-
+	// Constructor. 
 	public Genetic(int popSize, int literalNumber, int maxIteration, double crossOverProb, double mutateProb,ArrayList<ArrayList<Integer>> satProblem) {
 		this.satProblem = satProblem;
 		this.population = initPopulation(popSize,literalNumber);
@@ -20,7 +28,7 @@ public class Genetic extends GAAlgorithms {
 		this.crossOverProb = crossOverProb;
 		this.mutateProb = mutateProb;
 	}
-
+	// Update the max fitness encountered so far
 	public void updateMaxFitness(int fitness, ArrayList<Integer> values) {
 		if(fitness > this.maxFitnessSoFar) {
 			maxFitnessSoFar = fitness;
@@ -34,13 +42,16 @@ public class Genetic extends GAAlgorithms {
 	}
 
 	public void evolve(String selectionMethod){
-		//ArrayList<Integer> count = new ArrayList<Integer>(Collections.nCopies(popToEvolve.size(), 0));//delete
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++){
 			
-		
-			//rankSelectTest(popToEvolve, count);//delete
+			if (selectionMethod.equalsIgnoreCase("rank")){
+				  rankSelect();
+			}else if(selectionMethod.equalsIgnoreCase("boltzman")){
+				//  boltzmanSelect(popToEvolve);
+			}else{
+				  tournamentSelect(1,5);//Todo make variables
+			}
 			
-			select(selectionMethod);
 			if(foundSATSolution){
 				System.out.println("Fully Satisfied Clauses");
 				break;
@@ -48,29 +59,16 @@ public class Genetic extends GAAlgorithms {
 			singlePointCrossover(crossOverProb);
 			mutate(mutateProb);
 		}
-		//System.out.println("test" + count);//delete
-		//System.out.println("Sum" + count.stream().mapToInt(Integer::intValue).sum());//delete
 		System.out.println( "Max Fitness so far:"+ maxFitnessSoFar);
 		System.out.println("Best Solution" +bestSolution);
 	}
 
-	private void select(String selectionMethod){
-		if (selectionMethod.equalsIgnoreCase("rank")){
-			  rankSelect();
-		}else if(selectionMethod.equalsIgnoreCase("boltzman")){
-			//  boltzmanSelect(popToEvolve);
-		}else{
-			  tournamentSelect(1,5);//Todo make variables
-		}
-	}
 
 
 
 
 	private void tournamentSelect(int winners, int sample) {
-
 		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
-
 		while( winnerPool.size() < population.size()){
 			//Get array of random numbers
 			ArrayList<Integer> randomNumbers  = new ArrayList<Integer>();
@@ -101,8 +99,6 @@ public class Genetic extends GAAlgorithms {
 
 		}
 		this.population = winnerPool;//Replace current population with the breeding pool
-
-		//popToEvolve = winnerPool;//Replace current population with the breeding pool
 	}
 
 
@@ -149,8 +145,6 @@ public class Genetic extends GAAlgorithms {
 			cumulativeProbabilityLead += probFromRank((double) (this.population.size() - (i+1)),(double) this.population.size());
 		}
 		this.population = winnerPool;//Replace current population with the breeding pool
-		//popToEvolve = winnerPool;//Replace current population with the breeding pool
-
 	}
 
 	private double probFromRank (double rank,double popsize){
@@ -160,7 +154,6 @@ public class Genetic extends GAAlgorithms {
 
 
 	private void mutate(double mutateProb) {
-		
 		for (int i = 0; i < this.population.size() ;i++){
 			for (int j = 0; j < this.population.get(i).size() ;j++){
 				boolean flip = random.nextDouble() < mutateProb;
@@ -181,14 +174,14 @@ public class Genetic extends GAAlgorithms {
 			if (cross){
 				//Pick cross over location
 				crossOverLocation = random.nextInt(this.population.get(i).size());
-				//Copy first half of A into C
+				//Copy first part of A into C
 				List<Integer> c = new ArrayList<Integer>(this.population.get(i).subList(0, crossOverLocation));
-				//Replace first half of A with First half of B
+				//Replace first part of A with First part of B
 				for (int j = 0; j < crossOverLocation ;j++){ 
 					int value = this.population.get(i+1).get(j);
 					this.population.get(i).set(j, value);
 				}
-				//Replace first half of B with C
+				//Replace first part of B with C
 				for (int j = 0; j < c.size() ;j++){
 					int value = c.get(j);
 					this.population.get(i+1).set(j, value);
@@ -198,7 +191,7 @@ public class Genetic extends GAAlgorithms {
 
 		}
 	}
-
+	// Initialize population.
 	public ArrayList<ArrayList<Integer>> initPopulation(int popSize,int literalNumber){
 		ArrayList<ArrayList<Integer>> population = new ArrayList<ArrayList<Integer>>();
 		for (int i = 0; i < popSize ;i++){
@@ -214,55 +207,3 @@ public class Genetic extends GAAlgorithms {
 	}	
 }
 
-
-
-/*
-	private boolean rankSelectTest(ArrayList<ArrayList<Integer>> popToEvolve, ArrayList<Integer> count ) {
-		ArrayList<ArrayWithFitness> withFitness = new ArrayList<ArrayWithFitness>();
-		
-		// Pass in each individual and get back a fitness and merge with individual
-		for (int i = 0; i < popToEvolve.size(); i++){
-			ArrayWithFitness memberWithFitness = new ArrayWithFitness(popToEvolve.get(i));
-			memberWithFitness.fitness = evaluateCandidate(popToEvolve.get(i));
-			withFitness.add(memberWithFitness);
-		}
-		
-		//Sort so  that position zero has individual with highest fitness
-		Collections.sort(withFitness);
-
-
-		//Generate one random double per member of the population
-		double[] probability = new double[popToEvolve.size()];
-		for (int i = 0; i < popToEvolve.size() ;i++){
-			probability[i] = random.nextDouble();
-		}
-		
-		//Sort ascending
-		Arrays.sort(probability);
-
-		int pickUpFrom = 0;
-		double cumulativeProbabilityLag = 0;
-		double cumulativeProbabilityLead = probFromRank((double) popToEvolve.size() ,(double) popToEvolve.size());
-		
-		for (int i = 0; i < popToEvolve.size();i++){
-			for (int j = pickUpFrom; j < probability.length;j++){
-				if ((probability[j] >= cumulativeProbabilityLag) && (probability[j] < cumulativeProbabilityLead) ){
-					//winnerPool.add(withFitness.get(i).individual);
-					count.set( i,count.get(i) + 1);
-				} else{
-					pickUpFrom = j;
-					break;
-				}
-			}
-
-			cumulativeProbabilityLag = cumulativeProbabilityLead;
-			cumulativeProbabilityLead += probFromRank((double) (popToEvolve.size() - (i+1)),(double) popToEvolve.size());
-			//System.out.println(probFromRank((double) (popToEvolve.size() - (i+1)),(double) popToEvolve.size()));
-			if (cumulativeProbabilityLag > 1){
-				System.out.println("This is bad");
-			}
-		}
-
-		return false;//Return whether all clauses have been satisfied by any candidate
-	}
- * */
