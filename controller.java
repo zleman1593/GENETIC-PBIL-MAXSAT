@@ -8,6 +8,7 @@ public class Controller {
 	
 	public static void main(String [ ] args) {
 		String infile = PATH_ZACK;
+//		String infile = PATH_IVY;
 		
 		// Import and format MAXSAT problem.
 		SatProblem problem = new SatProblem();
@@ -16,10 +17,11 @@ public class Controller {
 		ArrayList<ArrayList<Integer>> satProblem = problem.getProblem();
 		
 		// GA parameters.
-		int popSize = 200;
-		int maxIteration = 1000;
-		double crossOverProb = 0.7; 
-	    double mutateProb = 0.01; 
+		int GA_popSize = 200;
+		int GA_literalNumber = numberOfLiterals;
+		int GA_maxIteration = 1000;
+		double GA_crossOverProb = 0.7; 
+	    double GA_mutateProb = 0.01; 
 		
 	    // PBIL parameters.
 	    int PBIL_samples= 100;
@@ -38,8 +40,8 @@ public class Controller {
 //		double[] prob = test.iteratePBIL();
 		
 		// Run Genetic Algorithms.
-		Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIteration, 
-				crossOverProb, mutateProb, satProblem);
+		Genetic geneticAlgo = new Genetic(GA_popSize, GA_literalNumber, GA_maxIteration, 
+				GA_crossOverProb, GA_mutateProb, satProblem);
 		
 		geneticAlgo.evolve("rank");
 //		ArrayList<ArrayList<Integer>>  pop = geneticAlgo.population;

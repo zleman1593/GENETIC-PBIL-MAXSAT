@@ -21,7 +21,8 @@ public class Genetic extends EvolAlgorithms {
 	boolean foundSATSolution = false;
 
 	// Constructor. 
-	public Genetic(int popSize, int literalNumber, int maxIteration, double crossOverProb, double mutateProb,ArrayList<ArrayList<Integer>> satProblem) {
+	public Genetic(int popSize, int literalNumber, int maxIteration, double crossOverProb, 
+			double mutateProb, ArrayList<ArrayList<Integer>> satProblem) {
 		this.satProblem = satProblem;
 		this.population = initPopulation(popSize,literalNumber);
 		this.random = new Random();
