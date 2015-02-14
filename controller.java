@@ -5,9 +5,9 @@ public class controller {
 
 	
 	public static void main(String [ ] args) {
-		String infile = "/Users/zackleman/Desktop/test.cnf";
+		String infile = "/Users/zackleman/Desktop/t3pm3-5555.spn.cnf";
 		int numberOfLiterals;
-		int popSize = 100;
+		int popSize = 200;
 		int maxIteration = 1000;
 		double crossOverProb = 0.7; 
 	    double mutateProb = 0.01; 
