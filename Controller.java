@@ -37,14 +37,13 @@ public class Controller {
 				PBIL_length, PBIL_mutProb, PBIL_mutShift, PBIL_maxIterations, satProblem); 
 		
 		test.initProbVector();
-//		double[] prob = test.iteratePBIL();
+		double[] prob = test.iteratePBIL();
 		
 		// Run Genetic Algorithms.
 		Genetic geneticAlgo = new Genetic(GA_popSize, GA_literalNumber, GA_maxIteration, 
 				GA_crossOverProb, GA_mutateProb, satProblem);
 		
 		geneticAlgo.evolve("rank");
-//		ArrayList<ArrayList<Integer>>  pop = geneticAlgo.population;
-//		geneticAlgo.singlePointCrossover(1, pop);		
+	
 	}
 }
