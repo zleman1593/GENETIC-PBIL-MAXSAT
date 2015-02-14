@@ -16,9 +16,9 @@ public class PBIL extends GAAlgorithms {
 	private ArrayList<int[]> sampleVectors = new ArrayList<int[]>();
 	// Others.
 	private int maxIterations;
-	private int iterations = 0;
+	private Random randomGenerator;
 	private ArrayList<ArrayList<Integer>> satProblem = new ArrayList<ArrayList<Integer>>();
-	private Random randomGenerator =  new Random();
+	
 	
 	// Constructor. 
 	public PBIL (int samples, double learningRate, double negLearningRate, int length, double mutProb, 
@@ -31,6 +31,7 @@ public class PBIL extends GAAlgorithms {
 		this.mutShift = mutShift;
 		this.maxIterations = maxIterations;
 		this.satProblem = satProblem;
+		this.randomGenerator = new Random();
 	}
 	
 	// Initialize probability vector.
@@ -42,6 +43,7 @@ public class PBIL extends GAAlgorithms {
 	}
 	
 	public double[] iteratePBIL() {
+		int iterations = 0;
 		while (iterations < maxIterations) {
 			// Generate all individuals and evaluate them.
 			for (int i = 0; i < samples; i++) {
@@ -49,6 +51,10 @@ public class PBIL extends GAAlgorithms {
 				sampleVectors.add(individual);
 				// Evaluate each candidate and store results in array.
 				evaluations[i] = evaluateCandidate(satProblem, toObject(individual));
+				// Found solution to all clauses.
+				if (evaluations[i] == satProblem.size()) {
+					return probVector;
+				}
 			}
 			// Keep track of the best and worst candidate.
 			int[] bestVector = findBestVector();
@@ -74,6 +80,7 @@ public class PBIL extends GAAlgorithms {
 					probVector[i] = probVector[i] * (1.0 - mutShift) + mutateDirection * mutShift;
 				}
 			}
+			iterations++;
 		}	
 		return probVector;
 	}
