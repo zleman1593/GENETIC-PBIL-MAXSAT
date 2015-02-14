@@ -153,6 +153,7 @@ public class Genetic {
 
 
 	private void mutate(double mutateProb,ArrayList<ArrayList<Integer>> popToMutate ) {
+		
 		for (int i = 0; i < popToMutate.size() ;i++){
 			for (int j = 0; j < popToMutate.get(i).size() ;j++){
 				boolean flip = random.nextDouble() < mutateProb;
@@ -174,9 +175,9 @@ public class Genetic {
 				//Pick cross over location
 				crossOverLocation = random.nextInt(popToCross.get(i).size());
 				//Copy first half of A into C
-				List<Integer> c =  popToCross.get(i).subList(0, crossOverLocation); 
+				List<Integer> c = new ArrayList<Integer>(popToCross.get(i).subList(0, crossOverLocation));
 				//Replace first half of A with First half of B
-				for (int j = 0; j < popToCross.get(i).size() ;j++){
+				for (int j = 0; j < crossOverLocation ;j++){ 
 					int value = popToCross.get(i+1).get(j);
 					popToCross.get(i).set(j, value);
 				}
@@ -224,7 +225,7 @@ public class Genetic {
 
 		if(fitness > this.maxFitnessSoFar){
 			maxFitnessSoFar = fitness;
-			bestSolution = (ArrayList<Integer>)values.clone();;
+			bestSolution = (ArrayList<Integer>)values.clone();
 			if(fitness == satProblem.size()){
 				System.out.println("Fully Satisfied");
 				foundSATSolution = true;

@@ -10,7 +10,7 @@ public class controller {
 		int popSize = 200;
 		int maxIteration = 1000;
 		double crossOverProb = 0.7; 
-	    double mutateProb = 0.7; 
+	    double mutateProb = 0.01; 
 		
 		SatProblem problem = new SatProblem();
 		problem.createSatProblemFromFile(infile);
@@ -20,7 +20,7 @@ public class controller {
 		Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIteration, crossOverProb, mutateProb,problem.getProblem());
 		
 		ArrayList<ArrayList<Integer>>  pop = geneticAlgo.population;
-		geneticAlgo.evolve(pop,"tournament");
+		geneticAlgo.evolve(pop,"rank");
 		//geneticAlgo.singlePointCrossover(1, pop);
 
 		
