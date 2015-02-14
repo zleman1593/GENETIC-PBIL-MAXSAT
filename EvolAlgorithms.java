@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 
-public class GAAlgorithms {
+public class EvolAlgorithms {
 	
 	/*Fitness Function*/
 	public int evaluateCandidate(ArrayList<ArrayList<Integer>> satProblem, 
@@ -12,7 +12,8 @@ public class GAAlgorithms {
 			//Look at every literal
 			for (int j = 0; j <  satProblem.get(i).size();j++){
 				int literalTruth = satProblem.get(i).get(j);
-				if(((literalTruth < 0) && values.get(Math.abs(literalTruth) -1 ) == 0)  || ((literalTruth > 0) && values.get(Math.abs(literalTruth) -1 ) == 1) ){
+				if(((literalTruth < 0) && values.get(Math.abs(literalTruth) -1 ) == 0)  || 
+						((literalTruth > 0) && values.get(Math.abs(literalTruth) -1 ) == 1) ){
 					//Count clause as satisfied
 					fitness++;
 					break;

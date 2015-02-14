@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class Genetic extends GAAlgorithms {
+public class Genetic extends EvolAlgorithms {
 	public ArrayList<ArrayList<Integer>> population = new ArrayList<ArrayList<Integer>>();
 	private ArrayList<ArrayList<Integer>> satProblem = new ArrayList<ArrayList<Integer>>();
 	private Random random; 

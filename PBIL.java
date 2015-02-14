@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-public class PBIL extends GAAlgorithms {
+public class PBIL extends EvolAlgorithms {
 	// User inputs.
 	private int samples;
 	private double learningRate;
@@ -13,13 +13,16 @@ public class PBIL extends GAAlgorithms {
 	// Vectors.
 	private double[] probVector;
 	private int[] evaluations;
+	private int[] bestVector;
+	private int[] worstVector;
 	private ArrayList<int[]> sampleVectors = new ArrayList<int[]>();
 	// Others.
+	private int maxFitness = 0;
+	private int minFitness;
 	private int maxIterations;
-	private Random randomGenerator;
-	private ArrayList<ArrayList<Integer>> satProblem = new ArrayList<ArrayList<Integer>>();
-	
-	
+	private ArrayList<ArrayList<Integer>> satProblem;
+	private Random randomGenerator = new Random();
+
 	// Constructor. 
 	public PBIL (int samples, double learningRate, double negLearningRate, int length, double mutProb, 
 			double mutShift, int maxIterations, ArrayList<ArrayList<Integer>> satProblem) {
@@ -31,7 +34,9 @@ public class PBIL extends GAAlgorithms {
 		this.mutShift = mutShift;
 		this.maxIterations = maxIterations;
 		this.satProblem = satProblem;
-		this.randomGenerator = new Random();
+		
+		minFitness = satProblem.size();
+		evaluations = new int[samples];
 	}
 	
 	// Initialize probability vector.
@@ -52,37 +57,73 @@ public class PBIL extends GAAlgorithms {
 				// Evaluate each candidate and store results in array.
 				evaluations[i] = evaluateCandidate(satProblem, toObject(individual));
 				// Found solution to all clauses.
-				if (evaluations[i] == satProblem.size()) {
+				int fitness = evaluations[i];
+				if (fitness == satProblem.size()) {
+					System.out.println("All clauses satisfied.");
 					return probVector;
-				}
-			}
-			// Keep track of the best and worst candidate.
-			int[] bestVector = findBestVector();
-			int[] worstVector = findWorstVector();
-			
-			// Update probability vector toward best solution.
-			for (int i = 0; i < probVector.length; i++) {
-				probVector[i] = probVector[i] * (1.0 - learningRate) + 
-						bestVector[i] * learningRate;
-			}
-			// Update probability vector away from worst solution.
-			for (int i = 0; i < probVector.length; i++) {
-				if (bestVector[i] != worstVector[i]) {
-					probVector[i] = probVector[i] * (1.0 - negLearningRate) + 
-							bestVector[i] * negLearningRate;
-				}
+				} else {
+					updateFitness(fitness, individual);
+				} 
 			}
 			
-			// Mutate probability vector.
-			for (int i = 0; i < probVector.length; i++) {
-				if (randomGenerator.nextDouble() < mutProb) {
-					int mutateDirection = randomGenerator.nextDouble() > 0.5 ? 1 : 0;
-					probVector[i] = probVector[i] * (1.0 - mutShift) + mutateDirection * mutShift;
-				}
-			}
+			// Update and mutate probability vector.
+			updateProbVector();
+			mutateProbVector();
+			
 			iterations++;
 		}	
+		System.out.println("Max number of clauses satisfied:" + maxFitness);
 		return probVector;
+	}
+	
+	// Generate the individual according to probability.
+	private int[] generateSampleVector(double[] prob) {
+		int[] individual = new int[prob.length];
+		// Generate according to probability
+		for (int i = 0; i < individual.length; i++) {
+			double p = randomGenerator.nextDouble();
+			individual[i] = (p < prob[i]) ? 1 : 0;
+		}
+		return individual;
+	}
+	
+	// Update probability vector.
+	private void updateProbVector() {
+		// Update probability vector toward best solution.
+		for (int i = 0; i < probVector.length; i++) {
+			probVector[i] = probVector[i] * (1.0 - learningRate) + 
+					bestVector[i] * learningRate;
+		}
+		// Update probability vector away from worst solution.
+		for (int i = 0; i < probVector.length; i++) {
+			if (bestVector[i] != worstVector[i]) {
+				probVector[i] = probVector[i] * (1.0 - negLearningRate) + 
+						bestVector[i] * negLearningRate;
+			}
+		}
+	}
+	
+	// Mutate probability vector.
+	private void mutateProbVector() {
+		// Mutate probability vector.
+		for (int i = 0; i < probVector.length; i++) {
+			if (randomGenerator.nextDouble() < mutProb) {
+				int mutateDirection = randomGenerator.nextDouble() > 0.5 ? 1 : 0;
+				probVector[i] = probVector[i] * (1.0 - mutShift) + mutateDirection * mutShift;
+			}
+		}
+	}
+		
+	// Keep track of current max and min fitness and update individual accordingly.
+	private void updateFitness(int fitness, int[] individual) {
+		if (fitness > maxFitness) {
+			bestVector = individual;
+			maxFitness =  fitness;
+		}
+		if (fitness < minFitness) {
+			worstVector = individual;
+			minFitness = fitness;
+		}
 	}
 	
 	// Helper method to convert an int array to an ArrayList of Integer.
@@ -95,42 +136,5 @@ public class PBIL extends GAAlgorithms {
 		// Convert array to ArrayList
 		ArrayList<Integer> resultList = new ArrayList<Integer>(Arrays.asList(result));
 		return resultList;
-	}
-	
-	// Generate the individual according to probability.
-	private int[] generateSampleVector(double[] prob) {
-		int[] individual = new int[length];
-		// Generate according to probability
-		for (int i = 0; i < individual.length; i++) {
-			double p = randomGenerator.nextDouble();
-			individual[i] = (p < prob[i]) ? 1 : 0;
-		}
-		return individual;
-	}
-	
-	// Return the strongest candidate.
-	private int[] findBestVector() {
-		int maxIndex = 0;
-		int max = evaluations[0];
-		for (int i = 1; i < evaluations.length; i++) {
-			if (evaluations[i] > max) {
-				maxIndex = i;
-			}
-		}
-		// Candidate at the corresponding index.
-		return sampleVectors.get(maxIndex);
-	}
-	
-	// Return the weakest candidate.
-	private int[] findWorstVector(){
-		int minIndex = 0;
-		int min = evaluations[0];
-		for (int i = 1; i < evaluations.length; i++) {
-			if (evaluations[i] < min) {
-				minIndex = i;
-			}
-		}
-		// Get candidate at the corresponding index.
-		return sampleVectors.get(minIndex);
 	}
 }
