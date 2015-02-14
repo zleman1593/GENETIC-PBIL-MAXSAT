@@ -32,7 +32,7 @@ public class SatProblem {
 	public void createSatProblemFromFile(String infile){
 		ArrayList<ArrayList<Integer>> clauses = new ArrayList<ArrayList<Integer>>();
 		ArrayList<String> choppedCNF = readFile(infile);
-		for (int i = 0; i < choppedCNF.size() ;i++){
+		for (int i = 0; i < choppedCNF.size() -1 ;i++){//todo
 			if(!choppedCNF.get(i).startsWith("c")){
 				//Number of clauses and literals
 				if(choppedCNF.get(i).startsWith("p")){
