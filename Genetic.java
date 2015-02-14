@@ -40,7 +40,7 @@ public class Genetic {
 	private boolean select(ArrayList<ArrayList<Integer>> popToEvolve, String selectionMethod){
 		boolean foundSATSolution = false;
 		if (selectionMethod.equalsIgnoreCase("rank")){
-			//foundSATSolution = rankSelect(popToEvolve);
+			foundSATSolution = rankSelect(popToEvolve);
 		}else if(selectionMethod.equalsIgnoreCase("boltzman")){
 			//foundSATSolution = boltzmanSelect(popToEvolve);
 		}else{
@@ -77,18 +77,68 @@ public class Genetic {
 
 			//Sort
 			Collections.sort(withFitness);
-			
+
 			//Pick top x individuals and add to winnerPool until it is full
 			for (int i = 0; i < winners && ( winnerPool.size() < population.size()) ; i++){
-			winnerPool.add(withFitness.get(i).individual);	
+				winnerPool.add(withFitness.get(i).individual);	
 			}
-			
+
 		}
 
 
 		popToEvolve = winnerPool;//Replace current population with the breeding pool
 		return foundSATSolution;//Return whether all clauses have been satisfied by any candidate
 	}
+
+
+//todo make sure off by 1 errors are removed. Diff between array position and rank
+	private boolean rankSelect(ArrayList<ArrayList<Integer>> popToEvolve) {
+		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
+		ArrayList<ArrayWithFitness> withFitness = new ArrayList<ArrayWithFitness>();
+		// Pass in each individual and get back a fitness and merge with individual
+		for (int i = 0; i < popToEvolve.size(); i++){
+			ArrayWithFitness memberWithFitness = new ArrayWithFitness(popToEvolve.get(i));
+			memberWithFitness.fitness = evaluateCandidate(popToEvolve.get(i));
+			withFitness.add(memberWithFitness);
+		}
+		//Sort
+		Collections.sort(withFitness);
+		
+	
+		
+		double[] probability = new double[popToEvolve.size()];
+		for (int i = 0; i < popToEvolve.size() ;i++){
+			probability[i] = random.nextDouble();
+		}
+		Arrays.sort(probability);
+		
+		
+		double cumulativeProbabilityLag = 0;
+		double cumulativeProbabilityLead = probFromRank((double) popToEvolve.size() ,(double) popToEvolve.size());
+		for (int i = 0; i < popToEvolve.size();i++){
+			for (int j = 0; j < probability.length;j++){
+			if ((probability[j] >= cumulativeProbabilityLag) && (probability[j] < cumulativeProbabilityLead) ){
+				winnerPool.add(withFitness.get(popToEvolve.size() - (i + 1)).individual);
+			}
+			}
+			
+			
+			cumulativeProbabilityLag = cumulativeProbabilityLead;
+			cumulativeProbabilityLead += probFromRank((double) (popToEvolve.size() - (i+1)),(double) popToEvolve.size());
+		}
+
+		popToEvolve = winnerPool;//Replace current population with the breeding pool
+		return false;//Return whether all clauses have been satisfied by any candidate
+	}
+	
+	
+private double probFromRank (double rank,double popsize){
+	return rank / ((rank*(rank+1)/2));
+}
+
+private double rankFromFitness (double rank,double popsize){
+	return rank / ((rank*(rank+1)/2));
+}
 
 
 
@@ -163,9 +213,10 @@ public class Genetic {
 				} 
 			}
 		}
+
 		if(fitness > this.maxFitnessSoFar){
 			maxFitnessSoFar = fitness;
-			 
+
 			bestSolution = (ArrayList<Integer>)values.clone();;
 			//System.out.println(fitness);
 			//System.out.println(values);
