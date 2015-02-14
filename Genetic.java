@@ -42,7 +42,7 @@ public class Genetic extends EvolAlgorithms {
 		}
 	}
 
-	public void evolve(String selectionMethod){
+	public void evolve(String selectionMethod) {
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++){
 			
 			if (selectionMethod.equalsIgnoreCase("rank")){

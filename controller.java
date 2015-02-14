@@ -7,8 +7,7 @@ public class Controller {
 	private static final String PATH_IVY = "/Users/mxing/Desktop/t3pm3-5555.spn.cnf";
 	
 	public static void main(String [ ] args) {
-//		String infile = PATH_ZACK;
-		String infile = PATH_IVY;
+		String infile = PATH_ZACK;
 		
 		// Import and format MAXSAT problem.
 		SatProblem problem = new SatProblem();
@@ -36,14 +35,14 @@ public class Controller {
 				PBIL_length, PBIL_mutProb, PBIL_mutShift, PBIL_maxIterations, satProblem); 
 		
 		test.initProbVector();
-		double[] prob = test.iteratePBIL();
+//		double[] prob = test.iteratePBIL();
 		
 		// Run Genetic Algorithms.
 		Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIteration, 
 				crossOverProb, mutateProb, satProblem);
 		
-		ArrayList<ArrayList<Integer>>  pop = geneticAlgo.population;
-		geneticAlgo.evolve(pop,"rank");
+		geneticAlgo.evolve("rank");
+//		ArrayList<ArrayList<Integer>>  pop = geneticAlgo.population;
 //		geneticAlgo.singlePointCrossover(1, pop);		
 	}
 }
