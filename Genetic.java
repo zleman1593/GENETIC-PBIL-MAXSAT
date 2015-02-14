@@ -1,7 +1,6 @@
 import java.util.*;
 
-
-public class Genetic {
+public class Genetic extends GAAlgorithms {
 	public ArrayList<ArrayList<Integer>> population = new ArrayList<ArrayList<Integer>>();
 	private ArrayList<ArrayList<Integer>> satProblem = new ArrayList<ArrayList<Integer>>();
 	private Random random; 
@@ -22,6 +21,17 @@ public class Genetic {
 		this.mutateProb = mutateProb;
 	}
 
+	public void updateMaxFitness(int fitness, ArrayList<Integer> values) {
+		if(fitness > this.maxFitnessSoFar) {
+			maxFitnessSoFar = fitness;
+			bestSolution = new ArrayList<Integer>();
+			bestSolution.addAll(values);
+			if (fitness == satProblem.size()) {
+				System.out.println("Fully Satisfied");
+				foundSATSolution = true;
+			}
+		}
+	}
 
 	public void evolve(ArrayList<ArrayList<Integer>> popToEvolve, String selectionMethod){
 		//ArrayList<Integer> count = new ArrayList<Integer>(Collections.nCopies(popToEvolve.size(), 0));//delete
@@ -76,7 +86,8 @@ public class Genetic {
 			for (int i = 0; i < randomNumbers.size(); i++){
 				// Pass in each individual and get back a fitness and merge with individual
 				ArrayWithFitness memberWithFitness = new ArrayWithFitness(popToEvolve.get(i));
-				memberWithFitness.fitness = evaluateCandidate(popToEvolve.get(i));
+				memberWithFitness.fitness = evaluateCandidate(satProblem, popToEvolve.get(i));
+				updateMaxFitness(memberWithFitness.fitness, popToEvolve.get(i));
 				withFitness.add(memberWithFitness);
 			}
 
@@ -102,7 +113,8 @@ public class Genetic {
 		// Pass in each individual and get back a fitness and merge with individual
 		for (int i = 0; i < popToEvolve.size(); i++){
 			ArrayWithFitness memberWithFitness = new ArrayWithFitness(popToEvolve.get(i));
-			memberWithFitness.fitness = evaluateCandidate(popToEvolve.get(i));
+			memberWithFitness.fitness = evaluateCandidate(satProblem, popToEvolve.get(i));
+			updateMaxFitness(memberWithFitness.fitness, popToEvolve.get(i));
 			withFitness.add(memberWithFitness);
 		}
 		
@@ -140,11 +152,6 @@ public class Genetic {
 		popToEvolve = winnerPool;//Replace current population with the breeding pool
 
 	}
-	
-	
-
-	
-
 
 	private double probFromRank (double rank,double popsize){
 		return  rank / ((popsize*(popsize+1)/2));
@@ -204,35 +211,7 @@ public class Genetic {
 			population.add(individual);
 		}
 		return population;
-	}
-
-
-	/*Fitness Function*/
-	public int  evaluateCandidate(ArrayList<Integer> values){
-		int fitness = 0;
-		//Look at every clause
-		for (int i = 0; i < satProblem.size();i++){
-			//Look at every literal
-			for (int j = 0; j <  satProblem.get(i).size();j++){
-				int literalTruth = satProblem.get(i).get(j);
-				if(((literalTruth < 0) && values.get(Math.abs(literalTruth) -1 ) == 0)  || ((literalTruth > 0) && values.get(Math.abs(literalTruth) -1 ) == 1) ){
-					//Count clause as satisfied
-					fitness++;
-					break;
-				} 
-			}
-		}
-
-		if(fitness > this.maxFitnessSoFar){
-			maxFitnessSoFar = fitness;
-			bestSolution = (ArrayList<Integer>)values.clone();
-			if(fitness == satProblem.size()){
-				System.out.println("Fully Satisfied");
-				foundSATSolution = true;
-			}
-		}
-		return fitness;
-	}
+	}	
 }
 
 

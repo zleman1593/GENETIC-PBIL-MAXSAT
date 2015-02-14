@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-public class PBIL {
+public class PBIL extends GAAlgorithms {
 	// User inputs.
 	private int samples;
 	private double learningRate;
@@ -17,22 +17,25 @@ public class PBIL {
 	// Others.
 	private int maxIterations;
 	private int iterations = 0;
+	private ArrayList<ArrayList<Integer>> satProblem = new ArrayList<ArrayList<Integer>>();
 	private Random randomGenerator =  new Random();
-		
+	
 	// Constructor. 
-	public PBIL (int s, double lr, double neglr, int l, double mProb, double mShift, int i) {
-		samples = s;
-		learningRate = lr;
-		negLearningRate = neglr;
-		length = l;
-		mutProb = mProb;
-		mutShift = mShift;
-		maxIterations = i;
-		probVector = new double[l];
+	public PBIL (int samples, double learningRate, double negLearningRate, int length, double mutProb, 
+			double mutShift, int maxIterations, ArrayList<ArrayList<Integer>> satProblem) {
+		this.samples = samples;
+		this.learningRate = learningRate;
+		this.negLearningRate = negLearningRate;
+		this.length = length;
+		this.mutProb = mutProb;
+		this.mutShift = mutShift;
+		this.maxIterations = maxIterations;
+		this.satProblem = satProblem;
 	}
 	
 	// Initialize probability vector.
 	public void initProbVector() {
+		probVector = new double[length];
 		for (int i = 0; i < probVector.length; i++) {
 			probVector[i] = 0.5;
 		}
@@ -45,7 +48,7 @@ public class PBIL {
 				int[] individual = generateSampleVector(probVector);
 				sampleVectors.add(individual);
 				// Evaluate each candidate and store results in array.
-				evaluations[i] = evaluateCandidate(toObject(individual));
+				evaluations[i] = evaluateCandidate(satProblem, toObject(individual));
 			}
 			// Keep track of the best and worst candidate.
 			int[] bestVector = findBestVector();
@@ -72,7 +75,6 @@ public class PBIL {
 				}
 			}
 		}	
-		
 		return probVector;
 	}
 	
