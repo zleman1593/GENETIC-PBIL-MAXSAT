@@ -10,6 +10,7 @@ public class Genetic {
 	public ArrayList<Integer> bestSolution; 
 	private double crossOverProb; 
 	private double mutateProb; 
+	boolean foundSATSolution = false;
 
 
 	public Genetic(int popSize, int literalNumber, int maxIteration, double crossOverProb, double mutateProb,ArrayList<ArrayList<Integer>> satProblem) {
@@ -23,14 +24,13 @@ public class Genetic {
 
 
 	public void evolve(ArrayList<ArrayList<Integer>> popToEvolve, String selectionMethod){
-		boolean foundSATSolution = false;
 		//ArrayList<Integer> count = new ArrayList<Integer>(Collections.nCopies(popToEvolve.size(), 0));//delete
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++){
 			
 		
 			//rankSelectTest(popToEvolve, count);//delete
 			
-			foundSATSolution = select(popToEvolve,selectionMethod);
+			select(popToEvolve,selectionMethod);
 			if(foundSATSolution){
 				System.out.println("Fully Satisfied Clauses");
 				break;
@@ -44,23 +44,21 @@ public class Genetic {
 		System.out.println("Best Solution" +bestSolution);
 	}
 
-	private boolean select(ArrayList<ArrayList<Integer>> popToEvolve, String selectionMethod){
-		boolean foundSATSolution = false;
+	private void select(ArrayList<ArrayList<Integer>> popToEvolve, String selectionMethod){
 		if (selectionMethod.equalsIgnoreCase("rank")){
-			foundSATSolution = rankSelect(popToEvolve);
+			  rankSelect(popToEvolve);
 		}else if(selectionMethod.equalsIgnoreCase("boltzman")){
-			//foundSATSolution = boltzmanSelect(popToEvolve);
+			//  boltzmanSelect(popToEvolve);
 		}else{
-			foundSATSolution = tournamentSelect(popToEvolve,1,5);//Todo make variables
+			  tournamentSelect(popToEvolve,1,5);//Todo make variables
 		}
-		return foundSATSolution;
 	}
 
 
 
 
-	private boolean tournamentSelect(ArrayList<ArrayList<Integer>> popToEvolve,int winners, int sample) {
-		boolean foundSATSolution = false;
+	private void tournamentSelect(ArrayList<ArrayList<Integer>> popToEvolve,int winners, int sample) {
+
 		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
 
 		while( winnerPool.size() < population.size()){
@@ -94,11 +92,10 @@ public class Genetic {
 
 
 		popToEvolve = winnerPool;//Replace current population with the breeding pool
-		return foundSATSolution;//Return whether all clauses have been satisfied by any candidate
 	}
 
 
-	private boolean rankSelect(ArrayList<ArrayList<Integer>> popToEvolve) {
+	private void rankSelect(ArrayList<ArrayList<Integer>> popToEvolve) {
 		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
 		ArrayList<ArrayWithFitness> withFitness = new ArrayList<ArrayWithFitness>();
 		
@@ -141,7 +138,7 @@ public class Genetic {
 		}
 
 		popToEvolve = winnerPool;//Replace current population with the breeding pool
-		return false;//Return whether all clauses have been satisfied by any candidate
+
 	}
 	
 	
@@ -230,6 +227,7 @@ public class Genetic {
 			bestSolution = (ArrayList<Integer>)values.clone();;
 			if(fitness == satProblem.size()){
 				System.out.println("Fully Satisfied");
+				foundSATSolution = true;
 			}
 		}
 		return fitness;
