@@ -14,7 +14,7 @@ public class Genetic extends GAAlgorithms {
 
 	public Genetic(int popSize, int literalNumber, int maxIteration, double crossOverProb, double mutateProb,ArrayList<ArrayList<Integer>> satProblem) {
 		this.satProblem = satProblem;
-		population = initPopulation(popSize,literalNumber);
+		this.population = initPopulation(popSize,literalNumber);
 		this.random = new Random();
 		this.maxIteration = maxIteration;
 		this.crossOverProb = crossOverProb;
@@ -33,20 +33,20 @@ public class Genetic extends GAAlgorithms {
 		}
 	}
 
-	public void evolve(ArrayList<ArrayList<Integer>> popToEvolve, String selectionMethod){
+	public void evolve(String selectionMethod){
 		//ArrayList<Integer> count = new ArrayList<Integer>(Collections.nCopies(popToEvolve.size(), 0));//delete
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++){
 			
 		
 			//rankSelectTest(popToEvolve, count);//delete
 			
-			select(popToEvolve,selectionMethod);
+			select(selectionMethod);
 			if(foundSATSolution){
 				System.out.println("Fully Satisfied Clauses");
 				break;
 			}
-			singlePointCrossover(crossOverProb, popToEvolve);
-			mutate(mutateProb, popToEvolve);
+			singlePointCrossover(crossOverProb);
+			mutate(mutateProb);
 		}
 		//System.out.println("test" + count);//delete
 		//System.out.println("Sum" + count.stream().mapToInt(Integer::intValue).sum());//delete
@@ -54,20 +54,20 @@ public class Genetic extends GAAlgorithms {
 		System.out.println("Best Solution" +bestSolution);
 	}
 
-	private void select(ArrayList<ArrayList<Integer>> popToEvolve, String selectionMethod){
+	private void select(String selectionMethod){
 		if (selectionMethod.equalsIgnoreCase("rank")){
-			  rankSelect(popToEvolve);
+			  rankSelect();
 		}else if(selectionMethod.equalsIgnoreCase("boltzman")){
 			//  boltzmanSelect(popToEvolve);
 		}else{
-			  tournamentSelect(popToEvolve,1,5);//Todo make variables
+			  tournamentSelect(1,5);//Todo make variables
 		}
 	}
 
 
 
 
-	private void tournamentSelect(ArrayList<ArrayList<Integer>> popToEvolve,int winners, int sample) {
+	private void tournamentSelect(int winners, int sample) {
 
 		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
 
@@ -78,16 +78,16 @@ public class Genetic extends GAAlgorithms {
 				int number;
 				do
 				{
-					number = random.nextInt(popToEvolve.size());
+					number = random.nextInt(this.population.size());
 				} while (randomNumbers.contains(number));
 				randomNumbers.add(number);
 			}
 			ArrayList<ArrayWithFitness> withFitness = new ArrayList<ArrayWithFitness>();
 			for (int i = 0; i < randomNumbers.size(); i++){
 				// Pass in each individual and get back a fitness and merge with individual
-				ArrayWithFitness memberWithFitness = new ArrayWithFitness(popToEvolve.get(i));
-				memberWithFitness.fitness = evaluateCandidate(satProblem, popToEvolve.get(i));
-				updateMaxFitness(memberWithFitness.fitness, popToEvolve.get(i));
+				ArrayWithFitness memberWithFitness = new ArrayWithFitness(this.population.get(i));
+				memberWithFitness.fitness = evaluateCandidate(satProblem, this.population.get(i));
+				updateMaxFitness(memberWithFitness.fitness, this.population.get(i));
 				withFitness.add(memberWithFitness);
 			}
 
@@ -96,25 +96,25 @@ public class Genetic extends GAAlgorithms {
 
 			//Pick top x individuals and add to winnerPool until it is full
 			for (int i = 0; i < winners && ( winnerPool.size() < population.size()) ; i++){
-				winnerPool.add(withFitness.get(i).individual);	
+				winnerPool.add((ArrayList<Integer>)withFitness.get(i).individual.clone());	
 			}
 
 		}
+		this.population = winnerPool;//Replace current population with the breeding pool
 
-
-		popToEvolve = winnerPool;//Replace current population with the breeding pool
+		//popToEvolve = winnerPool;//Replace current population with the breeding pool
 	}
 
 
-	private void rankSelect(ArrayList<ArrayList<Integer>> popToEvolve) {
+	private void rankSelect() {
 		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
 		ArrayList<ArrayWithFitness> withFitness = new ArrayList<ArrayWithFitness>();
 		
 		// Pass in each individual and get back a fitness and merge with individual
-		for (int i = 0; i < popToEvolve.size(); i++){
-			ArrayWithFitness memberWithFitness = new ArrayWithFitness(popToEvolve.get(i));
-			memberWithFitness.fitness = evaluateCandidate(satProblem, popToEvolve.get(i));
-			updateMaxFitness(memberWithFitness.fitness, popToEvolve.get(i));
+		for (int i = 0; i < this.population.size(); i++){
+			ArrayWithFitness memberWithFitness = new ArrayWithFitness(this.population.get(i));
+			memberWithFitness.fitness = evaluateCandidate(satProblem, this.population.get(i));
+			updateMaxFitness(memberWithFitness.fitness, this.population.get(i));
 			withFitness.add(memberWithFitness);
 		}
 		
@@ -123,8 +123,8 @@ public class Genetic extends GAAlgorithms {
 
 
 		//Generate one random double per member of the population
-		double[] probability = new double[popToEvolve.size()];
-		for (int i = 0; i < popToEvolve.size() ;i++){
+		double[] probability = new double[this.population.size()];
+		for (int i = 0; i < this.population.size() ;i++){
 			probability[i] = random.nextDouble();
 		}
 		
@@ -133,12 +133,12 @@ public class Genetic extends GAAlgorithms {
 
 		int pickUpFrom = 0;
 		double cumulativeProbabilityLag = 0;
-		double cumulativeProbabilityLead = probFromRank((double) popToEvolve.size() ,(double) popToEvolve.size());
+		double cumulativeProbabilityLead = probFromRank((double) this.population.size() ,(double) this.population.size());
 		
-		for (int i = 0; i < popToEvolve.size();i++){
+		for (int i = 0; i < this.population.size();i++){
 			for (int j = pickUpFrom; j < probability.length;j++){
 				if ((probability[j] >= cumulativeProbabilityLag) && (probability[j] < cumulativeProbabilityLead) ){
-					winnerPool.add(withFitness.get(i).individual);
+					winnerPool.add((ArrayList<Integer>)withFitness.get(i).individual.clone());
 				}else{
 					pickUpFrom = j;
 					break;
@@ -146,10 +146,10 @@ public class Genetic extends GAAlgorithms {
 			}
 
 			cumulativeProbabilityLag = cumulativeProbabilityLead;
-			cumulativeProbabilityLead += probFromRank((double) (popToEvolve.size() - (i+1)),(double) popToEvolve.size());
+			cumulativeProbabilityLead += probFromRank((double) (this.population.size() - (i+1)),(double) this.population.size());
 		}
-
-		popToEvolve = winnerPool;//Replace current population with the breeding pool
+		this.population = winnerPool;//Replace current population with the breeding pool
+		//popToEvolve = winnerPool;//Replace current population with the breeding pool
 
 	}
 
@@ -159,39 +159,39 @@ public class Genetic extends GAAlgorithms {
 
 
 
-	private void mutate(double mutateProb,ArrayList<ArrayList<Integer>> popToMutate ) {
+	private void mutate(double mutateProb) {
 		
-		for (int i = 0; i < popToMutate.size() ;i++){
-			for (int j = 0; j < popToMutate.get(i).size() ;j++){
+		for (int i = 0; i < this.population.size() ;i++){
+			for (int j = 0; j < this.population.get(i).size() ;j++){
 				boolean flip = random.nextDouble() < mutateProb;
-				if (flip &&  popToMutate.get(i).get(j) == 1){
-					popToMutate.get(i).set(j,0);
-				}else if(flip && popToMutate.get(i).get(j) == 0){
-					popToMutate.get(i).set(j,1);
+				if (flip &&  this.population.get(i).get(j) == 1){
+					this.population.get(i).set(j,0);
+				}else if(flip && this.population.get(i).get(j) == 0){
+					this.population.get(i).set(j,1);
 				}
 			}
 
 		}
 	}
 
-	private void singlePointCrossover(double crossProb,ArrayList<ArrayList<Integer>> popToCross ) {
-		for (int i = 0; i < popToCross.size() ;i+= 2){
+	private void singlePointCrossover(double crossProb) {
+		for (int i = 0; i < this.population.size() ;i+= 2){
 			boolean cross = random.nextDouble() < crossProb;
 			int crossOverLocation;
 			if (cross){
 				//Pick cross over location
-				crossOverLocation = random.nextInt(popToCross.get(i).size());
+				crossOverLocation = random.nextInt(this.population.get(i).size());
 				//Copy first half of A into C
-				List<Integer> c = new ArrayList<Integer>(popToCross.get(i).subList(0, crossOverLocation));
+				List<Integer> c = new ArrayList<Integer>(this.population.get(i).subList(0, crossOverLocation));
 				//Replace first half of A with First half of B
 				for (int j = 0; j < crossOverLocation ;j++){ 
-					int value = popToCross.get(i+1).get(j);
-					popToCross.get(i).set(j, value);
+					int value = this.population.get(i+1).get(j);
+					this.population.get(i).set(j, value);
 				}
 				//Replace first half of B with C
 				for (int j = 0; j < c.size() ;j++){
 					int value = c.get(j);
-					popToCross.get(i+1).set(j, value);
+					this.population.get(i+1).set(j, value);
 				}
 
 			}

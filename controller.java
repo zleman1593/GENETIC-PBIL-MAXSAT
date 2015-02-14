@@ -17,18 +17,15 @@ public class controller {
 		numberOfLiterals = problem.getNumLiterals();
 		
 		
-		PBIL test = new PBIL(10, 0.2, 0.2, numberOfLiterals,mutateProb, mutateProb, maxIteration,problem.getProblem()); 
+		//PBIL test = new PBIL(10, 0.2, 0.2, numberOfLiterals,mutateProb, mutateProb, maxIteration,problem.getProblem()); 
 		
-		test.initProbVector();
-		double[] prob = test.iteratePBIL();
+		//test.initProbVector();
+		//double[] prob = test.iteratePBIL();
 		
 		
 		
 		Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIteration, crossOverProb, mutateProb,problem.getProblem());
-		
-		ArrayList<ArrayList<Integer>>  pop = geneticAlgo.population;
-		geneticAlgo.evolve(pop,"rank");
-		//geneticAlgo.singlePointCrossover(1, pop);
+		geneticAlgo.evolve("rank");
 
 		
 	}
