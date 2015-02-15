@@ -110,7 +110,7 @@ public class Genetic extends EvolAlgorithms {
 			}
 
 		}
-		this.population = winnerPool;// Replace current population with the
+		population = winnerPool;// Replace current population with the
 		// newly selected pool
 	}
 
@@ -121,7 +121,7 @@ public class Genetic extends EvolAlgorithms {
 
 		// Pass in each individual and get back a fitness and merge with
 		// individual
-		for (int i = 0; i < this.population.size(); i++) {
+		for (int i = 0; i < population.size(); i++) {
 			ArrayList<Integer> individual = population.get(i);
 			ArrayWithFitness memberWithFitness = new ArrayWithFitness(
 					individual);
@@ -136,8 +136,8 @@ public class Genetic extends EvolAlgorithms {
 		Collections.sort(allIndividualsWithFitness);
 
 		// Generate one random double per member of the population
-		double[] probability = new double[this.population.size()];
-		for (int i = 0; i < this.population.size(); i++) {
+		double[] probability = new double[population.size()];
+		for (int i = 0; i < population.size(); i++) {
 			probability[i] = random.nextDouble();
 		}
 
@@ -153,8 +153,8 @@ public class Genetic extends EvolAlgorithms {
 		// Initialize two range indices that bracket probability ranges
 		if (option.equalsIgnoreCase("rank")) {
 			cumulativeProbabilityLead = probFromRank(
-					(double) this.population.size(),
-					(double) this.population.size());
+					(double) population.size(),
+					(double) population.size());
 		} else {
 			calcBoltzmannSum(allIndividualsWithFitness); // calculate the denominator of the
 			// boltzmann function once per
@@ -162,7 +162,7 @@ public class Genetic extends EvolAlgorithms {
 			cumulativeProbabilityLead = probFromBoltz(0, allIndividualsWithFitness);
 		}
 
-		for (int i = 0; i < this.population.size(); i++) {
+		for (int i = 0; i < population.size(); i++) {
 
 			for (int j = pickUpFrom; j < probability.length; j++) {
 				// If random value/selection is within the range indicated by
@@ -186,8 +186,8 @@ public class Genetic extends EvolAlgorithms {
 			// next individual (using rank/Boltzmann)
 			if (option.equalsIgnoreCase("rank")) {
 				cumulativeProbabilityLead += probFromRank(
-						(double) this.population.size(),
-						(double) this.population.size());
+						(double) population.size(),
+						(double) population.size());
 			} else if (i < population.size() - 1) {
 				// If boltzmann
 				cumulativeProbabilityLead += probFromBoltz(indexOfIndividual,
@@ -224,13 +224,13 @@ public class Genetic extends EvolAlgorithms {
 
 	/* Mutates the current population */
 	private void mutate(double mutateProb) {
-		for (int i = 0; i < this.population.size(); i++) {
-			for (int j = 0; j < this.population.get(i).size(); j++) {
+		for (int i = 0; i < population.size(); i++) {
+			for (int j = 0; j < population.get(i).size(); j++) {
 				boolean flip = random.nextDouble() < mutateProb;
-				if (flip && this.population.get(i).get(j) == 1) {
-					this.population.get(i).set(j, 0);
-				} else if (flip && this.population.get(i).get(j) == 0) {
-					this.population.get(i).set(j, 1);
+				if (flip && population.get(i).get(j) == 1) {
+					population.get(i).set(j, 0);
+				} else if (flip && population.get(i).get(j) == 0) {
+					population.get(i).set(j, 1);
 				}
 			}
 
@@ -242,25 +242,25 @@ public class Genetic extends EvolAlgorithms {
 	 * random crossover point
 	 */
 	private void singlePointCrossover(double crossProb) {
-		for (int i = 0; i < this.population.size(); i += 2) {
+		for (int i = 0; i < population.size(); i += 2) {
 			boolean cross = random.nextDouble() < crossProb;
 			int crossOverLocation;
 			if (cross) {
 				// Pick cross over location
-				crossOverLocation = random.nextInt(this.population.get(i)
+				crossOverLocation = random.nextInt(population.get(i)
 						.size());
 				// Copy first part of A into C
-				List<Integer> c = new ArrayList<Integer>(this.population.get(i)
+				List<Integer> c = new ArrayList<Integer>(population.get(i)
 						.subList(0, crossOverLocation));
 				// Replace first part of A with First part of B
 				for (int j = 0; j < crossOverLocation; j++) {
-					int value = this.population.get(i + 1).get(j);
-					this.population.get(i).set(j, value);
+					int value = population.get(i + 1).get(j);
+					population.get(i).set(j, value);
 				}
 				// Replace first part of B with C
 				for (int j = 0; j < c.size(); j++) {
 					int value = c.get(j);
-					this.population.get(i + 1).set(j, value);
+					population.get(i + 1).set(j, value);
 				}
 
 			}
@@ -273,7 +273,7 @@ public class Genetic extends EvolAlgorithms {
 	 * random crossover
 	 */
 	private void uniformCrossover(double crossProb) {
-		for (int i = 0; i < this.population.size(); i += 2) {
+		for (int i = 0; i < population.size(); i += 2) {
 			boolean cross;
 			for( int j = 0; j < population.get(i).size(); j++){
 				cross = random.nextDouble() < crossProb;
