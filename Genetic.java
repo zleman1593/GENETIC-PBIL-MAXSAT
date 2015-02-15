@@ -38,20 +38,6 @@ public class Genetic extends EvolAlgorithms {
 		this.sample = 5;
 	}
 
-	// Update the max fitness encountered so far
-	private void updateMaxFitness(int fitness, ArrayList<Integer> values) {
-		if (fitness > maxFitnessSoFar) {
-			bestGeneration = currentGeneration;;
-			maxFitnessSoFar = fitness;
-			bestSolution = new ArrayList<Integer>();
-			bestSolution.addAll(values);
-			// If all clauses are satisfied
-			if (fitness == satProblem.size()) {
-				foundSATSolution = true;
-			}
-		}
-	}
-
 	public void evolve(String selectionMethod) {
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++) {
 			currentGeneration = i+1;
@@ -74,7 +60,7 @@ public class Genetic extends EvolAlgorithms {
 			
 			 mutate(mutateProb);
 		}
-		System.out.println("Genetic Algorithm Output");
+		System.out.println("Genetic Algorithm Output:");
 		System.out.println("Number Of Variables: " + population.get(0).size());
 		System.out.println("Number Of Clauses: " + satProblem.size());
 		System.out.println("Satisfied Clauses: " + maxFitnessSoFar + " out of " + satProblem.size() + " (" + (satProblem.size() - maxFitnessSoFar) + " unsatisfied clauses)." );
@@ -84,6 +70,21 @@ public class Genetic extends EvolAlgorithms {
 		
 	}
 
+	// Update the max fitness encountered so far
+	private void updateMaxFitness(int fitness, ArrayList<Integer> values) {
+		if (fitness > maxFitnessSoFar) {
+			bestGeneration = currentGeneration;;
+			maxFitnessSoFar = fitness;
+			bestSolution = new ArrayList<Integer>();
+			bestSolution.addAll(values);
+			// If all clauses are satisfied
+			if (fitness == satProblem.size()) {
+				foundSATSolution = true;
+			}
+		}
+	}
+
+	
 	private void tournamentSelect() {
 		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
 		// While the next generation pool is smaller than the population limit

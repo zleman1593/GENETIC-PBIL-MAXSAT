@@ -10,6 +10,7 @@ public class SatProblem {
 	private int numClauses = 0;
 	private ArrayList<String> readFile(String filename)
 	{
+		System.out.println("File: " + filename);
 		ArrayList<String> records = new ArrayList<String>();
 		try
 		{
