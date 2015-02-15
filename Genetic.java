@@ -108,7 +108,7 @@ public class Genetic extends EvolAlgorithms {
 		// newly selected pool
 	}
 
-	private ArrayList<ArrayWithFitness> getFitness() {
+	private ArrayList<ArrayWithFitness> getFitnessForAllIndividuals() {
 		ArrayList<ArrayWithFitness> allIndividualsWithFitness = new ArrayList<ArrayWithFitness>();
 		// Pass in each individual and get back a fitness and merge with
 		// individual
@@ -132,7 +132,7 @@ public class Genetic extends EvolAlgorithms {
 	/* Method that runs Rank and Boltzmann selection */
 	private void rankBoltzSelect(String option) {
 		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
-		ArrayList<ArrayWithFitness> allIndividualsWithFitness = getFitness();
+		ArrayList<ArrayWithFitness> allIndividualsWithFitness = getFitnessForAllIndividuals();
 
 		// Generate one random double per member of the population
 		double[] probability = new double[population.size()];
@@ -209,7 +209,7 @@ public class Genetic extends EvolAlgorithms {
 	private void calcBoltzmannSum(ArrayList<ArrayWithFitness> popWithFitness) {
 		double sum = 0;
 		for (int i = 0; i < popWithFitness.size(); i++) {
-			sum = +Math.exp((popWithFitness.get(i).fitness));
+			sum = + Math.exp((popWithFitness.get(i).fitness));
 		}
 		boltzmannSum = sum;
 	}
