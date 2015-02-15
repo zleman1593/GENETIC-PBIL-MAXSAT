@@ -50,9 +50,9 @@ public class Genetic extends EvolAlgorithms {
 
 			if (selectionMethod.equalsIgnoreCase("rank")
 					|| selectionMethod.equalsIgnoreCase("boltzmann")) {
-				rankBoltzSelect(selectionMethod);
+				//rankBoltzSelect(selectionMethod);
 			} else {
-				tournamentSelect();// Todo make variables
+				//tournamentSelect();
 			}
 
 			if (foundSATSolution) {
@@ -60,7 +60,7 @@ public class Genetic extends EvolAlgorithms {
 				break;
 			}
 			singlePointCrossover(crossOverProb);
-			mutate(mutateProb);
+			//mutate(mutateProb);
 		}
 		System.out.println("Max Fitness so far:" + maxFitnessSoFar);
 		System.out.println("Best Solution" + bestSolution);
@@ -217,7 +217,7 @@ public class Genetic extends EvolAlgorithms {
 	private void calcBoltzmannSum(ArrayList<ArrayWithFitness> popWithFitness) {
 		double sum = 0;
 		for (int i = 0; i < popWithFitness.size(); i++) {
-			sum = +Math.exp((popWithFitness.get(i).fitness));
+			sum = + Math.exp((popWithFitness.get(i).fitness));
 		}
 		boltzmannSum = sum;
 	}

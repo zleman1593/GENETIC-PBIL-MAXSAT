@@ -19,7 +19,7 @@ public class Controller {
 		// GA parameters.
 		int GA_popSize = 200;
 		int GA_literalNumber = numberOfLiterals;
-		int GA_maxIteration = 1000;
+		int GA_maxIteration = 2000;
 		double GA_crossOverProb = 0.7; 
 	    double GA_mutateProb = 0.01; 
 		
@@ -30,7 +30,7 @@ public class Controller {
 	    int PBIL_length = numberOfLiterals;
 	    double PBIL_mutProb = 0.02;
 		double PBIL_mutShift = 0.05; 
-		int PBIL_maxIterations = 1000;
+		int PBIL_maxIterations = 2000;
 		
 	    // Run PBIL.
 		PBIL test = new PBIL(PBIL_samples, PBIL_learningRate, PBIL_negLearningRate, 
