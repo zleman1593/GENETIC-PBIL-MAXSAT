@@ -11,14 +11,16 @@ public class Genetic extends EvolAlgorithms {
 	// Maximum fitness found so far in any generation
 	private int maxFitnessSoFar = 0;
 	// Individual Solution with Maximum fitness found so far in any generation
-	public ArrayList<Integer> bestSolution;
+	private ArrayList<Integer> bestSolution;
 	// Probabilities
 	private double crossOverProb, mutateProb;
 	// Tournament variables
 	private int winners, sample;
 	// Keeps track of whether a full solution has been found
-	boolean foundSATSolution = false;
+	private boolean foundSATSolution = false;
 	private double boltzmannSum;
+	private int bestGeneration;
+	private int currentGeneration;
 
 	// Constructor.
 	public Genetic(int popSize, int literalNumber, int maxIteration, double crossOverProb, double mutateProb,
@@ -32,8 +34,9 @@ public class Genetic extends EvolAlgorithms {
 	}
 
 	// Update the max fitness encountered so far
-	public void updateMaxFitness(int fitness, ArrayList<Integer> values) {
+	private void updateMaxFitness(int fitness, ArrayList<Integer> values) {
 		if (fitness > maxFitnessSoFar) {
+			bestGeneration = currentGeneration;;
 			maxFitnessSoFar = fitness;
 			bestSolution = new ArrayList<Integer>();
 			bestSolution.addAll(values);
@@ -46,6 +49,7 @@ public class Genetic extends EvolAlgorithms {
 
 	public void evolve(String selectionMethod) {
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++) {
+			currentGeneration = i+1;
 			if (selectionMethod.equalsIgnoreCase("rank") || selectionMethod.equalsIgnoreCase("boltzmann")) {
 				 rankBoltzSelect(selectionMethod);
 			} else {
@@ -53,14 +57,20 @@ public class Genetic extends EvolAlgorithms {
 			}
 
 			if (foundSATSolution) {
-				System.out.println("Fully Satisfied Clauses");
+				System.out.println("Fully Satisfied All Clauses");
 				break;
 			}
 			singlePointCrossover(crossOverProb);
 			 mutate(mutateProb);
 		}
-		System.out.println("Max Fitness so far:" + maxFitnessSoFar);
-		System.out.println("Best Solution" + bestSolution);
+		System.out.println("Genetic Algorithm Output");
+		System.out.println("Number Of Variables: " + population.get(0).size());
+		System.out.println("Number Of Clauses: " + satProblem.size());
+		System.out.println("Satisfied Clauses: " + maxFitnessSoFar + " out of " + satProblem.size() + " (" + (satProblem.size() - maxFitnessSoFar) + " unsatisfied clauses)." );
+		System.out.println("Best Variable Assignment: " + Arrays.toString( binaryToNumber(bestSolution)));
+		System.out.println("Percent satisfied: " + ( (double) maxFitnessSoFar *100 / (double) satProblem.size()) + "%");
+		System.out.println("Best Generation:" + bestGeneration);
+		
 	}
 
 	private void tournamentSelect() {
@@ -291,4 +301,18 @@ public class Genetic extends EvolAlgorithms {
 		}
 		return population;
 	}
+	/*Makes the solution more human readable*/
+	private int[] binaryToNumber(ArrayList<Integer> solution){
+		int[] display = new int[solution.size()];
+		for(int i =0; i < solution.size(); i++){
+			if(solution.get(i) < 1){
+				display[i] = -1*(i+1);
+			} else{
+				display[i] = (i+1);
+			}
+		}
+		
+		return display;
+	}
+	
 }

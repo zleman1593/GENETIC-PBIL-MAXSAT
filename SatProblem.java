@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
-
+//TODO make more robust. Currently splits on single space. Will have error is there are 2 or more consecutive spaces
+//TODO make sure it doesnt read extra lines at the bottom of the file
 
 public class SatProblem {
 
@@ -32,7 +33,7 @@ public class SatProblem {
 	public void createSatProblemFromFile(String infile){
 		ArrayList<ArrayList<Integer>> clauses = new ArrayList<ArrayList<Integer>>();
 		ArrayList<String> choppedCNF = readFile(infile);
-		for (int i = 0; i < choppedCNF.size() -1 ;i++){//todo
+		for (int i = 0; i < choppedCNF.size() ;i++){
 			if(!choppedCNF.get(i).startsWith("c")){
 				//Number of clauses and literals
 				if(choppedCNF.get(i).startsWith("p")){
