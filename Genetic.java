@@ -274,28 +274,16 @@ public class Genetic extends EvolAlgorithms {
 	 */
 	private void uniformCrossover(double crossProb) {
 		for (int i = 0; i < this.population.size(); i += 2) {
-			boolean cross = random.nextDouble() < crossProb;
-			int crossOverLocation;
-			if (cross) {
-				// Pick cross over location
-				crossOverLocation = random.nextInt(this.population.get(i)
-						.size());
-				// Copy first part of A into C
-				List<Integer> c = new ArrayList<Integer>(this.population.get(i)
-						.subList(0, crossOverLocation));
-				// Replace first part of A with First part of B
-				for (int j = 0; j < crossOverLocation; j++) {
-					int value = this.population.get(i + 1).get(j);
-					this.population.get(i).set(j, value);
+			boolean cross;
+			for( int j = 0; j < population.get(i).size(); j++){
+				cross = random.nextDouble() < crossProb;
+				if (cross) {
+					//Swap to elements
+					int temp = population.get(i).get(j);
+					population.get(i).set(j,population.get(i+1).get(j));
+					population.get(i+1).set(j,temp);
 				}
-				// Replace first part of B with C
-				for (int j = 0; j < c.size(); j++) {
-					int value = c.get(j);
-					this.population.get(i + 1).set(j, value);
-				}
-
 			}
-
 		}
 	}
 
