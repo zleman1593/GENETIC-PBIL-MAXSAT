@@ -21,8 +21,7 @@ public class Genetic extends EvolAlgorithms {
 	private double boltzmannSum;
 
 	// Constructor.
-	public Genetic(int popSize, int literalNumber, int maxIteration,
-			double crossOverProb, double mutateProb,
+	public Genetic(int popSize, int literalNumber, int maxIteration, double crossOverProb, double mutateProb,
 			ArrayList<ArrayList<Integer>> satProblem) {
 		this.satProblem = satProblem;
 		this.population = initPopulation(popSize, literalNumber);
@@ -47,12 +46,10 @@ public class Genetic extends EvolAlgorithms {
 
 	public void evolve(String selectionMethod) {
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++) {
-
-			if (selectionMethod.equalsIgnoreCase("rank")
-					|| selectionMethod.equalsIgnoreCase("boltzmann")) {
-				//rankBoltzSelect(selectionMethod);
+			if (selectionMethod.equalsIgnoreCase("rank") || selectionMethod.equalsIgnoreCase("boltzmann")) {
+				// rankBoltzSelect(selectionMethod);
 			} else {
-				//tournamentSelect();
+				// tournamentSelect();
 			}
 
 			if (foundSATSolution) {
@@ -60,7 +57,7 @@ public class Genetic extends EvolAlgorithms {
 				break;
 			}
 			singlePointCrossover(crossOverProb);
-			//mutate(mutateProb);
+			// mutate(mutateProb);
 		}
 		System.out.println("Max Fitness so far:" + maxFitnessSoFar);
 		System.out.println("Best Solution" + bestSolution);
@@ -82,15 +79,15 @@ public class Genetic extends EvolAlgorithms {
 				randomNumbers.add(number);
 			}
 
-			/* Evaluate each individual in the random sample, and add it with
-			 * its fitness to a new object*/
+			/*
+			 * Evaluate each individual in the random sample, and add it with
+			 * its fitness to a new object
+			 */
 			ArrayList<ArrayWithFitness> allIndividualsWithFitness = new ArrayList<ArrayWithFitness>();
 			for (int i = 0; i < randomNumbers.size(); i++) {
 				ArrayList<Integer> individual = population.get(i);
-				ArrayWithFitness memberWithFitness = new ArrayWithFitness(
-						individual);
-				memberWithFitness.fitness = evaluateCandidate(satProblem,
-						individual);
+				ArrayWithFitness memberWithFitness = new ArrayWithFitness(individual);
+				memberWithFitness.fitness = evaluateCandidate(satProblem, individual);
 				allIndividualsWithFitness.add(memberWithFitness);
 				// Update the global variable if a new individual is more fit
 				// than the current best
@@ -102,11 +99,8 @@ public class Genetic extends EvolAlgorithms {
 
 			// Pick top "winners" individuals and add to winnerPool until it is
 			// full
-			for (int i = 0; i < winners
-					&& (winnerPool.size() < population.size()); i++) {
-				winnerPool
-				.add((ArrayList<Integer>) allIndividualsWithFitness.get(i).individual
-						.clone());
+			for (int i = 0; i < winners && (winnerPool.size() < population.size()); i++) {
+				winnerPool.add((ArrayList<Integer>) allIndividualsWithFitness.get(i).individual.clone());
 			}
 
 		}
@@ -123,10 +117,8 @@ public class Genetic extends EvolAlgorithms {
 		// individual
 		for (int i = 0; i < population.size(); i++) {
 			ArrayList<Integer> individual = population.get(i);
-			ArrayWithFitness memberWithFitness = new ArrayWithFitness(
-					individual);
-			memberWithFitness.fitness = evaluateCandidate(satProblem,
-					individual);
+			ArrayWithFitness memberWithFitness = new ArrayWithFitness(individual);
+			memberWithFitness.fitness = evaluateCandidate(satProblem, individual);
 			updateMaxFitness(memberWithFitness.fitness, individual);
 			allIndividualsWithFitness.add(memberWithFitness);
 		}
@@ -152,11 +144,11 @@ public class Genetic extends EvolAlgorithms {
 		double cumulativeProbabilityLead;
 		// Initialize two range indices that bracket probability ranges
 		if (option.equalsIgnoreCase("rank")) {
-			cumulativeProbabilityLead = probFromRank(
-					(double) population.size(),
-					(double) population.size());
+			cumulativeProbabilityLead = probFromRank((double) population.size(), (double) population.size());
 		} else {
-			calcBoltzmannSum(allIndividualsWithFitness); // calculate the denominator of the
+			calcBoltzmannSum(allIndividualsWithFitness); // calculate the
+															// denominator of
+															// the
 			// boltzmann function once per
 			// generation
 			cumulativeProbabilityLead = probFromBoltz(0, allIndividualsWithFitness);
@@ -169,11 +161,8 @@ public class Genetic extends EvolAlgorithms {
 				// the two indices then
 				// add the individual associated with that range to the winner
 				// pool
-				if ((probability[j] >= cumulativeProbabilityLag)
-						&& (probability[j] < cumulativeProbabilityLead)) {
-					winnerPool
-					.add((ArrayList<Integer>) allIndividualsWithFitness.get(i).individual
-							.clone());
+				if ((probability[j] >= cumulativeProbabilityLag) && (probability[j] < cumulativeProbabilityLead)) {
+					winnerPool.add((ArrayList<Integer>) allIndividualsWithFitness.get(i).individual.clone());
 				} else {
 					pickUpFrom = j;// pick up iteration on j during the next
 					// iteration of the i for loop
@@ -185,13 +174,10 @@ public class Genetic extends EvolAlgorithms {
 			// New lead is old lead position plus additional probability of the
 			// next individual (using rank/Boltzmann)
 			if (option.equalsIgnoreCase("rank")) {
-				cumulativeProbabilityLead += probFromRank(
-						(double) population.size(),
-						(double) population.size());
+				cumulativeProbabilityLead += probFromRank((double) population.size(), (double) population.size());
 			} else if (i < population.size() - 1) {
 				// If boltzmann
-				cumulativeProbabilityLead += probFromBoltz(indexOfIndividual,
-						allIndividualsWithFitness);
+				cumulativeProbabilityLead += probFromBoltz(indexOfIndividual, allIndividualsWithFitness);
 				indexOfIndividual++;
 			}
 
@@ -205,8 +191,7 @@ public class Genetic extends EvolAlgorithms {
 	}
 
 	/* Get probability of selecting individual based on its fitness */
-	private double probFromBoltz(int index,
-			ArrayList<ArrayWithFitness> popWithFitness) {
+	private double probFromBoltz(int index, ArrayList<ArrayWithFitness> popWithFitness) {
 		return Math.exp(popWithFitness.get(index).fitness / boltzmannSum);
 	}
 
@@ -217,7 +202,7 @@ public class Genetic extends EvolAlgorithms {
 	private void calcBoltzmannSum(ArrayList<ArrayWithFitness> popWithFitness) {
 		double sum = 0;
 		for (int i = 0; i < popWithFitness.size(); i++) {
-			sum = + Math.exp((popWithFitness.get(i).fitness));
+			sum = +Math.exp((popWithFitness.get(i).fitness));
 		}
 		boltzmannSum = sum;
 	}
@@ -247,11 +232,9 @@ public class Genetic extends EvolAlgorithms {
 			int crossOverLocation;
 			if (cross) {
 				// Pick cross over location
-				crossOverLocation = random.nextInt(population.get(i)
-						.size());
+				crossOverLocation = random.nextInt(population.get(i).size());
 				// Copy first part of A into C
-				List<Integer> c = new ArrayList<Integer>(population.get(i)
-						.subList(0, crossOverLocation));
+				List<Integer> c = new ArrayList<Integer>(population.get(i).subList(0, crossOverLocation));
 				// Replace first part of A with First part of B
 				for (int j = 0; j < crossOverLocation; j++) {
 					int value = population.get(i + 1).get(j);
@@ -275,21 +258,20 @@ public class Genetic extends EvolAlgorithms {
 	private void uniformCrossover(double crossProb) {
 		for (int i = 0; i < population.size(); i += 2) {
 			boolean cross;
-			for( int j = 0; j < population.get(i).size(); j++){
+			for (int j = 0; j < population.get(i).size(); j++) {
 				cross = random.nextDouble() < crossProb;
 				if (cross) {
-					//Swap to elements
+					// Swap to elements
 					int temp = population.get(i).get(j);
-					population.get(i).set(j,population.get(i+1).get(j));
-					population.get(i+1).set(j,temp);
+					population.get(i).set(j, population.get(i + 1).get(j));
+					population.get(i + 1).set(j, temp);
 				}
 			}
 		}
 	}
 
 	// Initialize population
-	public ArrayList<ArrayList<Integer>> initPopulation(int popSize,
-			int literalNumber) {
+	public ArrayList<ArrayList<Integer>> initPopulation(int popSize, int literalNumber) {
 		ArrayList<ArrayList<Integer>> population = new ArrayList<ArrayList<Integer>>();
 		for (int i = 0; i < popSize; i++) {
 			ArrayList<Integer> individual = new ArrayList<Integer>();
