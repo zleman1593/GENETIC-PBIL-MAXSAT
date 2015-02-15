@@ -1,9 +1,7 @@
 import java.util.ArrayList;
 
 public class Controller {
-
-	private static final String PATH_ZACK = "/Users/zackleman/Desktop/t3pm3-5555.spn.cnf";
-	private static final String PATH_IVY = "/Users/mxing/Desktop/t3pm3-5555.spn.cnf";
+//Todo include ts smaple size and winner size
 
 	public static void main(String[] args) {
 		// Path to MXSAT input file
@@ -18,6 +16,7 @@ public class Controller {
 		ArrayList<ArrayList<Integer>> satProblem = problem.getProblem();
 
 		if (solutionTechnique.equalsIgnoreCase("g")) {
+			
 			int popSize = Integer.parseInt(args[1]);
 			String selectionType = args[2];
 			String crossoverType = args[3];
@@ -32,19 +31,25 @@ public class Controller {
 
 		} else {
 
-			// PBIL parameters.
+			// PBIL parameters
+//			int PBIL_samples = Integer.parseInt(args[1]);
+//			double PBIL_learningRate = Double.parseDouble(args[2]);
+//			double PBIL_negLearningRate = Double.parseDouble(args[3]);
+//			double PBIL_mutProb = Double.parseDouble(args[4]);
+//			double PBIL_mutShift =Double.parseDouble(args[5]);
+//			int PBIL_maxIterations = Integer.parseInt(args[6]);
+			
+			
 			int PBIL_samples = 100;
 			double PBIL_learningRate = 0.1;
 			double PBIL_negLearningRate = .075;
-			int PBIL_length = numberOfLiterals;
 			double PBIL_mutProb = 0.02;
 			double PBIL_mutShift = 0.05;
 			int PBIL_maxIterations = 2000;
 
 			// Run PBIL.
-			PBIL test = new PBIL(PBIL_samples, PBIL_learningRate, PBIL_negLearningRate, PBIL_length, PBIL_mutProb,
+			PBIL test = new PBIL(PBIL_samples, PBIL_learningRate, PBIL_negLearningRate, numberOfLiterals, PBIL_mutProb,
 					PBIL_mutShift, PBIL_maxIterations, satProblem);
-
 			test.initProbVector();
 			double[] prob = test.iteratePBIL();
 		}

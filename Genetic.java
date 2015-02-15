@@ -34,6 +34,8 @@ public class Genetic extends EvolAlgorithms {
 		this.crossOverProb = crossOverProb;
 		this.mutateProb = mutateProb;
 		this.crossOverMethod = crossOverMethod;
+		this.winners = 2;
+		this.sample = 5;
 	}
 
 	// Update the max fitness encountered so far
@@ -172,11 +174,8 @@ public class Genetic extends EvolAlgorithms {
 		if (option.equalsIgnoreCase("rs")) {
 			cumulativeProbabilityLead = probFromRank((double) population.size(), (double) population.size());
 		} else {
-			calcBoltzmannSum(allIndividualsWithFitness); // calculate the
-															// denominator of
-															// the
-			// boltzmann function once per
-			// generation
+			calcBoltzmannSum(allIndividualsWithFitness); // calculate the denominator of the
+			// Boltzmann function once per generation
 			cumulativeProbabilityLead = probFromBoltz(0, allIndividualsWithFitness);
 		}
 
@@ -310,6 +309,8 @@ public class Genetic extends EvolAlgorithms {
 		}
 		return population;
 	}
+	
+	
 	/*Makes the solution more human readable*/
 	private int[] binaryToNumber(ArrayList<Integer> solution){
 		int[] display = new int[solution.size()];
@@ -320,7 +321,6 @@ public class Genetic extends EvolAlgorithms {
 				display[i] = (i+1);
 			}
 		}
-		
 		return display;
 	}
 	
