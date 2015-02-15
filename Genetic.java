@@ -8,6 +8,8 @@ public class Genetic extends EvolAlgorithms {
 	private Random random;
 	// Maximum iterations allowed
 	private int maxIteration;
+	// Which method to use for Crossover
+	private String crossOverMethod;
 	// Maximum fitness found so far in any generation
 	private int maxFitnessSoFar = 0;
 	// Individual Solution with Maximum fitness found so far in any generation
@@ -23,7 +25,7 @@ public class Genetic extends EvolAlgorithms {
 	private int currentGeneration;
 
 	// Constructor.
-	public Genetic(int popSize, int literalNumber, int maxIteration, double crossOverProb, double mutateProb,
+	public Genetic(int popSize, int literalNumber, int maxIteration, String crossOverMethod, double crossOverProb, double mutateProb,
 			ArrayList<ArrayList<Integer>> satProblem) {
 		this.satProblem = satProblem;
 		this.population = initPopulation(popSize, literalNumber);
@@ -31,6 +33,7 @@ public class Genetic extends EvolAlgorithms {
 		this.maxIteration = maxIteration;
 		this.crossOverProb = crossOverProb;
 		this.mutateProb = mutateProb;
+		this.crossOverMethod = crossOverMethod;
 	}
 
 	// Update the max fitness encountered so far
@@ -50,7 +53,7 @@ public class Genetic extends EvolAlgorithms {
 	public void evolve(String selectionMethod) {
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++) {
 			currentGeneration = i+1;
-			if (selectionMethod.equalsIgnoreCase("rank") || selectionMethod.equalsIgnoreCase("boltzmann")) {
+			if (selectionMethod.equalsIgnoreCase("rs") || selectionMethod.equalsIgnoreCase("bs")) {
 				 rankBoltzSelect(selectionMethod);
 			} else {
 				 tournamentSelect();
@@ -60,7 +63,13 @@ public class Genetic extends EvolAlgorithms {
 				System.out.println("Fully Satisfied All Clauses");
 				break;
 			}
-			singlePointCrossover(crossOverProb);
+			
+			if (crossOverMethod.equalsIgnoreCase("1c")) {
+				singlePointCrossover(crossOverProb);
+			} else {
+				uniformCrossover(crossOverProb);
+			}
+			
 			 mutate(mutateProb);
 		}
 		System.out.println("Genetic Algorithm Output");
@@ -160,7 +169,7 @@ public class Genetic extends EvolAlgorithms {
 		double cumulativeProbabilityLag = 0;
 		double cumulativeProbabilityLead;
 		// Initialize two range indices that bracket probability ranges
-		if (option.equalsIgnoreCase("rank")) {
+		if (option.equalsIgnoreCase("rs")) {
 			cumulativeProbabilityLead = probFromRank((double) population.size(), (double) population.size());
 		} else {
 			calcBoltzmannSum(allIndividualsWithFitness); // calculate the
@@ -190,7 +199,7 @@ public class Genetic extends EvolAlgorithms {
 			cumulativeProbabilityLag = cumulativeProbabilityLead;
 			// New lead is old lead position plus additional probability of the
 			// next individual (using rank/Boltzmann)
-			if (option.equalsIgnoreCase("rank")) {
+			if (option.equalsIgnoreCase("rs")) {
 				cumulativeProbabilityLead += probFromRank((double) population.size(), (double) population.size());
 			} else if (i < population.size() - 1) {
 				// If boltzmann
