@@ -43,7 +43,7 @@ public class Controller {
 		Genetic geneticAlgo = new Genetic(GA_popSize, GA_literalNumber, GA_maxIteration, 
 				GA_crossOverProb, GA_mutateProb, satProblem);
 		
-		geneticAlgo.evolve("boltzmann");
+		geneticAlgo.evolve("rank");
 	
 	}
 }

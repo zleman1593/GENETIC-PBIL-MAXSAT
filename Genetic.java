@@ -47,9 +47,9 @@ public class Genetic extends EvolAlgorithms {
 	public void evolve(String selectionMethod) {
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++) {
 			if (selectionMethod.equalsIgnoreCase("rank") || selectionMethod.equalsIgnoreCase("boltzmann")) {
-				// rankBoltzSelect(selectionMethod);
+				 rankBoltzSelect(selectionMethod);
 			} else {
-				// tournamentSelect();
+				 tournamentSelect();
 			}
 
 			if (foundSATSolution) {
@@ -57,7 +57,7 @@ public class Genetic extends EvolAlgorithms {
 				break;
 			}
 			singlePointCrossover(crossOverProb);
-			// mutate(mutateProb);
+			 mutate(mutateProb);
 		}
 		System.out.println("Max Fitness so far:" + maxFitnessSoFar);
 		System.out.println("Best Solution" + bestSolution);
@@ -85,7 +85,7 @@ public class Genetic extends EvolAlgorithms {
 			 */
 			ArrayList<ArrayWithFitness> allIndividualsWithFitness = new ArrayList<ArrayWithFitness>();
 			for (int i = 0; i < randomNumbers.size(); i++) {
-				ArrayList<Integer> individual = population.get(i);
+				ArrayList<Integer> individual = population.get(randomNumbers.get(i));
 				ArrayWithFitness memberWithFitness = new ArrayWithFitness(individual);
 				memberWithFitness.fitness = evaluateCandidate(satProblem, individual);
 				allIndividualsWithFitness.add(memberWithFitness);
@@ -108,24 +108,31 @@ public class Genetic extends EvolAlgorithms {
 		// newly selected pool
 	}
 
-	/* Method that runs Rank and Boltzmann selection */
-	private void rankBoltzSelect(String option) {
-		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
+	private ArrayList<ArrayWithFitness> getFitness() {
 		ArrayList<ArrayWithFitness> allIndividualsWithFitness = new ArrayList<ArrayWithFitness>();
-
 		// Pass in each individual and get back a fitness and merge with
 		// individual
 		for (int i = 0; i < population.size(); i++) {
 			ArrayList<Integer> individual = population.get(i);
 			ArrayWithFitness memberWithFitness = new ArrayWithFitness(individual);
 			memberWithFitness.fitness = evaluateCandidate(satProblem, individual);
-			updateMaxFitness(memberWithFitness.fitness, individual);
 			allIndividualsWithFitness.add(memberWithFitness);
+			
+			updateMaxFitness(memberWithFitness.fitness, individual);
 		}
 
 		// Sort by fitness so that position zero has individual with highest
 		// fitness
 		Collections.sort(allIndividualsWithFitness);
+
+		return allIndividualsWithFitness;
+
+	}
+
+	/* Method that runs Rank and Boltzmann selection */
+	private void rankBoltzSelect(String option) {
+		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
+		ArrayList<ArrayWithFitness> allIndividualsWithFitness = getFitness();
 
 		// Generate one random double per member of the population
 		double[] probability = new double[population.size()];
