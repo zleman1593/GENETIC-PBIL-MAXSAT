@@ -48,6 +48,7 @@ public class PBIL extends EvolAlgorithms {
 	}
 	
 	public double[] iteratePBIL() {
+		long startTime = System.currentTimeMillis();
 		int iterations = 0;
 		while (iterations < maxIterations) {
 			// Generate all individuals and evaluate them.
@@ -72,7 +73,17 @@ public class PBIL extends EvolAlgorithms {
 			
 			iterations++;
 		}	
-		System.out.println("Max number of clauses satisfied:" + maxFitness);
+
+		System.out.println("PBIL Algorithm Output:");
+		System.out.println("Number Of Variables: " + probVector.length);
+		System.out.println("Number Of Clauses: " + satProblem.size());
+		System.out.println("Satisfied Clauses: " + maxFitness + " out of " + satProblem.size() + " (" + (satProblem.size() - maxFitness) + " unsatisfied clauses)." );
+		System.out.println("Best Variable Assignment: " + Arrays.toString( binaryToNumber(bestVector)));
+		System.out.println("Percent satisfied: " + ( (double) maxFitness *100 / (double) satProblem.size()) + "%");
+		System.out.println("Best Generation:" + bestGeneration);
+		long endTime = System.currentTimeMillis();
+		long executionTime = endTime - startTime;
+		System.out.println("Total execution time: " + executionTime + " milliseconds");
 		return probVector;
 	}
 	
@@ -117,6 +128,7 @@ public class PBIL extends EvolAlgorithms {
 	// Keep track of current max and min fitness and update individual accordingly.
 	private void updateFitness(int fitness, int[] individual) {
 		if (fitness > maxFitness) {
+			bestGeneration = currentGeneration;
 			bestVector = individual;
 			maxFitness =  fitness;
 		}
@@ -136,5 +148,19 @@ public class PBIL extends EvolAlgorithms {
 		// Convert array to ArrayList
 		ArrayList<Integer> resultList = new ArrayList<Integer>(Arrays.asList(result));
 		return resultList;
+	}
+	
+	
+	/*Makes the solution more human readable*/
+	private int[] binaryToNumber(int[] solution){
+		int[] display = new int[solution.length];
+		for(int i =0; i < solution.length; i++){
+			if(solution[i] < 1){
+				display[i] = -1*(i+1);
+			} else{
+				display[i] = (i+1);
+			}
+		}
+		return display;
 	}
 }

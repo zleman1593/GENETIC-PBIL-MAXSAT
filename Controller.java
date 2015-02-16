@@ -27,7 +27,9 @@ public class Controller {
 			// Run Genetic Algorithms.
 			Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIterations, crossoverType, crossoverProb,
 					mutationProb, satProblem);
+			
 			geneticAlgo.evolve(selectionType);
+			
 
 		} else {
 

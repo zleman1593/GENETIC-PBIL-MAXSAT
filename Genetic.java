@@ -21,8 +21,7 @@ public class Genetic extends EvolAlgorithms {
 	// Keeps track of whether a full solution has been found
 	private boolean foundSATSolution = false;
 	private double boltzmannSum;
-	private int bestGeneration;
-	private int currentGeneration;
+
 
 	// Constructor.
 	public Genetic(int popSize, int literalNumber, int maxIteration, String crossOverMethod, double crossOverProb, double mutateProb,
@@ -39,6 +38,7 @@ public class Genetic extends EvolAlgorithms {
 	}
 
 	public void evolve(String selectionMethod) {
+		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++) {
 			currentGeneration = i+1;
 			if (selectionMethod.equalsIgnoreCase("rs") || selectionMethod.equalsIgnoreCase("bs")) {
@@ -67,13 +67,16 @@ public class Genetic extends EvolAlgorithms {
 		System.out.println("Best Variable Assignment: " + Arrays.toString( binaryToNumber(bestSolution)));
 		System.out.println("Percent satisfied: " + ( (double) maxFitnessSoFar *100 / (double) satProblem.size()) + "%");
 		System.out.println("Best Generation:" + bestGeneration);
+		long endTime = System.currentTimeMillis();
+		long executionTime = endTime - startTime;
+		System.out.println("Total execution time: " + executionTime + " milliseconds");
 		
 	}
 
 	// Update the max fitness encountered so far
 	private void updateMaxFitness(int fitness, ArrayList<Integer> values) {
 		if (fitness > maxFitnessSoFar) {
-			bestGeneration = currentGeneration;;
+			bestGeneration = currentGeneration;
 			maxFitnessSoFar = fitness;
 			bestSolution = new ArrayList<Integer>();
 			bestSolution.addAll(values);

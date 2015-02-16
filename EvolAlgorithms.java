@@ -1,7 +1,9 @@
 import java.util.ArrayList;
 
 public class EvolAlgorithms {
-
+	protected int bestGeneration;
+	protected int currentGeneration;
+	
 	/* Fitness Function */
 	public int evaluateCandidate(ArrayList<ArrayList<Integer>> satProblem, ArrayList<Integer> values) {
 		int fitness = 0;
