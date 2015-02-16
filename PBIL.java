@@ -34,7 +34,7 @@ public class PBIL extends EvolAlgorithms {
 		this.mutShift = mutShift;
 		this.maxIterations = maxIterations;
 		this.satProblem = satProblem;
-		
+
 		minFitness = satProblem.size();
 		evaluations = new int[samples];
 	}
@@ -51,6 +51,7 @@ public class PBIL extends EvolAlgorithms {
 		long startTime = System.currentTimeMillis();
 		int iterations = 0;
 		while (iterations < maxIterations) {
+			currentGeneration = iterations;
 			// Generate all individuals and evaluate them.
 			for (int i = 0; i < samples; i++) {
 				int[] individual = generateSampleVector(probVector);
