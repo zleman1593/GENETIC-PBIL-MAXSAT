@@ -37,6 +37,7 @@ public class PBIL extends EvolAlgorithms {
 
 		minFitness = satProblem.size();
 		evaluations = new int[samples];
+		initProbVector();
 	}
 	
 	// Initialize probability vector.
@@ -47,7 +48,7 @@ public class PBIL extends EvolAlgorithms {
 		}
 	}
 	
-	public double[] iteratePBIL() {
+	public double[] evolve() {
 		long startTime = System.currentTimeMillis();
 		int iterations = 0;
 		while (iterations < maxIterations) {

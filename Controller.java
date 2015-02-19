@@ -49,10 +49,9 @@ public class Controller {
 			int PBIL_maxIterations = 2000;
 
 			// Run PBIL.
-			PBIL test = new PBIL(PBIL_samples, PBIL_learningRate, PBIL_negLearningRate, numberOfLiterals, PBIL_mutProb,
+			PBIL PBILAlgorithm = new PBIL(PBIL_samples, PBIL_learningRate, PBIL_negLearningRate, numberOfLiterals, PBIL_mutProb,
 					PBIL_mutShift, PBIL_maxIterations, satProblem);
-			test.initProbVector();
-			double[] prob = test.iteratePBIL();
+			PBILAlgorithm.evolve();
 		}
 
 	}

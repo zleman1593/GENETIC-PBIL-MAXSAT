@@ -3,9 +3,10 @@ import java.util.*;
 public class Genetic extends EvolAlgorithms {
 
 	// Population that is evolved, The MAXSAT problem
-	public ArrayList<ArrayList<Integer>> population, satProblem;
+	public static ArrayList<ArrayList<Integer>> population;
+	public ArrayList<ArrayList<Integer>> satProblem;
 	// Random Number generator
-	private Random random;
+	private  Random random;
 	// Maximum iterations allowed
 	private int maxIteration;
 	// Which method to use for Crossover
@@ -58,7 +59,8 @@ public class Genetic extends EvolAlgorithms {
 				uniformCrossover(crossOverProb);
 			}
 			
-			 mutate(mutateProb);
+			 //mutate(mutateProb);
+			 //eightCore(mutateProb, population.size());
 		}
 		System.out.println("Genetic Algorithm Output:");
 		System.out.println("Number Of Variables: " + population.get(0).size());
@@ -327,5 +329,8 @@ public class Genetic extends EvolAlgorithms {
 		}
 		return display;
 	}
+	
+	
+	
 	
 }
