@@ -6,7 +6,7 @@ public class Genetic extends EvolAlgorithms {
 	public static ArrayList<ArrayList<Integer>> population;
 	public ArrayList<ArrayList<Integer>> satProblem;
 	// Random Number generator
-	private static  Random random;
+	private static Random random;
 	// Maximum iterations allowed
 	private int maxIteration;
 	// Which method to use for Crossover
@@ -23,10 +23,9 @@ public class Genetic extends EvolAlgorithms {
 	private boolean foundSATSolution = false;
 	private double boltzmannSum;
 
-
 	// Constructor.
-	public Genetic(int popSize, int literalNumber, int maxIteration, String crossOverMethod, double crossOverProb, double mutateProb,
-			ArrayList<ArrayList<Integer>> satProblem) {
+	public Genetic(int popSize, int literalNumber, int maxIteration, String crossOverMethod, double crossOverProb,
+			double mutateProb, ArrayList<ArrayList<Integer>> satProblem) {
 		this.satProblem = satProblem;
 		this.population = initPopulation(popSize, literalNumber);
 		this.random = new Random();
@@ -41,43 +40,45 @@ public class Genetic extends EvolAlgorithms {
 	public Results evolve(String selectionMethod) {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++) {
-			currentGeneration = i+1;
+			currentGeneration = i + 1;
 			if (selectionMethod.equalsIgnoreCase("rs") || selectionMethod.equalsIgnoreCase("bs")) {
-				 rankBoltzSelect(selectionMethod);
+				rankBoltzSelect(selectionMethod);
 			} else {
-				 tournamentSelect();
+				tournamentSelect();
 			}
 
 			if (foundSATSolution) {
 				System.out.println("Fully Satisfied All Clauses");
 				break;
 			}
-			
+
 			if (crossOverMethod.equalsIgnoreCase("1c")) {
 				singlePointCrossover(crossOverProb);
 			} else {
 				uniformCrossover(crossOverProb);
 			}
-			
-			 mutate(mutateProb);
-			 //eightCore(mutateProb, population.size());
+
+			mutate(mutateProb);
+			// eightCore(mutateProb, population.size());
 		}
 		long endTime = System.currentTimeMillis();
 		long executionTime = endTime - startTime;
-		double percent = ( (double) maxFitnessSoFar *100 / (double) satProblem.size());
+		double percent = ((double) maxFitnessSoFar * 100 / (double) satProblem.size());
 
 		System.out.println("Genetic Algorithm Output:");
 		System.out.println("Number Of Variables: " + population.get(0).size());
 		System.out.println("Number Of Clauses: " + satProblem.size());
-		System.out.println("Satisfied Clauses: " + maxFitnessSoFar + " out of " + satProblem.size() + " (" + (satProblem.size() - maxFitnessSoFar) + " unsatisfied clauses)." );
-		System.out.println("Best Variable Assignment: " + Arrays.toString( binaryToNumber(bestSolution)));
-		System.out.println("Percent satisfied: " +percent + "%");
+		System.out.println("Satisfied Clauses: " + maxFitnessSoFar + " out of " + satProblem.size() + " ("
+				+ (satProblem.size() - maxFitnessSoFar) + " unsatisfied clauses).");
+		System.out.println("Best Variable Assignment: " + Arrays.toString(binaryToNumber(bestSolution)));
+		System.out.println("Percent satisfied: " + percent + "%");
 		System.out.println("Best Generation:" + bestGeneration);
 		System.out.println("Total execution time: " + executionTime + " milliseconds");
-		
-		Results result = new Results("Genetic Algorithm", population.get(0).size(),satProblem.size(),executionTime,(satProblem.size() - maxFitnessSoFar),percent,binaryToNumber(bestSolution),bestGeneration);
+
+		Results result = new Results("Genetic Algorithm", population.get(0).size(), satProblem.size(), executionTime,
+				(satProblem.size() - maxFitnessSoFar), percent, binaryToNumber(bestSolution), bestGeneration);
 		return result;
-		
+
 	}
 
 	// Update the max fitness encountered so far
@@ -94,7 +95,6 @@ public class Genetic extends EvolAlgorithms {
 		}
 	}
 
-	
 	private void tournamentSelect() {
 		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
 		// While the next generation pool is smaller than the population limit
@@ -149,7 +149,7 @@ public class Genetic extends EvolAlgorithms {
 			ArrayWithFitness memberWithFitness = new ArrayWithFitness(individual);
 			memberWithFitness.fitness = evaluateCandidate(satProblem, individual);
 			allIndividualsWithFitness.add(memberWithFitness);
-			
+
 			updateMaxFitness(memberWithFitness.fitness, individual);
 		}
 
@@ -185,7 +185,9 @@ public class Genetic extends EvolAlgorithms {
 		if (option.equalsIgnoreCase("rs")) {
 			cumulativeProbabilityLead = probFromRank((double) population.size(), (double) population.size());
 		} else {
-			calcBoltzmannSum(allIndividualsWithFitness); // calculate the denominator of the
+			calcBoltzmannSum(allIndividualsWithFitness); // calculate the
+															// denominator of
+															// the
 			// Boltzmann function once per generation
 			cumulativeProbabilityLead = probFromBoltz(0, allIndividualsWithFitness);
 		}
@@ -238,7 +240,7 @@ public class Genetic extends EvolAlgorithms {
 	private void calcBoltzmannSum(ArrayList<ArrayWithFitness> popWithFitness) {
 		double sum = 0;
 		for (int i = 0; i < popWithFitness.size(); i++) {
-			sum = + Math.exp((popWithFitness.get(i).fitness));
+			sum = +Math.exp((popWithFitness.get(i).fitness));
 		}
 		boltzmannSum = sum;
 	}
@@ -320,22 +322,18 @@ public class Genetic extends EvolAlgorithms {
 		}
 		return population;
 	}
-	
-	
-	/*Makes the solution more human readable*/
-	private int[] binaryToNumber(ArrayList<Integer> solution){
+
+	/* Makes the solution more human readable */
+	private int[] binaryToNumber(ArrayList<Integer> solution) {
 		int[] display = new int[solution.size()];
-		for(int i =0; i < solution.size(); i++){
-			if(solution.get(i) < 1){
-				display[i] = -1*(i+1);
-			} else{
-				display[i] = (i+1);
+		for (int i = 0; i < solution.size(); i++) {
+			if (solution.get(i) < 1) {
+				display[i] = -1 * (i + 1);
+			} else {
+				display[i] = (i + 1);
 			}
 		}
 		return display;
 	}
-	
 
-	
-	
 }
