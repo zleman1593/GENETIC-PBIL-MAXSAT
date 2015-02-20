@@ -3,9 +3,9 @@ import java.util.ArrayList;
 
 public class TestController {
 	public static void main(String[] args) {
-		
-		tests(10, "g", "/Users/zackleman/Desktop/assign1-ga-pbil-for-maxsat/t3pm3-5555.spn.cnf");
-		tests(10, "p", "/Users/zackleman/Desktop/assign1-ga-pbil-for-maxsat/t3pm3-5555.spn.cnf");
+		//Todo make stats reflect up until either best solution or until correct "goodness level" is reached
+		//tests(10, "g", "/Users/zackleman/Desktop/assign1-ga-pbil-for-maxsat/t3pm3-5555.spn.cnf");
+		tests(10, "p", "/Users/zackleman/Desktop/assign1-ga-pbil-for-maxsat/maxsat-problems/maxsat-crafted/MAXCUT/DIMACS_MOD/brock800_1.clq.cnf");
 
 
 	}
