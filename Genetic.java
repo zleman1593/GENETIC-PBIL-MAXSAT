@@ -6,7 +6,7 @@ public class Genetic extends EvolAlgorithms {
 	public static ArrayList<ArrayList<Integer>> population;
 	public ArrayList<ArrayList<Integer>> satProblem;
 	// Random Number generator
-	private  Random random;
+	private static  Random random;
 	// Maximum iterations allowed
 	private int maxIteration;
 	// Which method to use for Crossover
@@ -38,7 +38,7 @@ public class Genetic extends EvolAlgorithms {
 		this.sample = 5;
 	}
 
-	public void evolve(String selectionMethod) {
+	public Results evolve(String selectionMethod) {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++) {
 			currentGeneration = i+1;
@@ -59,19 +59,24 @@ public class Genetic extends EvolAlgorithms {
 				uniformCrossover(crossOverProb);
 			}
 			
-			 //mutate(mutateProb);
+			 mutate(mutateProb);
 			 //eightCore(mutateProb, population.size());
 		}
+		long endTime = System.currentTimeMillis();
+		long executionTime = endTime - startTime;
+		double percent = ( (double) maxFitnessSoFar *100 / (double) satProblem.size());
+
 		System.out.println("Genetic Algorithm Output:");
 		System.out.println("Number Of Variables: " + population.get(0).size());
 		System.out.println("Number Of Clauses: " + satProblem.size());
 		System.out.println("Satisfied Clauses: " + maxFitnessSoFar + " out of " + satProblem.size() + " (" + (satProblem.size() - maxFitnessSoFar) + " unsatisfied clauses)." );
 		System.out.println("Best Variable Assignment: " + Arrays.toString( binaryToNumber(bestSolution)));
-		System.out.println("Percent satisfied: " + ( (double) maxFitnessSoFar *100 / (double) satProblem.size()) + "%");
+		System.out.println("Percent satisfied: " +percent + "%");
 		System.out.println("Best Generation:" + bestGeneration);
-		long endTime = System.currentTimeMillis();
-		long executionTime = endTime - startTime;
 		System.out.println("Total execution time: " + executionTime + " milliseconds");
+		
+		Results result = new Results("Genetic Algorithm", population.get(0).size(),satProblem.size(),executionTime,(satProblem.size() - maxFitnessSoFar),percent,binaryToNumber(bestSolution),bestGeneration);
+		return result;
 		
 	}
 
@@ -330,7 +335,7 @@ public class Genetic extends EvolAlgorithms {
 		return display;
 	}
 	
-	
+
 	
 	
 }

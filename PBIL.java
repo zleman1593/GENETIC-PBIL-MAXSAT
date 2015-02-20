@@ -48,7 +48,7 @@ public class PBIL extends EvolAlgorithms {
 		}
 	}
 	
-	public double[] evolve() {
+	public Results evolve() {
 		long startTime = System.currentTimeMillis();
 		int iterations = 0;
 		while (iterations < maxIterations) {
@@ -63,7 +63,11 @@ public class PBIL extends EvolAlgorithms {
 				int fitness = evaluations[i];
 				if (fitness == satProblem.size()) {
 					System.out.println("All clauses satisfied.");
-					return probVector;
+					long endTime = System.currentTimeMillis();
+					long executionTime = endTime - startTime;
+					double percent = ( (double) maxFitness *100 / (double) satProblem.size());
+					Results result = new Results("PBIL Algorithm", probVector.length,satProblem.size(),executionTime,(satProblem.size() - maxFitness),percent,bestVector,bestGeneration);
+					return result;
 				} else {
 					updateFitness(fitness, individual);
 				} 
@@ -81,12 +85,15 @@ public class PBIL extends EvolAlgorithms {
 		System.out.println("Number Of Clauses: " + satProblem.size());
 		System.out.println("Satisfied Clauses: " + maxFitness + " out of " + satProblem.size() + " (" + (satProblem.size() - maxFitness) + " unsatisfied clauses)." );
 		System.out.println("Best Variable Assignment: " + Arrays.toString( binaryToNumber(bestVector)));
-		System.out.println("Percent satisfied: " + ( (double) maxFitness *100 / (double) satProblem.size()) + "%");
+		double percent = ( (double) maxFitness *100 / (double) satProblem.size());
+		System.out.println("Percent satisfied: " + percent + "%");
 		System.out.println("Best Generation:" + bestGeneration);
 		long endTime = System.currentTimeMillis();
 		long executionTime = endTime - startTime;
 		System.out.println("Total execution time: " + executionTime + " milliseconds");
-		return probVector;
+
+		Results result = new Results("PBIL Algorithm", probVector.length,satProblem.size(),executionTime,(satProblem.size() - maxFitness),percent,bestVector,bestGeneration);
+		return result;
 	}
 	
 	// Generate the individual according to probability.
