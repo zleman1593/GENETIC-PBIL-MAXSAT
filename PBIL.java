@@ -22,6 +22,7 @@ public class PBIL extends EvolAlgorithms {
 	private int maxIterations;
 	private ArrayList<ArrayList<Integer>> satProblem;
 	private Random randomGenerator = new Random();
+	private long endTime;
 
 	// Constructor.
 	public PBIL(int samples, double learningRate, double negLearningRate, int length, double mutProb, double mutShift,
@@ -90,7 +91,7 @@ public class PBIL extends EvolAlgorithms {
 		double percent = ((double) maxFitness * 100 / (double) satProblem.size());
 		System.out.println("Percent satisfied: " + percent + "%");
 		System.out.println("Best Generation:" + bestGeneration);
-		long endTime = System.currentTimeMillis();
+		
 		long executionTime = endTime - startTime;
 		System.out.println("Total execution time: " + executionTime + " milliseconds");
 
@@ -142,6 +143,7 @@ public class PBIL extends EvolAlgorithms {
 			bestGeneration = currentGeneration;
 			bestVector = individual;
 			maxFitness = fitness;
+			endTime = System.currentTimeMillis();
 		}
 		if (fitness < minFitness) {
 			worstVector = individual;

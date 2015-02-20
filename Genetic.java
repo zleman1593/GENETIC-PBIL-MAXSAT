@@ -22,6 +22,7 @@ public class Genetic extends EvolAlgorithms {
 	// Keeps track of whether a full solution has been found
 	private boolean foundSATSolution = false;
 	private double boltzmannSum;
+	private long endTime;
 
 	// Constructor.
 	public Genetic(int popSize, int literalNumber, int maxIteration, String crossOverMethod, double crossOverProb,
@@ -61,7 +62,6 @@ public class Genetic extends EvolAlgorithms {
 			mutate(mutateProb);
 			// eightCore(mutateProb, population.size());
 		}
-		long endTime = System.currentTimeMillis();
 		long executionTime = endTime - startTime;
 		double percent = ((double) maxFitnessSoFar * 100 / (double) satProblem.size());
 
@@ -92,6 +92,7 @@ public class Genetic extends EvolAlgorithms {
 			if (fitness == satProblem.size()) {
 				foundSATSolution = true;
 			}
+			 endTime = System.currentTimeMillis();//Time to find best solution
 		}
 	}
 

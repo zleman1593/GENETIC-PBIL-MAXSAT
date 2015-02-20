@@ -4,8 +4,8 @@ import java.util.ArrayList;
 public class TestController {
 	public static void main(String[] args) {
 		//Todo make stats reflect up until either best solution or until correct "goodness level" is reached
-		//tests(10, "g", "/Users/zackleman/Desktop/assign1-ga-pbil-for-maxsat/t3pm3-5555.spn.cnf");
-		tests(10, "p", "/Users/zackleman/Desktop/assign1-ga-pbil-for-maxsat/maxsat-problems/maxsat-crafted/MAXCUT/DIMACS_MOD/brock800_1.clq.cnf");
+		tests(10, "g", "/Users/zackleman/Desktop/assign1-ga-pbil-for-maxsat/t3pm3-5555.spn.cnf");
+		//tests(10, "p", "/Users/zackleman/Desktop/assign1-ga-pbil-for-maxsat/maxsat-problems/maxsat-crafted/MAXCUT/DIMACS_MOD/brock800_1.clq.cnf");
 
 
 	}
@@ -71,17 +71,35 @@ public class TestController {
 			averageUnsatisfiedClauses += results.get(i).numUnsatisifiedClauses;
 			averagePercentSatisfiedClauses += results.get(i).percentSatisfied;
 		}
+		
+		
+
+
+
+		       
+		    
+		
 		averageTime = averageTime / (long) numberofTrials;
 		averageBestGeneration = averageBestGeneration / numberofTrials;
 		averageUnsatisfiedClauses = averageUnsatisfiedClauses / numberofTrials;
 		averagePercentSatisfiedClauses = averagePercentSatisfiedClauses / (double) numberofTrials;
 
-		System.out.println("Average Genetic Algorithm Output for " + numberofTrials + " trials:");
+		System.out.println("Average Output for " + numberofTrials + " trials:");
 		System.out.println("Number Of Variables: " + results.get(0).numVariables);
 		System.out.println("Number Of Clauses: " + results.get(0).numClauses);
 		System.out.println("Average Percent satisfied: " + averagePercentSatisfiedClauses + "%");
 		System.out.println("Average Best Generation:" + averageBestGeneration);
 		System.out.println("Average execution time: " + averageTime + " milliseconds");
-	}
+		
+		
+		 double sum = 0.0;
+	        for (int i = 0; i < results.size(); i++) {
+	            sum += Math.pow(((double)results.get(i).executionTime - (double) averageTime), 2);
+	        }
+	        double stdev = Math.sqrt( sum / (results.size() - 1));
+	
+	
+	System.out.println("STDEV of execution time: " + stdev + " milliseconds");
 
+	}
 }
