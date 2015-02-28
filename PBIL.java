@@ -20,8 +20,6 @@ public class PBIL extends EvolAlgorithms {
 	private int maxFitness = 0;
 	private int minFitness;
 	private int maxIterations;
-	private ArrayList<ArrayList<Integer>> satProblem;
-	private Random randomGenerator = new Random();
 	private long endTime;
 
 	// Constructor.

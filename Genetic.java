@@ -2,11 +2,8 @@ import java.util.*;
 
 public class Genetic extends EvolAlgorithms {
 
-	// Population that is evolved, The MAXSAT problem
+	// Population that is evolved
 	public static ArrayList<ArrayList<Integer>> population;
-	public ArrayList<ArrayList<Integer>> satProblem;
-	// Random Number generator
-	private static Random random;
 	// Maximum iterations allowed
 	private int maxIteration;
 	// Which method to use for Crossover
@@ -29,7 +26,6 @@ public class Genetic extends EvolAlgorithms {
 			double mutateProb, ArrayList<ArrayList<Integer>> satProblem) {
 		this.satProblem = satProblem;
 		this.population = initPopulation(popSize, literalNumber);
-		this.random = new Random();
 		this.maxIteration = maxIteration;
 		this.crossOverProb = crossOverProb;
 		this.mutateProb = mutateProb;
@@ -107,7 +103,7 @@ public class Genetic extends EvolAlgorithms {
 			while (randomNumbers.size() < sample) {
 				int number;
 				do {
-					number = random.nextInt(population.size());
+					number = randomGenerator.nextInt(population.size());
 				} while (randomNumbers.contains(number));
 				randomNumbers.add(number);
 			}
@@ -170,7 +166,7 @@ public class Genetic extends EvolAlgorithms {
 		// Generate one random double per member of the population
 		double[] probability = new double[population.size()];
 		for (int i = 0; i < population.size(); i++) {
-			probability[i] = random.nextDouble();
+			probability[i] = randomGenerator.nextDouble();
 		}
 
 		// Sort ascending
@@ -250,7 +246,7 @@ public class Genetic extends EvolAlgorithms {
 	private void mutate(double mutateProb) {
 		for (int i = 0; i < population.size(); i++) {
 			for (int j = 0; j < population.get(i).size(); j++) {
-				boolean flip = random.nextDouble() < mutateProb;
+				boolean flip = randomGenerator.nextDouble() < mutateProb;
 				if (flip && population.get(i).get(j) == 1) {
 					population.get(i).set(j, 0);
 				} else if (flip && population.get(i).get(j) == 0) {
@@ -267,11 +263,11 @@ public class Genetic extends EvolAlgorithms {
 	 */
 	private void singlePointCrossover(double crossProb) {
 		for (int i = 0; i < population.size(); i += 2) {
-			boolean cross = random.nextDouble() < crossProb;
+			boolean cross = randomGenerator.nextDouble() < crossProb;
 			int crossOverLocation;
 			if (cross) {
 				// Pick cross over location
-				crossOverLocation = random.nextInt(population.get(i).size());
+				crossOverLocation = randomGenerator.nextInt(population.get(i).size());
 				// Copy first part of A into C
 				List<Integer> c = new ArrayList<Integer>(population.get(i).subList(0, crossOverLocation));
 				// Replace first part of A with First part of B
@@ -298,7 +294,7 @@ public class Genetic extends EvolAlgorithms {
 		for (int i = 0; i < population.size(); i += 2) {
 			boolean cross;
 			for (int j = 0; j < population.get(i).size(); j++) {
-				cross = random.nextDouble() < crossProb;
+				cross = randomGenerator.nextDouble() < crossProb;
 				if (cross) {
 					// Swap to elements
 					int temp = population.get(i).get(j);

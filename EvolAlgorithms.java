@@ -1,8 +1,14 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 public class EvolAlgorithms {
+	//The MAXSAT problem
+	protected ArrayList<ArrayList<Integer>> satProblem;
+	//Random number generator
+	protected Random randomGenerator = new Random();
 	protected int bestGeneration;
 	protected int currentGeneration;
+	protected int targetPercentSolved;
 	
 	/* Fitness Function */
 	public int evaluateCandidate(ArrayList<ArrayList<Integer>> satProblem, ArrayList<Integer> values) {

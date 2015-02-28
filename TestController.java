@@ -1,15 +1,19 @@
 import java.util.ArrayList;
-
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class TestController {
-	public static void main(String[] args) {
+	static String filename = "/Users/zackleman/Desktop/assign1-ga-pbil-for-maxsat/maxsat-problems/maxsat-crafted/MAXCUT/DIMACS_MOD/brock800_1.clq.cnf";
+	public static void main(String[] args) throws IOException {
 		//Todo make stats reflect up until either best solution or until correct "goodness level" is reached
-		tests(10, "g", "/Users/zackleman/Desktop/assign1-ga-pbil-for-maxsat/t3pm3-5555.spn.cnf");
-		//tests(10, "p", "/Users/zackleman/Desktop/assign1-ga-pbil-for-maxsat/maxsat-problems/maxsat-crafted/MAXCUT/DIMACS_MOD/brock800_1.clq.cnf");
+		//tests(10, "g", filename);
+		tests(10, "p", filename);
 
 
 	}
-	public static void tests(int numOfTrials, String algorithm, String problemLocation) {
+	public static void tests(int numOfTrials, String algorithm, String problemLocation) throws IOException {
 		// TESTS variables
 		ArrayList<Results> results = new ArrayList<Results>();
 		// Import and format MAXSAT problem.
@@ -58,8 +62,22 @@ public class TestController {
 	}
 
 	/* Report averages */
-	public static void reportStats(ArrayList<Results> results, int numberofTrials) {
+	public static void reportStats(ArrayList<Results> results, int numberofTrials) throws IOException { 
+		BufferedWriter outputWriter = null;
+		String randomString = Double.toString(Math.random());
+		File file = new File("/Users/zackleman/Desktop/Results/" + randomString + ".txt");
+
+		// If file does not exists, then create it.
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+		outputWriter = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
+		
+		System.out.println("File: " + filename);
+		outputWriter.write("File: " + filename);
 		System.out.println(numberofTrials + " trials were run.");
+		outputWriter.write(numberofTrials + " trials were run.");
+		outputWriter.newLine();
 		long averageTime = 0;
 		int averageBestGeneration = 0;
 		int averageUnsatisfiedClauses = 0;
@@ -72,24 +90,30 @@ public class TestController {
 			averagePercentSatisfiedClauses += results.get(i).percentSatisfied;
 		}
 		
-		
 
-
-
-		       
-		    
-		
 		averageTime = averageTime / (long) numberofTrials;
 		averageBestGeneration = averageBestGeneration / numberofTrials;
 		averageUnsatisfiedClauses = averageUnsatisfiedClauses / numberofTrials;
 		averagePercentSatisfiedClauses = averagePercentSatisfiedClauses / (double) numberofTrials;
 
 		System.out.println("Average Output for " + numberofTrials + " trials:");
+		outputWriter.write("Average Output for " + numberofTrials + " trials:");
+		outputWriter.newLine();
 		System.out.println("Number Of Variables: " + results.get(0).numVariables);
+		outputWriter.write("Number Of Variables: " + results.get(0).numVariables);
+		outputWriter.newLine();
 		System.out.println("Number Of Clauses: " + results.get(0).numClauses);
+		outputWriter.write("Number Of Clauses: " + results.get(0).numClauses);
+		outputWriter.newLine();
 		System.out.println("Average Percent satisfied: " + averagePercentSatisfiedClauses + "%");
+		outputWriter.write("Average Percent satisfied: " + averagePercentSatisfiedClauses + "%");
+		outputWriter.newLine();
 		System.out.println("Average Best Generation:" + averageBestGeneration);
+		outputWriter.write("Average Best Generation:" + averageBestGeneration);
+		outputWriter.newLine();
 		System.out.println("Average execution time: " + averageTime + " milliseconds");
+		outputWriter.write("Average execution time: " + averageTime + " milliseconds");
+		outputWriter.newLine();
 		
 		
 		 double sum = 0.0;
@@ -100,6 +124,12 @@ public class TestController {
 	
 	
 	System.out.println("STDEV of execution time: " + stdev + " milliseconds");
-
+	outputWriter.write("STDEV of execution time: " + stdev + " milliseconds");
+	outputWriter.flush();
+	outputWriter.close();
 	}
+	
+	
+	
+
 }
