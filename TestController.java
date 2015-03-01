@@ -5,7 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class TestController {
-	static String filename = "/Users/zackleman/Desktop/assign1-ga-pbil-for-maxsat/maxsat-problems/maxsat-crafted/MAXCUT/DIMACS_MOD/brock800_1.clq.cnf";
+//	static String filename = "/Users/mxing/Desktop/GENETIC-PBIL-MAXSAT/Results/SPINGLASS/t7pm3-9999.spn.cnf";
+	static String filename = "/Users/mxing/Desktop/maxsat_industrial/SeanSafarpour/b14_opt_bug2_vec1-gate-0.dimacs.seq.filtered.cnf";
 	
 	// Set these for GA
 	static int popSize = 200;
@@ -65,7 +66,7 @@ public class TestController {
 	public static void reportStats(ArrayList<Results> results, int numberofTrials, String algorithm) throws IOException { 
 		BufferedWriter outputWriter = null;
 		String randomString = Double.toString(Math.random());
-		File file = new File("/Users/zackleman/Desktop/Results/" + randomString + ".txt");
+		File file = new File("/Users/mxing/Desktop/" + randomString + ".txt");
 
 		// If file does not exists, then create it.
 		if (!file.exists()) {
@@ -81,7 +82,7 @@ public class TestController {
 		long averageTime = 0;
 		int averageBestGeneration = 0;
 		int averageUnsatisfiedClauses = 0;
-		int fewestUnsatisfiedClauses = 0;
+		int fewestUnsatisfiedClauses = Integer.MAX_VALUE;
 		double averagePercentSatisfiedClauses = 0;
 
 		for (int i = 0; i < results.size(); i++) {
