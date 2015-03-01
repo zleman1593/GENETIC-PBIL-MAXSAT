@@ -39,13 +39,11 @@ public class SatProblem {
 				//Number of clauses and literals
 				if(choppedCNF.get(i).startsWith("p")){
 					String[] values = choppedCNF.get(i).split("\\s+");
-					numLiterals = Integer.parseInt(values[2]);
-					numClauses = Integer.parseInt(values[3]);	
-				} else {
+					this.numLiterals = Integer.parseInt(values[2]);
+					this.numClauses = Integer.parseInt(values[3]);
+				}else{
 					ArrayList<Integer> clause = new ArrayList<Integer>();
-					String chopped = choppedCNF.get(i).trim();
-					String[] literalsInAClause = chopped.split("\\s+");
-					
+					String[] literalsInAClause = choppedCNF.get(i).split(" ");
 					for (int j = 0; j < literalsInAClause.length - 1; j++){
 						clause.add(Integer.parseInt(literalsInAClause[j]));
 					}
