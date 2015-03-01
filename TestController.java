@@ -93,8 +93,6 @@ public class TestController {
 		
 		System.out.println("File: " + filename);
 		outputWriter.write("File: " + filename);
-		System.out.println("Algorithm: " + algorithm);
-		outputWriter.write("File: " + filename);
 		System.out.println(numberofTrials + " trials were run.");
 		outputWriter.write(numberofTrials + " trials were run.");
 		outputWriter.newLine();
@@ -145,6 +143,7 @@ public class TestController {
 	
 	System.out.println("STDEV of execution time: " + stdev + " milliseconds");
 	outputWriter.write("STDEV of execution time: " + stdev + " milliseconds");*/
+		if (algorithm.equalsIgnoreCase("g")) {
 		outputWriter.write("Settings GA");
 		outputWriter.newLine();
 		outputWriter.write(""+popSize);
@@ -161,7 +160,7 @@ public class TestController {
 		outputWriter.newLine();
 		outputWriter.write(""+mutationProb);
 		outputWriter.newLine();
-		
+		}else{
 		
 		outputWriter.write("Settings PBIL");
 		outputWriter.newLine();
@@ -177,6 +176,7 @@ public class TestController {
 		outputWriter.newLine();
 		outputWriter.write(""+PBIL_maxIterations);
 		outputWriter.newLine();
+		}
 	
 	
 	outputWriter.flush();
