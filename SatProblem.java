@@ -38,7 +38,7 @@ public class SatProblem {
 			if(!choppedCNF.get(i).startsWith("c")){
 				//Number of clauses and literals
 				if(choppedCNF.get(i).startsWith("p")){
-					String[] values = choppedCNF.get(i).split(" ");
+					String[] values = choppedCNF.get(i).split("\\s+");
 					this.numLiterals = Integer.parseInt(values[2]);
 					this.numClauses = Integer.parseInt(values[3]);
 				}else{

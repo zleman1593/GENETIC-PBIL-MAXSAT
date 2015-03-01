@@ -39,25 +39,7 @@ public class TestController {
 		problem.createSatProblemFromFile(problemLocation);
 		int numberOfLiterals = problem.getNumLiterals();
 		ArrayList<ArrayList<Integer>> satProblem = problem.getProblem();
-/*
-		// Set these for GA
-		int popSize = 200;
-		String selectionType = "ts";
-		String crossoverType = "1c";
-		Double crossoverProb = 0.7;
-		Double mutationProb = 0.01;
-		int maxIterations = 1000;
-		//
 
-		// Set these for PBIL
-		int PBIL_samples = 100;
-		double PBIL_learningRate = 0.1;
-		double PBIL_negLearningRate = .075;
-		double PBIL_mutProb = 0.02;
-		double PBIL_mutShift = 0.05;
-		int PBIL_maxIterations = 2000;
-		//
-*/
 		if (algorithm.equalsIgnoreCase("g")) {
 			for (int i = 0; i < numOfTrials; i++) {
 				Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIterations, crossoverType,
@@ -99,13 +81,18 @@ public class TestController {
 		long averageTime = 0;
 		int averageBestGeneration = 0;
 		int averageUnsatisfiedClauses = 0;
+		int fewestUnsatisfiedClauses = 0;
 		double averagePercentSatisfiedClauses = 0;
 
 		for (int i = 0; i < results.size(); i++) {
+			int temp = results.get(i).numUnsatisifiedClauses;
 			averageTime += results.get(i).executionTime;
 			averageBestGeneration += results.get(i).bestgeneration;
-			averageUnsatisfiedClauses += results.get(i).numUnsatisifiedClauses;
+			averageUnsatisfiedClauses += temp;
 			averagePercentSatisfiedClauses += results.get(i).percentSatisfied;
+			if (temp < fewestUnsatisfiedClauses){
+				fewestUnsatisfiedClauses = temp;
+			}
 		}
 		
 
@@ -128,6 +115,12 @@ public class TestController {
 		outputWriter.newLine();
 		System.out.println("Average Best Generation:" + averageBestGeneration);
 		outputWriter.write("Average Best Generation:" + averageBestGeneration);
+		outputWriter.newLine();
+		System.out.println("Average # Unsatisfied  Clauses:" + averageUnsatisfiedClauses);
+		outputWriter.write("Average # Unsatisfied  Clauses:" + averageUnsatisfiedClauses);
+		outputWriter.newLine();
+		System.out.println("Fewest # Unsatisfied  Clauses:" + fewestUnsatisfiedClauses);
+		outputWriter.write("Fewest # Unsatisfied  Clauses:" + fewestUnsatisfiedClauses);
 		outputWriter.newLine();
 		System.out.println("Average execution time: " + averageTime + " milliseconds");
 		outputWriter.write("Average execution time: " + averageTime + " milliseconds");
