@@ -21,6 +21,8 @@ public class PBIL extends EvolAlgorithms {
 	private int minFitness;
 	private int maxIterations;
 	private long endTime;
+	private long timeout = Long.MAX_VALUE;
+	private int optimalUnsat = Integer.MAX_VALUE; 
 
 	// Constructor.
 	public PBIL(int samples, double learningRate, double negLearningRate, int length, double mutProb, double mutShift,
@@ -38,6 +40,25 @@ public class PBIL extends EvolAlgorithms {
 		evaluations = new int[samples];
 		initProbVector();
 	}
+	
+	// Constructor with optimal unsat value and timeout
+	public PBIL(int samples, double learningRate, double negLearningRate, int length, double mutProb, double mutShift,
+			int maxIterations, ArrayList<ArrayList<Integer>> satProblem, long timeout, int optimalUnsat) {
+		this.samples = samples;
+		this.learningRate = learningRate;
+		this.negLearningRate = negLearningRate;
+		this.length = length;
+		this.mutProb = mutProb;
+		this.mutShift = mutShift;
+		this.maxIterations = maxIterations;
+		this.satProblem = satProblem;
+		this.timeout = timeout;
+		this.optimalUnsat = optimalUnsat;
+
+		minFitness = satProblem.size();
+		evaluations = new int[samples];
+		initProbVector();
+	}
 
 	// Initialize probability vector.
 	public void initProbVector() {
@@ -50,6 +71,7 @@ public class PBIL extends EvolAlgorithms {
 	public Results evolve() {
 		long startTime = System.currentTimeMillis();
 		int iterations = 0;
+		boolean foundSATSolution = false;
 		while (iterations < maxIterations) {
 			currentGeneration = iterations;
 			// Generate all individuals and evaluate them.
@@ -60,7 +82,20 @@ public class PBIL extends EvolAlgorithms {
 				evaluations[i] = evaluateCandidate(satProblem, toObject(individual));
 				// Found solution to all clauses.
 				int fitness = evaluations[i];
-				if (fitness == satProblem.size()) {
+				
+				// Time out, do not run next iteration.
+				long totalTimeElapsed = System.currentTimeMillis() - startTime;
+				if (totalTimeElapsed > timeout) {
+					foundSATSolution = true;
+				}
+				
+				// If reached optimal number of clauses satisfied, return result
+				int currentUnsat = satProblem.size() - fitness;
+				if (currentUnsat <= optimalUnsat || fitness == satProblem.size()) {
+					foundSATSolution = true;
+				}
+				
+				if (foundSATSolution) {
 					System.out.println("All clauses satisfied.");
 					long endTime = System.currentTimeMillis();
 					long executionTime = endTime - startTime;

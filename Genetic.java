@@ -20,6 +20,8 @@ public class Genetic extends EvolAlgorithms {
 	private boolean foundSATSolution = false;
 	private double boltzmannSum;
 	private long endTime;
+	private long timeout = Long.MAX_VALUE;
+	private int optimalUnSat = Integer.MAX_VALUE;
 
 	// Constructor.
 	public Genetic(int popSize, int literalNumber, int maxIteration, String crossOverMethod, double crossOverProb,
@@ -32,6 +34,21 @@ public class Genetic extends EvolAlgorithms {
 		this.crossOverMethod = crossOverMethod;
 		this.winners = 2;
 		this.sample = 5;
+	}
+	
+	// Constructor for tests
+	public Genetic(int popSize, int literalNumber, int maxIteration, String crossOverMethod, double crossOverProb,
+			double mutateProb, ArrayList<ArrayList<Integer>> satProblem, long timeout, int optimalUnSat) {
+		this.satProblem = satProblem;
+		this.population = initPopulation(popSize, literalNumber);
+		this.maxIteration = maxIteration;
+		this.crossOverProb = crossOverProb;
+		this.mutateProb = mutateProb;
+		this.crossOverMethod = crossOverMethod;
+		this.winners = 2;
+		this.sample = 5;
+		this.timeout = timeout;
+		this.optimalUnSat = optimalUnSat;
 	}
 
 	public Results evolve(String selectionMethod) {
@@ -57,8 +74,21 @@ public class Genetic extends EvolAlgorithms {
 
 			mutate(mutateProb);
 			// eightCore(mutateProb, population.size());
+			
+			// Time out, do not run next iteration.
+			long totalTimeElapsed = System.currentTimeMillis() - startTime;
+			if (totalTimeElapsed > timeout) {
+				foundSATSolution = true;
+			}
+			
+			// If reached optimal number of clauses satisfied, return result
+			int currentUnsat = satProblem.size() - maxFitnessSoFar;
+			if (currentUnsat <= optimalUnSat) {
+				foundSATSolution = true;
+			}
 		}
 		long executionTime = endTime - startTime;
+		
 		double percent = ((double) maxFitnessSoFar * 100 / (double) satProblem.size());
 
 		System.out.println("Genetic Algorithm Output:");
