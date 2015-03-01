@@ -89,7 +89,7 @@ public class TestController {
 		long averageTime = 0;
 		int averageBestGeneration = 0;
 		int averageUnsatisfiedClauses = 0;
-		int fewestUnsatisfiedClauses = 0;
+		int fewestUnsatisfiedClauses = Integer.MAX_VALUE;
 		double averagePercentSatisfiedClauses = 0;
 
 		for (int i = 0; i < results.size(); i++) {

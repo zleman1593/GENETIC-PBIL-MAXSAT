@@ -43,7 +43,8 @@ public class SatProblem {
 					this.numClauses = Integer.parseInt(values[3]);
 				}else{
 					ArrayList<Integer> clause = new ArrayList<Integer>();
-					String[] literalsInAClause = choppedCNF.get(i).split(" ");
+					String chopped = choppedCNF.get(i).trim(); 
+					String[] literalsInAClause = chopped.split("\\s+");
 					for (int j = 0; j < literalsInAClause.length - 1; j++){
 						clause.add(Integer.parseInt(literalsInAClause[j]));
 					}
