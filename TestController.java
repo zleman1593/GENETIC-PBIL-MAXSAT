@@ -5,19 +5,25 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class TestController {
+<<<<<<< HEAD
 	//static String filename = "/DIMACS_MOD/brock800_1.clq.cnf";
 	static String root = "/Users/zackleman/Desktop/Results/";
 	static String[] files= {"SPINGLASS/t4pm3-6666.spn.cnf","SPINGLASS/t5pm3-7777.spn.cnf","SPINGLASS/t7pm3-9999.spn.cnf","SPINGLASS/t6pm3-8888.spn.cnf", "140v/s2v140c1600-10.cnf",
 		"140v/s2v140c1200-10.cnf","140v/s2v140c1300-10.cnf","140v/s2v140c1400-10.cnf","140/s2v140c1500-10.cnf","maxcut-140-630-0.8/maxcut-140-630-0.8-9.cnf",
 		"maxcut-140-630-0.8/maxcut-140-630-0.8-8.cnf","maxcut-140-630-0.7/maxcut-140-630-0.7-9.cnf","maxcut-140-630-0.7/maxcut-140-630-0.7-8.cnf","60v/s3v60c800-1.cnf",
 		"60v/s3v60c1000-1.cnf","60v/s3v60c1200-1.cnf","4SAT/HG-4SAT-V100-C900-1.cnf","4SAT/HG-4SAT-V150-C1350-100.cnf","5SAT/HG-5SAT-V50-C900-1.cnf","5SAT/HG-5SAT-V50-C900-5.cnf","HG-5SAT-V100-C1800-100.cnf"};
+=======
+//	static String filename = "/Users/mxing/Desktop/GENETIC-PBIL-MAXSAT/Results/SPINGLASS/t7pm3-9999.spn.cnf";
+	static String filename = "/Users/mxing/Desktop/maxsat_industrial/SeanSafarpour/b14_opt_bug2_vec1-gate-0.dimacs.seq.filtered.cnf";
+	
+>>>>>>> origin/master
 	// Set these for GA
 	static int popSize = 200;
 	static String selectionType = "ts";
 	static String crossoverType = "1c";
 	static Double crossoverProb = 0.7;
 	static Double mutationProb = 0.01;
-	static int maxIterations = 2000;
+	static int maxIterations = 1000;
 	//
 	
 	// Set these for PBIL
@@ -30,15 +36,12 @@ public class TestController {
 	//
 	public static void main(String[] args) throws IOException {
 		//Todo make stats reflect up until either best solution or until correct "goodness level" is reached
-
-		for(int i = 0; i < files.length ;i++){
-		tests(10, "g", root + files[i],i);
-		tests(10, "p", root + files[i],i);
-		}
+		//tests(10, "g", filename);
+		tests(10, "p", filename);
 
 
 	}
-	public static void tests(int numOfTrials, String algorithm, String problemLocation, int index) throws IOException {
+	public static void tests(int numOfTrials, String algorithm, String problemLocation) throws IOException {
 		// TESTS variables
 		ArrayList<Results> results = new ArrayList<Results>();
 		// Import and format MAXSAT problem.
@@ -53,7 +56,7 @@ public class TestController {
 						crossoverProb, mutationProb, satProblem);
 				results.add(geneticAlgo.evolve(selectionType));
 			}
-			reportStats(results, numOfTrials,algorithm,index);
+			reportStats(results, numOfTrials,algorithm);
 
 		} else {
 			for (int i = 0; i < numOfTrials; i++) {
@@ -63,16 +66,16 @@ public class TestController {
 				results.add(PBILAlgorithm.evolve());
 
 			}
-			reportStats(results, numOfTrials,algorithm,index);
+			reportStats(results, numOfTrials,algorithm);
 		}
 
 	}
 
 	/* Report averages */
-	public static void reportStats(ArrayList<Results> results, int numberofTrials, String algorithm, int problem) throws IOException { 
+	public static void reportStats(ArrayList<Results> results, int numberofTrials, String algorithm) throws IOException { 
 		BufferedWriter outputWriter = null;
 		String randomString = Double.toString(Math.random());
-		File file = new File("/Users/zackleman/Desktop/Results/" + randomString + ".txt");
+		File file = new File("/Users/mxing/Desktop/" + randomString + ".txt");
 
 		// If file does not exists, then create it.
 		if (!file.exists()) {
@@ -80,16 +83,15 @@ public class TestController {
 		}
 		outputWriter = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
 		
-		System.out.println("File: " + files[problem]);
-		outputWriter.write("File: " + files[problem]);
+		System.out.println("File: " + filename);
+		outputWriter.write("File: " + filename);
 		System.out.println(numberofTrials + " trials were run.");
-		//outputWriter.write(numberofTrials + " trials were run.");
-		outputWriter.write(numberofTrials);
+		outputWriter.write(numberofTrials + " trials were run.");
 		outputWriter.newLine();
 		long averageTime = 0;
 		int averageBestGeneration = 0;
 		int averageUnsatisfiedClauses = 0;
-		int fewestUnsatisfiedClauses = 0;
+		int fewestUnsatisfiedClauses = Integer.MAX_VALUE;
 		double averagePercentSatisfiedClauses = 0;
 
 		for (int i = 0; i < results.size(); i++) {
@@ -109,56 +111,29 @@ public class TestController {
 		averageUnsatisfiedClauses = averageUnsatisfiedClauses / numberofTrials;
 		averagePercentSatisfiedClauses = averagePercentSatisfiedClauses / (double) numberofTrials;
 		outputWriter.newLine();
-		
-//		System.out.println("Average Output for " + numberofTrials + " trials:");
-//		outputWriter.write("Average Output for " + numberofTrials + " trials:");
-//		outputWriter.newLine();
-//		System.out.println("Number Of Variables: " + results.get(0).numVariables);
-//		outputWriter.write("Number Of Variables: " + results.get(0).numVariables);
-//		outputWriter.newLine();
-//		System.out.println("Number Of Clauses: " + results.get(0).numClauses);
-//		outputWriter.write("Number Of Clauses: " + results.get(0).numClauses);
-//		outputWriter.newLine();
-//		System.out.println("Average Percent satisfied: " + averagePercentSatisfiedClauses + "%");
-//		outputWriter.write("Average Percent satisfied: " + averagePercentSatisfiedClauses + "%");
-//		outputWriter.newLine();
-//		System.out.println("Average Best Generation:" + averageBestGeneration);
-//		outputWriter.write("Average Best Generation:" + averageBestGeneration);
-//		outputWriter.newLine();
-//		System.out.println("Average # Unsatisfied  Clauses:" + averageUnsatisfiedClauses);
-//		outputWriter.write("Average # Unsatisfied  Clauses:" + averageUnsatisfiedClauses);
-//		outputWriter.newLine();
-//		System.out.println("Fewest # Unsatisfied  Clauses:" + fewestUnsatisfiedClauses);
-//		outputWriter.write("Fewest # Unsatisfied  Clauses:" + fewestUnsatisfiedClauses);
-//		outputWriter.newLine();
-//		System.out.println("Average execution time: " + averageTime + " milliseconds");
-//		outputWriter.write("Average execution time: " + averageTime + " milliseconds");
-//		
-		
 		System.out.println("Average Output for " + numberofTrials + " trials:");
-		outputWriter.write(""+numberofTrials);
+		outputWriter.write("Average Output for " + numberofTrials + " trials:");
 		outputWriter.newLine();
 		System.out.println("Number Of Variables: " + results.get(0).numVariables);
-		outputWriter.write(""+results.get(0).numVariables);
+		outputWriter.write("Number Of Variables: " + results.get(0).numVariables);
 		outputWriter.newLine();
 		System.out.println("Number Of Clauses: " + results.get(0).numClauses);
-		outputWriter.write(""+results.get(0).numClauses);
+		outputWriter.write("Number Of Clauses: " + results.get(0).numClauses);
 		outputWriter.newLine();
 		System.out.println("Average Percent satisfied: " + averagePercentSatisfiedClauses + "%");
-		outputWriter.write(""+averagePercentSatisfiedClauses);
+		outputWriter.write("Average Percent satisfied: " + averagePercentSatisfiedClauses + "%");
 		outputWriter.newLine();
 		System.out.println("Average Best Generation:" + averageBestGeneration);
-		outputWriter.write(""+averageBestGeneration);
+		outputWriter.write("Average Best Generation:" + averageBestGeneration);
 		outputWriter.newLine();
 		System.out.println("Average # Unsatisfied  Clauses:" + averageUnsatisfiedClauses);
-		outputWriter.write(""+averageUnsatisfiedClauses);
+		outputWriter.write("Average # Unsatisfied  Clauses:" + averageUnsatisfiedClauses);
 		outputWriter.newLine();
 		System.out.println("Fewest # Unsatisfied  Clauses:" + fewestUnsatisfiedClauses);
-		outputWriter.write(""+fewestUnsatisfiedClauses);
+		outputWriter.write("Fewest # Unsatisfied  Clauses:" + fewestUnsatisfiedClauses);
 		outputWriter.newLine();
 		System.out.println("Average execution time: " + averageTime + " milliseconds");
-		outputWriter.write(""+averageTime);
-		
+		outputWriter.write("Average execution time: " + averageTime + " milliseconds");
 		outputWriter.newLine();
 		
 		/*
