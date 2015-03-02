@@ -7,13 +7,11 @@ import java.io.IOException;
 public class TestController {
 
 	static String root = "/Users/mxing/Desktop/GENETIC-PBIL-MAXSAT/Results/";
-	static String[] files= {"140v/s2v140c1300-10.cnf","140v/s2v140c1400-10.cnf","140v/s2v140c1500-10.cnf","maxcut-140-630-0.8/maxcut-140-630-0.8-9.cnf",
+	static String[] files= {"SPINGLASS/t4pm3-6666.spn.cnf","SPINGLASS/t5pm3-7777.spn.cnf","SPINGLASS/t7pm3-9999.spn.cnf","SPINGLASS/t6pm3-8888.spn.cnf", "140v/s2v140c1600-10.cnf",
+		"140v/s2v140c1200-10.cnf", "140v/s2v140c1300-10.cnf","140v/s2v140c1400-10.cnf", "140v/s2v140c1500-10.cnf","maxcut-140-630-0.8/maxcut-140-630-0.8-9.cnf", 
 		"maxcut-140-630-0.8/maxcut-140-630-0.8-8.cnf","maxcut-140-630-0.7/maxcut-140-630-0.7-9.cnf","maxcut-140-630-0.7/maxcut-140-630-0.7-8.cnf","60v/s3v60c800-1.cnf",
 		"60v/s3v60c1000-1.cnf","60v/s3v60c1200-1.cnf","4SAT/HG-4SAT-V100-C900-1.cnf","4SAT/HG-4SAT-V150-C1350-100.cnf","5SAT/HG-5SAT-V50-C900-1.cnf","5SAT/HG-5SAT-V50-C900-5.cnf","5SAT/HG-V100-C1800-100.cnf"};
 	static int[] maxValues= {38,78,0,0, 226,140,170,188,200,165,167,166,165,35,53,69,1,0,0,0,0};
-	
-	//"SPINGLASS/t4pm3-6666.spn.cnf","SPINGLASS/t5pm3-7777.spn.cnf","SPINGLASS/t7pm3-9999.spn.cnf","SPINGLASS/t6pm3-8888.spn.cnf", "140v/s2v140c1600-10.cnf",
-//	"140v/s2v140c1200-10.cnf",
 	
 	// Set these for GA
 	static int popSize = 200;
@@ -105,30 +103,38 @@ public class TestController {
 			if (totalTime > 0) {
 				// Only add and average execution time if the algorithm didn't time out.
 				averageTime += totalTime;
+				averagePercentSatisfiedClauses += results.get(i).percentSatisfied;
+				averageBestGeneration += results.get(i).bestgeneration;
+				averageUnsatisfiedClauses += temp;
+				
+				if (temp < fewestUnsatisfiedClauses){
+					fewestUnsatisfiedClauses = temp;
+				}
+				if (results.get(i).executionTime < bestExecutionTime){
+					bestExecutionTime = results.get(i).executionTime;;
+				}
+				if (results.get(i).bestgeneration < bestGeneration){
+					bestGeneration = results.get(i).bestgeneration;;
+				}
 			} else {
 				numTimeouts++;
 			}
-			averageBestGeneration += results.get(i).bestgeneration;
-			averageUnsatisfiedClauses += temp;
-			averagePercentSatisfiedClauses += results.get(i).percentSatisfied;
-			if (temp < fewestUnsatisfiedClauses){
-				fewestUnsatisfiedClauses = temp;
-			}
-			if (results.get(i).bestgeneration < bestGeneration){
-				bestGeneration = results.get(i).bestgeneration;;
-			}
-			
-			if (results.get(i).executionTime < bestExecutionTime){
-				bestExecutionTime = results.get(i).executionTime;;
-			}
+	
 		}
 		
-
+if(numberofTrials - numTimeouts != 0){
 		averageTime = averageTime / (long) (numberofTrials - numTimeouts);
-		averageBestGeneration = averageBestGeneration / numberofTrials;
-		averageUnsatisfiedClauses = averageUnsatisfiedClauses / numberofTrials;
-		averagePercentSatisfiedClauses = averagePercentSatisfiedClauses / (double) numberofTrials;
+		averageBestGeneration = averageBestGeneration / (numberofTrials - numTimeouts);
+		averageUnsatisfiedClauses = averageUnsatisfiedClauses / (numberofTrials - numTimeouts);
+		averagePercentSatisfiedClauses = averagePercentSatisfiedClauses / (double) (numberofTrials - numTimeouts);
 		outputWriter.newLine();
+}else{
+	averageTime = -1;
+	averageBestGeneration = -1;
+	averageUnsatisfiedClauses = -1;
+	averagePercentSatisfiedClauses = -1;
+	outputWriter.newLine();
+}
 		
 //		System.out.println("Average Output for " + numberofTrials + " trials:");
 //		outputWriter.write("Average Output for " + numberofTrials + " trials:");
