@@ -20,7 +20,6 @@ public class Genetic extends EvolAlgorithms {
 	private boolean foundSATSolution = false;
 	private double boltzmannSum;
 	private long endTime;
-	private long timeout = Long.MAX_VALUE;
 	private int optimalUnSat = Integer.MAX_VALUE;
 
 	// Constructor.
@@ -34,11 +33,12 @@ public class Genetic extends EvolAlgorithms {
 		this.crossOverMethod = crossOverMethod;
 		this.winners = 2;
 		this.sample = 5;
+		this.timeout = Long.MAX_VALUE;
 	}
 	
 	// Constructor for tests
 	public Genetic(int popSize, int literalNumber, int maxIteration, String crossOverMethod, double crossOverProb,
-			double mutateProb, ArrayList<ArrayList<Integer>> satProblem, long timeout, int optimalUnSat) {
+			double mutateProb, ArrayList<ArrayList<Integer>> satProblem, int optimalUnSat) {
 		this.satProblem = satProblem;
 		this.population = initPopulation(popSize, literalNumber);
 		this.maxIteration = maxIteration;
@@ -47,12 +47,12 @@ public class Genetic extends EvolAlgorithms {
 		this.crossOverMethod = crossOverMethod;
 		this.winners = 2;
 		this.sample = 5;
-		this.timeout = timeout;
 		this.optimalUnSat = optimalUnSat;
 	}
 
 	public Results evolve(String selectionMethod) {
 		long startTime = System.currentTimeMillis();
+		long executionTime = -1;
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++) {
 			currentGeneration = i + 1;
 			if (selectionMethod.equalsIgnoreCase("rs") || selectionMethod.equalsIgnoreCase("bs")) {
@@ -77,14 +77,17 @@ public class Genetic extends EvolAlgorithms {
 			
 			// If time out or reached optimal number of clauses satisfied, return result.
 			int currentUnsat = satProblem.size() - maxFitnessSoFar;
-			if (System.currentTimeMillis() - startTime > timeout || currentUnsat <= optimalUnSat) {
+			if (System.currentTimeMillis() - startTime >= timeout) {
+				bestGeneration = -1;
+				foundSATSolution = true;
+				break;
+			} else if (currentUnsat <= optimalUnSat) {
+				// If finished all iterations, calculate time.
+				executionTime = endTime - startTime;
 				foundSATSolution = true;
 				break;
 			}
 		}
-		
-		// If finished all iterations, calculate time.
-		long executionTime = endTime - startTime;
 		
 		double percent = ((double) maxFitnessSoFar * 100 / (double) satProblem.size());
 

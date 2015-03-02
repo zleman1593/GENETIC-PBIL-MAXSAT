@@ -16,13 +16,14 @@ public class PBIL extends EvolAlgorithms {
 	private int[] bestVector;
 	private int[] worstVector;
 	private ArrayList<int[]> sampleVectors = new ArrayList<int[]>();
-	// Others.
+	// Iterations and fitness.
 	private int maxFitness = 0;
 	private int minFitness;
 	private int maxIterations;
+	// The minimum number of unsatisfied clauses according to the best algorithm run on the website you provided.
+	private int optimalUnsat;
+	// The time the algorithm took to find the best solution.
 	private long endTime;
-	private long timeout = Long.MAX_VALUE;
-	private int optimalUnsat = Integer.MAX_VALUE; 
 
 	// Constructor.
 	public PBIL(int samples, double learningRate, double negLearningRate, int length, double mutProb, double mutShift,
@@ -35,6 +36,8 @@ public class PBIL extends EvolAlgorithms {
 		this.mutShift = mutShift;
 		this.maxIterations = maxIterations;
 		this.satProblem = satProblem;
+		this.timeout = Long.MAX_VALUE;
+		this.optimalUnsat = Integer.MAX_VALUE;
 		
 		minFitness = satProblem.size();
 		evaluations = new int[samples];
@@ -43,7 +46,7 @@ public class PBIL extends EvolAlgorithms {
 	
 	// Constructor with optimal unsat value and timeout
 	public PBIL(int samples, double learningRate, double negLearningRate, int length, double mutProb, double mutShift,
-			int maxIterations, ArrayList<ArrayList<Integer>> satProblem, long timeout, int optimalUnsat) {
+			int maxIterations, ArrayList<ArrayList<Integer>> satProblem, int optimalUnsat) {
 		this.samples = samples;
 		this.learningRate = learningRate;
 		this.negLearningRate = negLearningRate;
@@ -52,7 +55,6 @@ public class PBIL extends EvolAlgorithms {
 		this.mutShift = mutShift;
 		this.maxIterations = maxIterations;
 		this.satProblem = satProblem;
-		this.timeout = timeout;
 		this.optimalUnsat = optimalUnsat;
 
 		minFitness = satProblem.size();
@@ -86,13 +88,19 @@ public class PBIL extends EvolAlgorithms {
 				// If reached optimal number of clauses satisfied or time out, return result
 				long totalTimeElapsed = System.currentTimeMillis() - startTime;
 				int currentUnsat = satProblem.size() - maxFitness;
-				if (totalTimeElapsed > timeout || currentUnsat <= optimalUnsat || maxFitness == satProblem.size()) {
+				if (totalTimeElapsed >= timeout) {
+					// Do not return best generation.
+					bestGeneration = -1;
+					// Timed out, do not factor in execution time.
+					return getResult(endTime + 1);
+				} else if (currentUnsat <= optimalUnsat || maxFitness == satProblem.size()) {
+					// Calculate execution time.
 					return getResult(startTime);
-				} else {
+				}
+				else {
 					updateFitness(fitness, individual);
 				}
 			}
-
 			// Update and mutate probability vector.
 			updateProbVector();
 			mutateProbVector();
@@ -112,7 +120,7 @@ public class PBIL extends EvolAlgorithms {
 		System.out.println("Best Variable Assignment: " + Arrays.toString(binaryToNumber(bestVector)));
 		
 		double percent = ((double) maxFitness * 100 / (double) satProblem.size());
-		long executionTime = endTime - startTime;
+		long executionTime = endTime - startTime; // -1 if timed out
 		
 		System.out.println("Percent satisfied: " + percent + "%");
 		System.out.println("Best Generation:" + bestGeneration);		

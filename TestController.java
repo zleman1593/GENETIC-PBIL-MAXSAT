@@ -31,7 +31,7 @@ public class TestController {
 	static double PBIL_mutProb = 0.02;
 	static double PBIL_mutShift = 0.05;
 	static int PBIL_maxIterations = Integer.MAX_VALUE;
-	static long timeoutms = 180000;
+	
 	//
 	public static void main(String[] args) throws IOException {
 		//Todo make stats reflect up until either best solution or until correct "goodness level" is reached
@@ -55,7 +55,7 @@ public class TestController {
 		if (algorithm.equalsIgnoreCase("g")) {
 			for (int i = 0; i < numOfTrials; i++) {
 				Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIterations, crossoverType,
-						crossoverProb, mutationProb, satProblem, timeoutms, maxValue);
+						crossoverProb, mutationProb, satProblem, maxValue);
 				results.add(geneticAlgo.evolve(selectionType));
 			}
 			reportStats(results, numOfTrials,algorithm,index);
@@ -64,7 +64,7 @@ public class TestController {
 			for (int i = 0; i < numOfTrials; i++) {
 
 				PBIL PBILAlgorithm = new PBIL(PBIL_samples, PBIL_learningRate, PBIL_negLearningRate, numberOfLiterals,
-						PBIL_mutProb, PBIL_mutShift, PBIL_maxIterations, satProblem,timeoutms, maxValue);
+						PBIL_mutProb, PBIL_mutShift, PBIL_maxIterations, satProblem, maxValue);
 				results.add(PBILAlgorithm.evolve());
 
 			}
@@ -98,9 +98,16 @@ public class TestController {
 		double averagePercentSatisfiedClauses = 0;
 		int bestGeneration = Integer.MAX_VALUE;
 		long bestExecutionTime = Integer.MAX_VALUE;
+		int numTimeouts = 0; // Number of times the algorithm timed out.
 		for (int i = 0; i < results.size(); i++) {
 			int temp = results.get(i).numUnsatisifiedClauses;
-			averageTime += results.get(i).executionTime;
+			long totalTime = results.get(i).executionTime; 
+			if (totalTime > 0) {
+				// Only add and average execution time if the algorithm didn't time out.
+				averageTime += totalTime;
+			} else {
+				numTimeouts++;
+			}
 			averageBestGeneration += results.get(i).bestgeneration;
 			averageUnsatisfiedClauses += temp;
 			averagePercentSatisfiedClauses += results.get(i).percentSatisfied;
@@ -117,7 +124,7 @@ public class TestController {
 		}
 		
 
-		averageTime = averageTime / (long) numberofTrials;
+		averageTime = averageTime / (long) (numberofTrials - numTimeouts);
 		averageBestGeneration = averageBestGeneration / numberofTrials;
 		averageUnsatisfiedClauses = averageUnsatisfiedClauses / numberofTrials;
 		averagePercentSatisfiedClauses = averagePercentSatisfiedClauses / (double) numberofTrials;
@@ -176,6 +183,8 @@ public class TestController {
 		outputWriter.write(""+averageTime);
 		System.out.println("Best execution time: " + averageTime + " milliseconds");
 		outputWriter.write(""+bestExecutionTime);
+		System.out.println("Number of time outs: " + numTimeouts);
+		outputWriter.write(""+numTimeouts);
 		
 		outputWriter.newLine();
 		

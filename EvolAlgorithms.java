@@ -9,6 +9,7 @@ public class EvolAlgorithms {
 	protected int bestGeneration;
 	protected int currentGeneration;
 	protected int targetPercentSolved;
+	protected long timeout = 180000;
 	
 	/* Fitness Function */
 	public int evaluateCandidate(ArrayList<Integer> values) {
