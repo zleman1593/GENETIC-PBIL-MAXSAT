@@ -12,7 +12,7 @@ public class TestController {
 		"maxcut-140-630-0.8/maxcut-140-630-0.8-8.cnf","maxcut-140-630-0.7/maxcut-140-630-0.7-9.cnf","maxcut-140-630-0.7/maxcut-140-630-0.7-8.cnf","60v/s3v60c800-1.cnf",
 		"60v/s3v60c1000-1.cnf","60v/s3v60c1200-1.cnf","4SAT/HG-4SAT-V100-C900-1.cnf","4SAT/HG-4SAT-V150-C1350-100.cnf","5SAT/HG-5SAT-V50-C900-1.cnf","5SAT/HG-5SAT-V50-C900-5.cnf","5SAT/HG-V100-C1800-100.cnf"};
 	static int[] maxValues= {38,78,0,0, 226,140,170,188,200,165,167,166,165,35,53,69,1,0,0,0,0};
-	
+
 	// Set these for GA
 	static int popSize = 200;
 	static String selectionType = "ts";
@@ -21,7 +21,7 @@ public class TestController {
 	static Double mutationProb = 0.01;
 	static int maxIterations = Integer.MAX_VALUE;
 	//
-	
+
 	// Set these for PBIL
 	static int PBIL_samples = 100;
 	static double PBIL_learningRate = 0.1;
@@ -29,14 +29,14 @@ public class TestController {
 	static double PBIL_mutProb = 0.02;
 	static double PBIL_mutShift = 0.05;
 	static int PBIL_maxIterations = Integer.MAX_VALUE;
-	
+
 	//
 	public static void main(String[] args) throws IOException {
 		//Todo make stats reflect up until either best solution or until correct "goodness level" is reached
 
 		for(int i = 0; i < files.length ;i++){
-		tests(10, "p", root + files[i],i,maxValues[i]);
-		tests(10, "g", root + files[i],i,maxValues[i]);
+			tests(10, "p", root + files[i],i,maxValues[i]);
+			tests(10, "g", root + files[i],i,maxValues[i]);
 		}
 
 
@@ -82,7 +82,7 @@ public class TestController {
 			file.createNewFile();
 		}
 		outputWriter = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
-		
+
 		System.out.println("File: " + files[problem]);
 		outputWriter.write("File: " + files[problem]);
 		System.out.println(numberofTrials + " trials were run.");
@@ -96,6 +96,13 @@ public class TestController {
 		double averagePercentSatisfiedClauses = 0;
 		int bestGeneration = Integer.MAX_VALUE;
 		long bestExecutionTime = Integer.MAX_VALUE;
+		//
+		int averageBestGenerationT = 0;
+		int averageUnsatisfiedClausesT = 0;
+		int fewestUnsatisfiedClausesT = Integer.MAX_VALUE;
+		double averagePercentSatisfiedClausesT = 0;
+		int bestGenerationT = Integer.MAX_VALUE;
+
 		int numTimeouts = 0; // Number of times the algorithm timed out.
 		for (int i = 0; i < results.size(); i++) {
 			int temp = results.get(i).numUnsatisifiedClauses;
@@ -106,7 +113,8 @@ public class TestController {
 				averagePercentSatisfiedClauses += results.get(i).percentSatisfied;
 				averageBestGeneration += results.get(i).bestgeneration;
 				averageUnsatisfiedClauses += temp;
-				
+
+
 				if (temp < fewestUnsatisfiedClauses){
 					fewestUnsatisfiedClauses = temp;
 				}
@@ -118,49 +126,75 @@ public class TestController {
 				}
 			} else {
 				numTimeouts++;
+				// Only add and average execution time if the algorithm did time out.
+
+				averagePercentSatisfiedClausesT += results.get(i).percentSatisfied;
+				averageBestGenerationT += results.get(i).bestgeneration;
+				averageUnsatisfiedClausesT += temp;
+
+				if (temp < fewestUnsatisfiedClausesT){
+					fewestUnsatisfiedClauses = temp;
+				}
+
+				if (results.get(i).bestgeneration < bestGeneration){
+					bestGenerationT = results.get(i).bestgeneration;;
+				}
 			}
-	
+
 		}
-		
-if(numberofTrials - numTimeouts != 0){
-		averageTime = averageTime / (long) (numberofTrials - numTimeouts);
-		averageBestGeneration = averageBestGeneration / (numberofTrials - numTimeouts);
-		averageUnsatisfiedClauses = averageUnsatisfiedClauses / (numberofTrials - numTimeouts);
-		averagePercentSatisfiedClauses = averagePercentSatisfiedClauses / (double) (numberofTrials - numTimeouts);
+
+		if(numberofTrials - numTimeouts != 0){
+			averageTime = averageTime / (long) (numberofTrials - numTimeouts);
+			averageBestGeneration = averageBestGeneration / (numberofTrials - numTimeouts);
+			averageUnsatisfiedClauses = averageUnsatisfiedClauses / (numberofTrials - numTimeouts);
+			averagePercentSatisfiedClauses = averagePercentSatisfiedClauses / (double) (numberofTrials - numTimeouts);
+			outputWriter.newLine();
+		}else{
+			averageTime = -1;
+			averageBestGeneration = -1;
+			averageUnsatisfiedClauses = -1;
+			averagePercentSatisfiedClauses = -1;
+			outputWriter.newLine();
+		}
+
+		if( numTimeouts != 0){
+			averageBestGenerationT = averageBestGenerationT / numTimeouts;
+			averageUnsatisfiedClausesT = averageUnsatisfiedClausesT / numTimeouts;
+			averagePercentSatisfiedClausesT = averagePercentSatisfiedClausesT / (double) numTimeouts;
+			outputWriter.newLine();
+		}else{
+			averageBestGenerationT = -1;
+			averageUnsatisfiedClausesT = -1;
+			averagePercentSatisfiedClausesT = -1;
+		}
+
+		//		System.out.println("Average Output for " + numberofTrials + " trials:");
+		//		outputWriter.write("Average Output for " + numberofTrials + " trials:");
+		//		outputWriter.newLine();
+		//		System.out.println("Number Of Variables: " + results.get(0).numVariables);
+		//		outputWriter.write("Number Of Variables: " + results.get(0).numVariables);
+		//		outputWriter.newLine();
+		//		System.out.println("Number Of Clauses: " + results.get(0).numClauses);
+		//		outputWriter.write("Number Of Clauses: " + results.get(0).numClauses);
+		//		outputWriter.newLine();
+		//		System.out.println("Average Percent satisfied: " + averagePercentSatisfiedClauses + "%");
+		//		outputWriter.write("Average Percent satisfied: " + averagePercentSatisfiedClauses + "%");
+		//		outputWriter.newLine();
+		//		System.out.println("Average Best Generation:" + averageBestGeneration);
+		//		outputWriter.write("Average Best Generation:" + averageBestGeneration);
+		//		outputWriter.newLine();
+		//		System.out.println("Average # Unsatisfied  Clauses:" + averageUnsatisfiedClauses);
+		//		outputWriter.write("Average # Unsatisfied  Clauses:" + averageUnsatisfiedClauses);
+		//		outputWriter.newLine();
+		//		System.out.println("Fewest # Unsatisfied  Clauses:" + fewestUnsatisfiedClauses);
+		//		outputWriter.write("Fewest # Unsatisfied  Clauses:" + fewestUnsatisfiedClauses);
+		//		outputWriter.newLine();
+		//		System.out.println("Average execution time: " + averageTime + " milliseconds");
+		//		outputWriter.write("Average execution time: " + averageTime + " milliseconds");
+		//		
+		System.out.println("SAT PROBLEM");
+		outputWriter.write("SAT PROBLEM");
 		outputWriter.newLine();
-}else{
-	averageTime = -1;
-	averageBestGeneration = -1;
-	averageUnsatisfiedClauses = -1;
-	averagePercentSatisfiedClauses = -1;
-	outputWriter.newLine();
-}
-		
-//		System.out.println("Average Output for " + numberofTrials + " trials:");
-//		outputWriter.write("Average Output for " + numberofTrials + " trials:");
-//		outputWriter.newLine();
-//		System.out.println("Number Of Variables: " + results.get(0).numVariables);
-//		outputWriter.write("Number Of Variables: " + results.get(0).numVariables);
-//		outputWriter.newLine();
-//		System.out.println("Number Of Clauses: " + results.get(0).numClauses);
-//		outputWriter.write("Number Of Clauses: " + results.get(0).numClauses);
-//		outputWriter.newLine();
-//		System.out.println("Average Percent satisfied: " + averagePercentSatisfiedClauses + "%");
-//		outputWriter.write("Average Percent satisfied: " + averagePercentSatisfiedClauses + "%");
-//		outputWriter.newLine();
-//		System.out.println("Average Best Generation:" + averageBestGeneration);
-//		outputWriter.write("Average Best Generation:" + averageBestGeneration);
-//		outputWriter.newLine();
-//		System.out.println("Average # Unsatisfied  Clauses:" + averageUnsatisfiedClauses);
-//		outputWriter.write("Average # Unsatisfied  Clauses:" + averageUnsatisfiedClauses);
-//		outputWriter.newLine();
-//		System.out.println("Fewest # Unsatisfied  Clauses:" + fewestUnsatisfiedClauses);
-//		outputWriter.write("Fewest # Unsatisfied  Clauses:" + fewestUnsatisfiedClauses);
-//		outputWriter.newLine();
-//		System.out.println("Average execution time: " + averageTime + " milliseconds");
-//		outputWriter.write("Average execution time: " + averageTime + " milliseconds");
-//		
-		
 		System.out.println("Average Output for " + numberofTrials + " trials:");
 		outputWriter.write(""+numberofTrials);
 		outputWriter.newLine();
@@ -170,14 +204,17 @@ if(numberofTrials - numTimeouts != 0){
 		System.out.println("Number Of Clauses: " + results.get(0).numClauses);
 		outputWriter.write(""+results.get(0).numClauses);
 		outputWriter.newLine();
-		System.out.println("Average Percent satisfied: " + averagePercentSatisfiedClauses + "%");
-		outputWriter.write(""+averagePercentSatisfiedClauses);
+
+		System.out.println("Stats for trials that did not timeout");
+		outputWriter.write("Stats for trials that did not timeout");
 		outputWriter.newLine();
+
+
 		System.out.println("Average Best Generation:" + averageBestGeneration);
 		outputWriter.write(""+averageBestGeneration);
 		outputWriter.newLine();
 		System.out.println("Best Generation:" + bestGeneration);
-		outputWriter.write(""+averageBestGeneration);
+		outputWriter.write(""+bestGeneration);
 		outputWriter.newLine();
 		System.out.println("Average # Unsatisfied  Clauses:" + averageUnsatisfiedClauses);
 		outputWriter.write(""+averageUnsatisfiedClauses);
@@ -187,64 +224,76 @@ if(numberofTrials - numTimeouts != 0){
 		outputWriter.newLine();
 		System.out.println("Average execution time: " + averageTime + " milliseconds");
 		outputWriter.write(""+averageTime);
-		System.out.println("Best execution time: " + averageTime + " milliseconds");
+		System.out.println("Best execution time: " + bestExecutionTime + " milliseconds");
 		outputWriter.write(""+bestExecutionTime);
+
+
+
+		System.out.println("Stats for timeouts");
+		outputWriter.write("Stats for timeouts");
+
+		System.out.println("Average Best Generation:" + averageBestGenerationT);
+		outputWriter.write(""+averageBestGenerationT);
+		outputWriter.newLine();
+		System.out.println("Best Generation:" + bestGenerationT);
+		outputWriter.write(""+bestGenerationT);
+		outputWriter.newLine();
+		System.out.println("Average # Unsatisfied  Clauses:" + averageUnsatisfiedClausesT);
+		outputWriter.write(""+averageUnsatisfiedClausesT);
+		outputWriter.newLine();
+		System.out.println("Fewest # Unsatisfied  Clauses:" + fewestUnsatisfiedClausesT);
+		outputWriter.write(""+fewestUnsatisfiedClausesT);
+		outputWriter.newLine();
 		System.out.println("Number of time outs: " + numTimeouts);
 		outputWriter.write(""+numTimeouts);
-		
+		System.out.println("Average Percent satisfied: " + averagePercentSatisfiedClausesT + "%");
+		outputWriter.write(""+averagePercentSatisfiedClausesT);
 		outputWriter.newLine();
-		
-		/*
-		 double sum = 0.0;
-	        for (int i = 0; i < results.size(); i++) {
-	            sum += Math.pow(((double)results.get(i).executionTime - (double) averageTime), 2);
-	        }
-	        double stdev = Math.sqrt( sum / (results.size() - 1));
-	
-	
-	System.out.println("STDEV of execution time: " + stdev + " milliseconds");
-	outputWriter.write("STDEV of execution time: " + stdev + " milliseconds");*/
+
+
+
+
 		if (algorithm.equalsIgnoreCase("g")) {
-		outputWriter.write("Settings GA");
-		outputWriter.newLine();
-		outputWriter.write(""+popSize);
-		outputWriter.newLine();
-		outputWriter.write(""+selectionType);
-		outputWriter.newLine();
-		outputWriter.write(""+crossoverType);
-		outputWriter.newLine();
-		outputWriter.write(""+crossoverProb);
-		outputWriter.newLine();
-		outputWriter.write(""+mutationProb);
-		outputWriter.newLine();
-		outputWriter.write(""+mutationProb);
-		outputWriter.newLine();
-		outputWriter.write(""+mutationProb);
-		outputWriter.newLine();
+			outputWriter.write("Settings GA");
+			outputWriter.newLine();
+			outputWriter.write(""+popSize);
+			outputWriter.newLine();
+			outputWriter.write(""+selectionType);
+			outputWriter.newLine();
+			outputWriter.write(""+crossoverType);
+			outputWriter.newLine();
+			outputWriter.write(""+crossoverProb);
+			outputWriter.newLine();
+			outputWriter.write(""+mutationProb);
+			outputWriter.newLine();
+			outputWriter.write(""+mutationProb);
+			outputWriter.newLine();
+			outputWriter.write(""+mutationProb);
+			outputWriter.newLine();
 		}else{
-		
-		outputWriter.write("Settings PBIL");
-		outputWriter.newLine();
-		outputWriter.write(""+PBIL_samples);
-		outputWriter.newLine();
-		outputWriter.write(""+PBIL_learningRate);
-		outputWriter.newLine();
-		outputWriter.write(""+PBIL_negLearningRate);
-		outputWriter.newLine();
-		outputWriter.write(""+PBIL_mutProb);
-		outputWriter.newLine();
-		outputWriter.write(""+PBIL_mutShift);
-		outputWriter.newLine();
-		outputWriter.write(""+PBIL_maxIterations);
-		outputWriter.newLine();
+
+			outputWriter.write("Settings PBIL");
+			outputWriter.newLine();
+			outputWriter.write(""+PBIL_samples);
+			outputWriter.newLine();
+			outputWriter.write(""+PBIL_learningRate);
+			outputWriter.newLine();
+			outputWriter.write(""+PBIL_negLearningRate);
+			outputWriter.newLine();
+			outputWriter.write(""+PBIL_mutProb);
+			outputWriter.newLine();
+			outputWriter.write(""+PBIL_mutShift);
+			outputWriter.newLine();
+			outputWriter.write(""+PBIL_maxIterations);
+			outputWriter.newLine();
 		}
-	
-	
-	outputWriter.flush();
-	outputWriter.close();
+
+
+		outputWriter.flush();
+		outputWriter.close();
 	}
-	
-	
-	
+
+
+
 
 }
