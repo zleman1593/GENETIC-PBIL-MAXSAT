@@ -84,7 +84,7 @@ public class PBIL extends EvolAlgorithms {
 				int fitness = evaluations[i];
 				
 				// Time out, do not run next iteration.
-				long totalTimeElapsed = System.currentTimeMillis() - startTime;
+				long totalTimeElapsed = endTime - startTime;
 				if (totalTimeElapsed > timeout) {
 					foundSATSolution = true;
 				}
@@ -97,8 +97,7 @@ public class PBIL extends EvolAlgorithms {
 				
 				if (foundSATSolution) {
 					System.out.println("All clauses satisfied.");
-					long endTime = System.currentTimeMillis();
-					long executionTime = endTime - startTime;
+					long executionTime = System.currentTimeMillis() - startTime;
 					double percent = ((double) maxFitness * 100 / (double) satProblem.size());
 					Results result = new Results("PBIL Algorithm", probVector.length, satProblem.size(), executionTime,
 							(satProblem.size() - maxFitness), percent, bestVector, bestGeneration);
