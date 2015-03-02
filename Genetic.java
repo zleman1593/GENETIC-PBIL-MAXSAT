@@ -75,18 +75,15 @@ public class Genetic extends EvolAlgorithms {
 			mutate(mutateProb);
 			// eightCore(mutateProb, population.size());
 			
-			// Time out, do not run next iteration.
-			long totalTimeElapsed = System.currentTimeMillis() - startTime;
-			if (totalTimeElapsed > timeout) {
-				foundSATSolution = true;
-			}
-			
-			// If reached optimal number of clauses satisfied, return result
+			// If time out or reached optimal number of clauses satisfied, return result.
 			int currentUnsat = satProblem.size() - maxFitnessSoFar;
-			if (currentUnsat <= optimalUnSat) {
+			if (endTime > timeout || currentUnsat <= optimalUnSat) {
 				foundSATSolution = true;
+				break;
 			}
 		}
+		
+		// If finished all iterations, calculate time.
 		long executionTime = endTime - startTime;
 		
 		double percent = ((double) maxFitnessSoFar * 100 / (double) satProblem.size());
