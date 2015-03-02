@@ -3,7 +3,7 @@ import java.util.*;
 public class Genetic extends EvolAlgorithms {
 
 	// Population that is evolved
-	public static ArrayList<ArrayList<Integer>> population;
+	public ArrayList<ArrayList<Integer>> population;
 	// Maximum iterations allowed
 	private int maxIteration;
 	// Which method to use for Crossover
@@ -110,6 +110,7 @@ public class Genetic extends EvolAlgorithms {
 			bestGeneration = currentGeneration;
 			maxFitnessSoFar = fitness;
 			bestSolution = new ArrayList<Integer>();
+			bestSolution.clear();
 			bestSolution.addAll(values);
 			// If all clauses are satisfied
 			if (fitness == satProblem.size()) {
@@ -143,7 +144,7 @@ public class Genetic extends EvolAlgorithms {
 			for (int i = 0; i < randomNumbers.size(); i++) {
 				ArrayList<Integer> individual = population.get(randomNumbers.get(i));
 				ArrayWithFitness memberWithFitness = new ArrayWithFitness(individual);
-				memberWithFitness.fitness = evaluateCandidate(satProblem, individual);
+				memberWithFitness.fitness = evaluateCandidate(individual);
 				allIndividualsWithFitness.add(memberWithFitness);
 				// Update the global variable if a new individual is more fit
 				// than the current best
@@ -171,7 +172,7 @@ public class Genetic extends EvolAlgorithms {
 		for (int i = 0; i < population.size(); i++) {
 			ArrayList<Integer> individual = population.get(i);
 			ArrayWithFitness memberWithFitness = new ArrayWithFitness(individual);
-			memberWithFitness.fitness = evaluateCandidate(satProblem, individual);
+			memberWithFitness.fitness = evaluateCandidate(individual);
 			allIndividualsWithFitness.add(memberWithFitness);
 
 			updateMaxFitness(memberWithFitness.fitness, individual);
@@ -335,6 +336,7 @@ public class Genetic extends EvolAlgorithms {
 	// Initialize population
 	public ArrayList<ArrayList<Integer>> initPopulation(int popSize, int literalNumber) {
 		ArrayList<ArrayList<Integer>> population = new ArrayList<ArrayList<Integer>>();
+		population.clear();
 		for (int i = 0; i < popSize; i++) {
 			ArrayList<Integer> individual = new ArrayList<Integer>();
 			for (int j = 0; j < literalNumber; j++) {

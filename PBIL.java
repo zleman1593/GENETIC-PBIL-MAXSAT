@@ -35,7 +35,7 @@ public class PBIL extends EvolAlgorithms {
 		this.mutShift = mutShift;
 		this.maxIterations = maxIterations;
 		this.satProblem = satProblem;
-
+		
 		minFitness = satProblem.size();
 		evaluations = new int[samples];
 		initProbVector();
@@ -69,9 +69,9 @@ public class PBIL extends EvolAlgorithms {
 	}
 
 	public Results evolve() {
+		sampleVectors.clear();
 		long startTime = System.currentTimeMillis();
 		int iterations = 0;
-		boolean foundSATSolution = false;
 		while (iterations < maxIterations) {
 			currentGeneration = iterations;
 			// Generate all individuals and evaluate them.
@@ -79,7 +79,7 @@ public class PBIL extends EvolAlgorithms {
 				int[] individual = generateSampleVector(probVector);
 				sampleVectors.add(individual);
 				// Evaluate each candidate and store results in array.
-				evaluations[i] = evaluateCandidate(satProblem, toObject(individual));
+				evaluations[i] = evaluateCandidate(toObject(individual));
 				// Found solution to all clauses.
 				int fitness = evaluations[i];
 				
@@ -87,10 +87,6 @@ public class PBIL extends EvolAlgorithms {
 				long totalTimeElapsed = System.currentTimeMillis() - startTime;
 				int currentUnsat = satProblem.size() - maxFitness;
 				if (totalTimeElapsed > timeout || currentUnsat <= optimalUnsat || maxFitness == satProblem.size()) {
-					foundSATSolution = true;
-				}
-				
-				if (foundSATSolution) {
 					return getResult(startTime);
 				} else {
 					updateFitness(fitness, individual);
@@ -180,13 +176,16 @@ public class PBIL extends EvolAlgorithms {
 
 	// Helper method to convert an int array to an ArrayList of Integer.
 	public static ArrayList<Integer> toObject(int[] intArray) {
-		// Cast int[] to Integer[]
-		Integer[] result = new Integer[intArray.length];
-		for (int i = 0; i < intArray.length; i++) {
-			result[i] = Integer.valueOf(intArray[i]);
-		}
 		// Convert array to ArrayList
-		ArrayList<Integer> resultList = new ArrayList<Integer>(Arrays.asList(result));
+		ArrayList<Integer> resultList = new ArrayList<Integer>();
+		resultList.clear();
+		for (int i = 0; i < intArray.length; i++) {
+			resultList.add(Integer.valueOf(intArray[i]));
+		}
+		
+		Runtime r = Runtime.getRuntime();
+		r.gc();
+		
 		return resultList;
 	}
 

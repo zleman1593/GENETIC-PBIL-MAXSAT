@@ -56,15 +56,15 @@ public class SatProblem {
 	}
 
 	public ArrayList<ArrayList<Integer>> getProblem(){
-		return this.satProblem;
+		return satProblem;
 	}
 
 	public int getNumLiterals(){
-		return this.numLiterals;
+		return numLiterals;
 	}
 
 	public int getNumClauses(){
-		return this.numClauses;
+		return numClauses;
 	}
 
 }
