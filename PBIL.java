@@ -86,8 +86,8 @@ public class PBIL extends EvolAlgorithms {
 				
 				// If reached optimal number of clauses satisfied or time out, return result
 				long totalTimeElapsed = endTime - startTime;
-				int currentUnsat = satProblem.size() - fitness;
-				if (totalTimeElapsed > timeout || currentUnsat <= optimalUnsat || fitness == satProblem.size()) {
+				int currentUnsat = satProblem.size() - maxFitness;
+				if (totalTimeElapsed > timeout || currentUnsat <= optimalUnsat || maxFitness == satProblem.size()) {
 					foundSATSolution = true;
 				}
 				
