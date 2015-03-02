@@ -224,13 +224,16 @@ public class TestController {
 		outputWriter.newLine();
 		System.out.println("Average execution time: " + averageTime + " milliseconds");
 		outputWriter.write(""+averageTime);
+		outputWriter.newLine();
 		System.out.println("Best execution time: " + bestExecutionTime + " milliseconds");
 		outputWriter.write(""+bestExecutionTime);
+		outputWriter.newLine();
 
 
 
 		System.out.println("Stats for timeouts");
 		outputWriter.write("Stats for timeouts");
+		outputWriter.newLine();
 
 		System.out.println("Average Best Generation:" + averageBestGenerationT);
 		outputWriter.write(""+averageBestGenerationT);
@@ -246,6 +249,7 @@ public class TestController {
 		outputWriter.newLine();
 		System.out.println("Number of time outs: " + numTimeouts);
 		outputWriter.write(""+numTimeouts);
+		outputWriter.newLine();
 		System.out.println("Average Percent satisfied: " + averagePercentSatisfiedClausesT + "%");
 		outputWriter.write(""+averagePercentSatisfiedClausesT);
 		outputWriter.newLine();

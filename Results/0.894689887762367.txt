@@ -1,15 +1,21 @@
 File: SPINGLASS/t4pm3-6666.spn.cnf
 
 
+
+SAT PROBLEM
 10
 64
 384
--1.0
+Stats for trials that did not timeout
 -1
 2147483647
 -1
+48
+-12147483647Stats for timeouts142
+391
+48
 2147483647
--1214748364710
+1087.47395833333333
 Settings PBIL
 100
 0.1
