@@ -5,12 +5,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class TestController {
-	//static String filename = "/DIMACS_MOD/brock800_1.clq.cnf";
+
 	static String root = "/Users/zackleman/Desktop/Results/";
 	static String[] files= {"SPINGLASS/t4pm3-6666.spn.cnf","SPINGLASS/t5pm3-7777.spn.cnf","SPINGLASS/t7pm3-9999.spn.cnf","SPINGLASS/t6pm3-8888.spn.cnf", "140v/s2v140c1600-10.cnf",
 		"140v/s2v140c1200-10.cnf","140v/s2v140c1300-10.cnf","140v/s2v140c1400-10.cnf","140/s2v140c1500-10.cnf","maxcut-140-630-0.8/maxcut-140-630-0.8-9.cnf",
 		"maxcut-140-630-0.8/maxcut-140-630-0.8-8.cnf","maxcut-140-630-0.7/maxcut-140-630-0.7-9.cnf","maxcut-140-630-0.7/maxcut-140-630-0.7-8.cnf","60v/s3v60c800-1.cnf",
 		"60v/s3v60c1000-1.cnf","60v/s3v60c1200-1.cnf","4SAT/HG-4SAT-V100-C900-1.cnf","4SAT/HG-4SAT-V150-C1350-100.cnf","5SAT/HG-5SAT-V50-C900-1.cnf","5SAT/HG-5SAT-V50-C900-5.cnf","5SAT/HG-V100-C1800-100.cnf"};
+	static int[] maxValues= {38,78,0,0, 226,140,170,188,200,165,167,166,165,35,53,69,1,0,0,0,0};
+	
 	// Set these for GA
 	static int popSize = 200;
 	static String selectionType = "ts";
@@ -32,13 +34,13 @@ public class TestController {
 		//Todo make stats reflect up until either best solution or until correct "goodness level" is reached
 
 		for(int i = 0; i < files.length ;i++){
-		tests(10, "g", root + files[i],i);
-		tests(10, "p", root + files[i],i);
+		tests(10, "g", root + files[i],i,maxValues[i]);
+		tests(10, "p", root + files[i],i,maxValues[i]);
 		}
 
 
 	}
-	public static void tests(int numOfTrials, String algorithm, String problemLocation, int index) throws IOException {
+	public static void tests(int numOfTrials, String algorithm, String problemLocation, int index, int maxValue) throws IOException {
 		// TESTS variables
 		ArrayList<Results> results = new ArrayList<Results>();
 		// Import and format MAXSAT problem.
@@ -50,7 +52,7 @@ public class TestController {
 		if (algorithm.equalsIgnoreCase("g")) {
 			for (int i = 0; i < numOfTrials; i++) {
 				Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIterations, crossoverType,
-						crossoverProb, mutationProb, satProblem,300000, 20);
+						crossoverProb, mutationProb, satProblem,300000, maxValue);
 				results.add(geneticAlgo.evolve(selectionType));
 			}
 			reportStats(results, numOfTrials,algorithm,index);
@@ -59,7 +61,7 @@ public class TestController {
 			for (int i = 0; i < numOfTrials; i++) {
 
 				PBIL PBILAlgorithm = new PBIL(PBIL_samples, PBIL_learningRate, PBIL_negLearningRate, numberOfLiterals,
-						PBIL_mutProb, PBIL_mutShift, PBIL_maxIterations, satProblem,300000, 20);
+						PBIL_mutProb, PBIL_mutShift, PBIL_maxIterations, satProblem,300000, maxValue);
 				results.add(PBILAlgorithm.evolve());
 
 			}
