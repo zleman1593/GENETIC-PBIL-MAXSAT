@@ -56,7 +56,7 @@ public class TestController {
 						crossoverProb, mutationProb, satProblem, maxValue);
 				results.add(geneticAlgo.evolve(selectionType));
 			}
-			reportStats(results, numOfTrials,algorithm,index);
+			reportStats(results, numOfTrials,algorithm,index,maxValue);
 
 		} else {
 			for (int i = 0; i < numOfTrials; i++) {
@@ -66,13 +66,13 @@ public class TestController {
 				results.add(PBILAlgorithm.evolve());
 
 			}
-			reportStats(results, numOfTrials,algorithm,index);
+			reportStats(results, numOfTrials,algorithm,index,maxValue);
 		}
 
 	}
 
 	/* Report averages */
-	public static void reportStats(ArrayList<Results> results, int numberofTrials, String algorithm, int problem) throws IOException { 
+	public static void reportStats(ArrayList<Results> results, int numberofTrials, String algorithm, int problem,int maxValue) throws IOException { 
 		BufferedWriter outputWriter = null;
 		String randomString = Double.toString(Math.random());
 		File file = new File(root + randomString + ".txt");
@@ -128,15 +128,15 @@ public class TestController {
 				numTimeouts++;
 				// Only add and average execution time if the algorithm did time out.
 
-				averagePercentSatisfiedClausesT += results.get(i).percentSatisfied;
+
 				averageBestGenerationT += results.get(i).bestgeneration;
 				averageUnsatisfiedClausesT += temp;
 
 				if (temp < fewestUnsatisfiedClausesT){
-					fewestUnsatisfiedClauses = temp;
+					fewestUnsatisfiedClausesT = temp;
 				}
 
-				if (results.get(i).bestgeneration < bestGeneration){
+				if (results.get(i).bestgeneration < bestGenerationT){
 					bestGenerationT = results.get(i).bestgeneration;;
 				}
 			}
@@ -160,7 +160,7 @@ public class TestController {
 		if( numTimeouts != 0){
 			averageBestGenerationT = averageBestGenerationT / numTimeouts;
 			averageUnsatisfiedClausesT = averageUnsatisfiedClausesT / numTimeouts;
-			averagePercentSatisfiedClausesT = averagePercentSatisfiedClausesT / (double) numTimeouts;
+			averagePercentSatisfiedClausesT = averageUnsatisfiedClausesT / (double) maxValue;
 			outputWriter.newLine();
 		}else{
 			averageBestGenerationT = -1;
