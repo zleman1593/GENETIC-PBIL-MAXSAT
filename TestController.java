@@ -96,6 +96,7 @@ public class TestController {
 		int averageUnsatisfiedClauses = 0;
 		int fewestUnsatisfiedClauses = Integer.MAX_VALUE;
 		double averagePercentSatisfiedClauses = 0;
+		int bestGeneration = Integer.MAX_VALUE;
 
 		for (int i = 0; i < results.size(); i++) {
 			int temp = results.get(i).numUnsatisifiedClauses;
@@ -105,6 +106,9 @@ public class TestController {
 			averagePercentSatisfiedClauses += results.get(i).percentSatisfied;
 			if (temp < fewestUnsatisfiedClauses){
 				fewestUnsatisfiedClauses = temp;
+			}
+			if (results.get(i).bestgeneration < bestGeneration){
+				bestGeneration = results.get(i).bestgeneration;;
 			}
 		}
 		
@@ -153,6 +157,9 @@ public class TestController {
 		outputWriter.write(""+averagePercentSatisfiedClauses);
 		outputWriter.newLine();
 		System.out.println("Average Best Generation:" + averageBestGeneration);
+		outputWriter.write(""+averageBestGeneration);
+		outputWriter.newLine();
+		System.out.println("Best Generation:" + bestGeneration);
 		outputWriter.write(""+averageBestGeneration);
 		outputWriter.newLine();
 		System.out.println("Average # Unsatisfied  Clauses:" + averageUnsatisfiedClauses);
