@@ -97,7 +97,7 @@ public class TestController {
 		int fewestUnsatisfiedClauses = Integer.MAX_VALUE;
 		double averagePercentSatisfiedClauses = 0;
 		int bestGeneration = Integer.MAX_VALUE;
-
+		long bestExecutionTime = Integer.MAX_VALUE;
 		for (int i = 0; i < results.size(); i++) {
 			int temp = results.get(i).numUnsatisifiedClauses;
 			averageTime += results.get(i).executionTime;
@@ -109,6 +109,10 @@ public class TestController {
 			}
 			if (results.get(i).bestgeneration < bestGeneration){
 				bestGeneration = results.get(i).bestgeneration;;
+			}
+			
+			if (results.get(i).executionTime < bestExecutionTime){
+				bestExecutionTime = results.get(i).executionTime;;
 			}
 		}
 		
@@ -170,6 +174,8 @@ public class TestController {
 		outputWriter.newLine();
 		System.out.println("Average execution time: " + averageTime + " milliseconds");
 		outputWriter.write(""+averageTime);
+		System.out.println("Best execution time: " + averageTime + " milliseconds");
+		outputWriter.write(""+bestExecutionTime);
 		
 		outputWriter.newLine();
 		
