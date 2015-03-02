@@ -19,7 +19,7 @@ public class TestController {
 	static String crossoverType = "1c";
 	static Double crossoverProb = 0.7;
 	static Double mutationProb = 0.01;
-	static int maxIterations = 2000;
+	static int maxIterations = Integer.MAX_VALUE;
 	//
 	
 	// Set these for PBIL
@@ -28,14 +28,14 @@ public class TestController {
 	static double PBIL_negLearningRate = .075;
 	static double PBIL_mutProb = 0.02;
 	static double PBIL_mutShift = 0.05;
-	static int PBIL_maxIterations = 2000;
+	static int PBIL_maxIterations = Integer.MAX_VALUE;
 	//
 	public static void main(String[] args) throws IOException {
 		//Todo make stats reflect up until either best solution or until correct "goodness level" is reached
 
 		for(int i = 0; i < files.length ;i++){
-		tests(10, "g", root + files[i],i,maxValues[i]);
 		tests(10, "p", root + files[i],i,maxValues[i]);
+		tests(10, "g", root + files[i],i,maxValues[i]);
 		}
 
 

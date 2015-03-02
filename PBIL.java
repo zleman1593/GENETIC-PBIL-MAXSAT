@@ -70,7 +70,6 @@ public class PBIL extends EvolAlgorithms {
 
 	public Results evolve() {
 		long startTime = System.currentTimeMillis();
-		long executionTime = 0;
 		int iterations = 0;
 		boolean foundSATSolution = false;
 		while (iterations < maxIterations) {
@@ -85,7 +84,7 @@ public class PBIL extends EvolAlgorithms {
 				int fitness = evaluations[i];
 				
 				// If reached optimal number of clauses satisfied or time out, return result
-				long totalTimeElapsed = endTime - startTime;
+				long totalTimeElapsed = System.currentTimeMillis() - startTime;
 				int currentUnsat = satProblem.size() - maxFitness;
 				if (totalTimeElapsed > timeout || currentUnsat <= optimalUnsat || maxFitness == satProblem.size()) {
 					foundSATSolution = true;
