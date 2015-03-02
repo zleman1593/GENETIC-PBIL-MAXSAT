@@ -89,8 +89,6 @@ public class PBIL extends EvolAlgorithms {
 				long totalTimeElapsed = System.currentTimeMillis() - startTime;
 				int currentUnsat = satProblem.size() - maxFitness;
 				if (totalTimeElapsed >= timeout) {
-					// Do not return best generation.
-					bestGeneration = -1;
 					// Timed out, do not factor in execution time.
 					return getResult(endTime + 1);
 				} else if (currentUnsat <= optimalUnsat || maxFitness == satProblem.size()) {

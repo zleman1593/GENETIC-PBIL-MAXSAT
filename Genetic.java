@@ -78,7 +78,6 @@ public class Genetic extends EvolAlgorithms {
 			// If time out or reached optimal number of clauses satisfied, return result.
 			int currentUnsat = satProblem.size() - maxFitnessSoFar;
 			if (System.currentTimeMillis() - startTime >= timeout) {
-				bestGeneration = -1;
 				foundSATSolution = true;
 				break;
 			} else if (currentUnsat <= optimalUnSat) {
