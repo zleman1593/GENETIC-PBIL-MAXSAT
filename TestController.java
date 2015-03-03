@@ -14,34 +14,95 @@ public class TestController {
 	static int[] maxValues= {38,78,0,0, 226,140,170,188,200,165,167,166,165,35,53,69,1,0,0,0,0};
 
 	// Set these for GA
-	static int popSize = 200;
-	static String selectionType = "ts";
-	static String crossoverType = "1c";
-	static Double crossoverProb = 0.7;
-	static Double mutationProb = 0.01;
+	static int[] popSize = {200, 400, 700, 1000, /* end pop*/ 200, 200, 200, /*end selection*/ 200, /*end crossover*/ 200, 200, 200, /*end crossover prob*/ 200, 200, 200};
+	static String[] selectionType = {"rs", "rs", "rs", "rs", /* end pop*/ "ts", "bs", /*end selection*/ "rs", /*end crossover*/ "rs", "rs", "rs", /*end crossover prob*/ "rs", "rs", "rs"};
+	static String[] crossoverType = {"1c", "1c", "1c", "1c", /* end pop*/ "1c", "1c", /*end selection*/ "uc", /*end crossover*/ "1c", "1c", "1c", /*end crossover prob*/ "1c", "1c", "1c"};
+	static Double[] crossoverProb = {0.7, 0.7, 0.7, 0.7, /* end pop*/ 0.7, 0.7, /*end selection*/ 0.7, /*end crossover*/ 0.1, 0.3, 1.0, /*end crossover prob*/ 0.7, 0.7, 0.7};
+	static Double[] mutationProb = {0.01, 0.01, 0.01, 0.01, /* end pop*/ 0.01, 0.01, /*end selection*/ 0.01, /*end crossover*/ 0.01, 0.01, 0.01, /*end crossover prob*/ 0.1, 0.3, 0.5};
 	static int maxIterations = Integer.MAX_VALUE;
 	//
 
 	// Set these for PBIL
-	static int PBIL_samples = 100;
-	static double PBIL_learningRate = 0.1;
-	static double PBIL_negLearningRate = .075;
-	static double PBIL_mutProb = 0.02;
-	static double PBIL_mutShift = 0.05;
+	static int[] PBIL_samples = {100, 300, 600, 1000, /* end pop*/ 100, 100, 100, 100, /*end lr*/ 100, 100, 100, /*end -lr*/ 100, 100, 100, /*end mutProb*/ 100, 100, 100, 100 /*end mutShift*/};
+	static double[] PBIL_learningRate = {0.1, 0.1, 0.1, 0.1, /* end pop*/ 0.01, 0.3, 0.5, 1, /*end lr*/ 0.1, 0.1, 0.1, /*end -lr*/ 0.1, 0.1, 0.1, /*end mutProb*/ 0.1, 0.1, 0.1, 0.1 /*end mutShift*/};
+	static double[] PBIL_negLearningRate = {0.075, 0.075, 0.075, 0.075, /* end pop*/ 0.075, 0.075, 0.075, 0.075, /*end lr*/ 0.02, 0.15, 0.3, /*end -lr*/ 0.075, 0.075, 0.075, /*end mutProb*/ 0.075, 0.075, 0.075, 0.075 /*end mutShift*/};
+	static double[] PBIL_mutProb = {0.02, 0.02, 0.02, 0.02, /* end pop*/ 0.02, 0.02, 0.02, 0.02, /*end lr*/ 0.02, 0.02, 0.02, /*end -lr*/ 0.1, 0.3, 0.5, /*end mutProb*/ 0.02, 0.02, 0.02, 0.02 /*end mutShift*/};
+	static double[] PBIL_mutShift = {0.05, 0.05, 0.05, 0.05, /* end pop*/ 0.05, 0.05, 0.05, 0.05, /*end lr*/ 0.05, 0.05, 0.05, /*end -lr*/ 0.05, 0.05, 0.05, /*end mutProb*/ 0.01, 0.1, 0.2, 0.5 /*end mutShift*/};
 	static int PBIL_maxIterations = Integer.MAX_VALUE;
 
 	//
 	public static void main(String[] args) throws IOException {
 		//Todo make stats reflect up until either best solution or until correct "goodness level" is reached
-
-		for(int i = 0; i < files.length ;i++){
-			tests(10, "p", root + files[i],i,maxValues[i]);
-			tests(10, "g", root + files[i],i,maxValues[i]);
+				Runnable r1 = new Runnable() {
+				public void run() {
+				//Tests the first quarter of the input data
+					try {
+						testThread(0, files.length/4);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				};
+				Runnable r2 = new Runnable() {
+				public void run() {
+				//Tests the second fourth of the input data
+					try {
+						testThread((files.length*1)/4,(files.length*2)/4);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				};
+				Runnable r3 = new Runnable() {
+				public void run() {
+				//Tests the third fourth of the input data
+					try {
+						testThread((files.length*2)/4,(files.length*3)/4);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				};
+				Runnable r4 = new Runnable() {
+				public void run() {
+				//Tests the last fourth of the input data
+					try {
+						testThread((files.length*3)/4, files.length);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				};
+				
+				//Starts the 8 threads
+				Thread thr1 = new Thread(r1);
+				Thread thr2 = new Thread(r2);
+				Thread thr3 = new Thread(r3);
+				Thread thr4 = new Thread(r4);
+			
+				thr1.start();
+				thr2.start();
+				thr3.start();
+				thr4.start();
+				try{
+				thr1.join();
+				thr2.join();
+				thr3.join();
+				thr4.join();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
 		}
+			
 
 
+		
 	}
-	public static void tests(int numOfTrials, String algorithm, String problemLocation, int index, int maxValue) throws IOException {
+	
+	public static void tests(int numOfTrials, String algorithm, String problemLocation, int index, int maxValue, int i) throws IOException {
 		// TESTS variables
 		ArrayList<Results> results = new ArrayList<Results>();
 		// Import and format MAXSAT problem.
@@ -51,18 +112,18 @@ public class TestController {
 		ArrayList<ArrayList<Integer>> satProblem = problem.getProblem();
 
 		if (algorithm.equalsIgnoreCase("g")) {
-			for (int i = 0; i < numOfTrials; i++) {
-				Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIterations, crossoverType,
-						crossoverProb, mutationProb, satProblem, maxValue);
-				results.add(geneticAlgo.evolve(selectionType));
+			for (int t = 0; t < numOfTrials; t++) {
+				Genetic geneticAlgo = new Genetic(popSize[i], numberOfLiterals, maxIterations, crossoverType[i],
+						crossoverProb[i], mutationProb[i], satProblem, maxValue);
+				results.add(geneticAlgo.evolve(selectionType[i]));
 			}
 			reportStats(results, numOfTrials,algorithm,index,maxValue);
 
 		} else {
-			for (int i = 0; i < numOfTrials; i++) {
+			for (int t = 0; t < numOfTrials; t++) {
 
-				PBIL PBILAlgorithm = new PBIL(PBIL_samples, PBIL_learningRate, PBIL_negLearningRate, numberOfLiterals,
-						PBIL_mutProb, PBIL_mutShift, PBIL_maxIterations, satProblem, maxValue);
+				PBIL PBILAlgorithm = new PBIL(PBIL_samples[i], PBIL_learningRate[i], PBIL_negLearningRate[i], numberOfLiterals,
+						PBIL_mutProb[i], PBIL_mutShift[i], PBIL_maxIterations, satProblem, maxValue);
 				results.add(PBILAlgorithm.evolve());
 
 			}
@@ -142,12 +203,13 @@ public class TestController {
 			}
 
 		}
-
+		
+		int totalNumClauses = results.get(0).numClauses;
 		if(numberofTrials - numTimeouts != 0){
 			averageTime = averageTime / (long) (numberofTrials - numTimeouts);
 			averageBestGeneration = averageBestGeneration / (numberofTrials - numTimeouts);
 			averageUnsatisfiedClauses = averageUnsatisfiedClauses / (numberofTrials - numTimeouts);
-			averagePercentSatisfiedClauses = averagePercentSatisfiedClauses / (double) (numberofTrials - numTimeouts);
+			averagePercentSatisfiedClauses = (totalNumClauses - averageUnsatisfiedClauses) / (totalNumClauses - maxValue);
 			outputWriter.newLine();
 		}else{
 			averageTime = -1;
@@ -160,7 +222,7 @@ public class TestController {
 		if( numTimeouts != 0){
 			averageBestGenerationT = averageBestGenerationT / numTimeouts;
 			averageUnsatisfiedClausesT = averageUnsatisfiedClausesT / numTimeouts;
-			averagePercentSatisfiedClausesT = averageUnsatisfiedClausesT / (double) maxValue;
+			averagePercentSatisfiedClausesT = (totalNumClauses - averageUnsatisfiedClausesT) / (totalNumClauses - maxValue);
 			outputWriter.newLine();
 		}else{
 			averageBestGenerationT = -1;
@@ -297,7 +359,14 @@ public class TestController {
 		outputWriter.close();
 	}
 
-
+	static void testThread( int start, int end) throws IOException {
+		for (int p = start; p < end; p++) {
+			for (int trialIndex = 0; trialIndex < popSize.length; trialIndex++) {
+				tests(10, "p", root + files[p], p,maxValues[p], trialIndex);
+				tests(10, "g", root + files[p], p,maxValues[p], trialIndex);
+			}
+		}
+		}
 
 
 }
