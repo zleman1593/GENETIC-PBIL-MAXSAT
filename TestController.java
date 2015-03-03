@@ -9,9 +9,10 @@ public class TestController {
 	static String root = "/Users/mxing/Desktop/GENETIC-PBIL-MAXSAT/Results/";
 	static String[] files= {"SPINGLASS/t4pm3-6666.spn.cnf","SPINGLASS/t5pm3-7777.spn.cnf","SPINGLASS/t7pm3-9999.spn.cnf","SPINGLASS/t6pm3-8888.spn.cnf", "140v/s2v140c1600-10.cnf",
 		"140v/s2v140c1200-10.cnf", "140v/s2v140c1300-10.cnf","140v/s2v140c1400-10.cnf", "140v/s2v140c1500-10.cnf","maxcut-140-630-0.8/maxcut-140-630-0.8-9.cnf", 
-		"maxcut-140-630-0.8/maxcut-140-630-0.8-8.cnf","maxcut-140-630-0.7/maxcut-140-630-0.7-9.cnf","maxcut-140-630-0.7/maxcut-140-630-0.7-8.cnf","60v/s3v60c800-1.cnf",
-		"60v/s3v60c1000-1.cnf","60v/s3v60c1200-1.cnf","4SAT/HG-4SAT-V100-C900-1.cnf","4SAT/HG-4SAT-V150-C1350-100.cnf","5SAT/HG-5SAT-V50-C900-1.cnf","5SAT/HG-5SAT-V50-C900-5.cnf","5SAT/HG-V100-C1800-100.cnf"};
-	static int[] maxValues= {38,78,0,0, 226,140,170,188,200,165,167,166,165,35,53,69,1,0,0,0,0};
+		"maxcut-140-630-0.8/maxcut-140-630-0.8-8.cnf","maxcut-140-630-0.7/maxcut-140-630-0.7-9.cnf", "maxcut-140-630-0.7/maxcut-140-630-0.7-8.cnf","60v/s3v60c800-1.cnf",
+		"60v/s3v60c1000-1.cnf", "60v/s3v60c1200-1.cnf","4SAT/HG-4SAT-V100-C900-1.cnf","4SAT/HG-4SAT-V150-C1350-100.cnf", "5SAT/HG-5SAT-V50-C900-1.cnf", 
+		"5SAT/HG-5SAT-V50-C900-5.cnf","5SAT/HG-V100-C1800-100.cnf"};
+	static int[] maxValues= {38,78,0,0, 226,140,170,188,200,165,  167,166,165,35,53,69,1,0,0,0,0};
 
 	// Set these for GA
 	static int[] popSize = {200, 400, 700, 1000, /* end pop*/ 200, 200, /*end selection*/ 200, /*end crossover*/ 200, 200, 200, /*end crossover prob*/ 200, 200, 200};
@@ -322,20 +323,19 @@ public class TestController {
 		if (algorithm.equalsIgnoreCase("g")) {
 			outputWriter.write("Settings GA");
 			outputWriter.newLine();
-			outputWriter.write(""+popSize);
+			outputWriter.write(""+popSize[index]);
 			outputWriter.newLine();
-			outputWriter.write(""+selectionType);
+			outputWriter.write(""+selectionType[index]);
 			outputWriter.newLine();
-			outputWriter.write(""+crossoverType);
+			outputWriter.write(""+crossoverType[index]);
 			outputWriter.newLine();
-			outputWriter.write(""+crossoverProb);
+			outputWriter.write(""+crossoverProb[index]);
 			outputWriter.newLine();
-			outputWriter.write(""+mutationProb);
+			outputWriter.write(""+mutationProb[index]);
 			outputWriter.newLine();
-			outputWriter.write(""+mutationProb);
+			outputWriter.write(""+PBIL_maxIterations);
 			outputWriter.newLine();
-			outputWriter.write(""+mutationProb);
-			outputWriter.newLine();
+		
 		}else{
 
 			outputWriter.write("Settings PBIL");
