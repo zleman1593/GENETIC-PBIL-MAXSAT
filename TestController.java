@@ -14,7 +14,7 @@ public class TestController {
 	static int[] maxValues= {38,78,0,0, 226,140,170,188,200,165,167,166,165,35,53,69,1,0,0,0,0};
 
 	// Set these for GA
-	static int[] popSize = {200, 400, 700, 1000, /* end pop*/ 200, 200, 200, /*end selection*/ 200, /*end crossover*/ 200, 200, 200, /*end crossover prob*/ 200, 200, 200};
+	static int[] popSize = {200, 400, 700, 1000, /* end pop*/ 200, 200, /*end selection*/ 200, /*end crossover*/ 200, 200, 200, /*end crossover prob*/ 200, 200, 200};
 	static String[] selectionType = {"rs", "rs", "rs", "rs", /* end pop*/ "ts", "bs", /*end selection*/ "rs", /*end crossover*/ "rs", "rs", "rs", /*end crossover prob*/ "rs", "rs", "rs"};
 	static String[] crossoverType = {"1c", "1c", "1c", "1c", /* end pop*/ "1c", "1c", /*end selection*/ "uc", /*end crossover*/ "1c", "1c", "1c", /*end crossover prob*/ "1c", "1c", "1c"};
 	static Double[] crossoverProb = {0.7, 0.7, 0.7, 0.7, /* end pop*/ 0.7, 0.7, /*end selection*/ 0.7, /*end crossover*/ 0.1, 0.3, 1.0, /*end crossover prob*/ 0.7, 0.7, 0.7};
@@ -117,7 +117,7 @@ public class TestController {
 						crossoverProb[i], mutationProb[i], satProblem, maxValue);
 				results.add(geneticAlgo.evolve(selectionType[i]));
 			}
-			reportStats(results, numOfTrials,algorithm,index,maxValue);
+			reportStats(results, numOfTrials,algorithm,index,maxValue, i);
 
 		} else {
 			for (int t = 0; t < numOfTrials; t++) {
@@ -127,13 +127,13 @@ public class TestController {
 				results.add(PBILAlgorithm.evolve());
 
 			}
-			reportStats(results, numOfTrials,algorithm,index,maxValue);
+			reportStats(results, numOfTrials,algorithm,index,maxValue, i);
 		}
 
 	}
 
 	/* Report averages */
-	public static void reportStats(ArrayList<Results> results, int numberofTrials, String algorithm, int problem,int maxValue) throws IOException { 
+	public static void reportStats(ArrayList<Results> results, int numberofTrials, String algorithm, int problem,int maxValue, int index) throws IOException { 
 		BufferedWriter outputWriter = null;
 		String randomString = Double.toString(Math.random());
 		File file = new File(root + randomString + ".txt");
@@ -340,15 +340,15 @@ public class TestController {
 
 			outputWriter.write("Settings PBIL");
 			outputWriter.newLine();
-			outputWriter.write(""+PBIL_samples);
+			outputWriter.write(""+PBIL_samples[index]);
 			outputWriter.newLine();
-			outputWriter.write(""+PBIL_learningRate);
+			outputWriter.write(""+PBIL_learningRate[index]);
 			outputWriter.newLine();
-			outputWriter.write(""+PBIL_negLearningRate);
+			outputWriter.write(""+PBIL_negLearningRate[index]);
 			outputWriter.newLine();
-			outputWriter.write(""+PBIL_mutProb);
+			outputWriter.write(""+PBIL_mutProb[index]);
 			outputWriter.newLine();
-			outputWriter.write(""+PBIL_mutShift);
+			outputWriter.write(""+PBIL_mutShift[index]);
 			outputWriter.newLine();
 			outputWriter.write(""+PBIL_maxIterations);
 			outputWriter.newLine();
