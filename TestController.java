@@ -11,7 +11,7 @@ public class TestController {
 		"140v/s2v140c1200-10.cnf", "140v/s2v140c1300-10.cnf","140v/s2v140c1400-10.cnf", "140v/s2v140c1500-10.cnf","maxcut-140-630-0.8/maxcut-140-630-0.8-9.cnf", 
 		"maxcut-140-630-0.8/maxcut-140-630-0.8-8.cnf","maxcut-140-630-0.7/maxcut-140-630-0.7-9.cnf", "maxcut-140-630-0.7/maxcut-140-630-0.7-8.cnf","60v/s3v60c800-1.cnf",
 		"60v/s3v60c1000-1.cnf", "60v/s3v60c1200-1.cnf","4SAT/HG-4SAT-V100-C900-1.cnf","4SAT/HG-4SAT-V150-C1350-100.cnf", "5SAT/HG-5SAT-V50-C900-1.cnf", 
-		"5SAT/HG-5SAT-V50-C900-5.cnf","5SAT/HG-V100-C1800-100.cnf"};
+		"5SAT/HG-5SAT-V50-C900-5.cnf","5SAT/HG-5SAT-V100-C1800-100.cnf"};
 	static int[] maxValues= {38,78,0,0, 226,140,170,188,200,165,  167,166,165,35,53,69,1,0,0,0,0};
 
 	// Set these for GA
