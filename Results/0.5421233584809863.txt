@@ -1,0 +1,29 @@
+File: 60v/s3v60c800-1.cnf
+
+
+
+SAT PROBLEM
+10
+60
+800
+Stats for trials that did not timeout
+89
+61
+35
+35
+75911
+56632
+Stats for timeouts
+75
+44
+39
+36
+8
+0.0
+Settings GA
+400
+rs
+1c
+0.7
+0.01
+2147483647
