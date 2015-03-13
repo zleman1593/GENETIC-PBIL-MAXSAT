@@ -7,14 +7,14 @@ import java.io.IOException;
 public class TestController {
 
 	static String root = "/Users/mxing/Desktop/GENETIC-PBIL-MAXSAT/Results/";
-	static String[] files= {"SPINGLASS/t4pm3-6666.spn.cnf","SPINGLASS/t5pm3-7777.spn.cnf","SPINGLASS/t7pm3-9999.spn.cnf","SPINGLASS/t6pm3-8888.spn.cnf", "140v/s2v140c1600-10.cnf",
+	static String[] files = {"SPINGLASS/t4pm3-6666.spn.cnf","SPINGLASS/t5pm3-7777.spn.cnf","SPINGLASS/t7pm3-9999.spn.cnf","SPINGLASS/t6pm3-8888.spn.cnf", "140v/s2v140c1600-10.cnf",
 		"140v/s2v140c1200-10.cnf", "140v/s2v140c1300-10.cnf","140v/s2v140c1400-10.cnf", "140v/s2v140c1500-10.cnf","maxcut-140-630-0.8/maxcut-140-630-0.8-9.cnf", 
 		"maxcut-140-630-0.8/maxcut-140-630-0.8-8.cnf","maxcut-140-630-0.7/maxcut-140-630-0.7-9.cnf", "maxcut-140-630-0.7/maxcut-140-630-0.7-8.cnf","60v/s3v60c800-1.cnf",
 		"60v/s3v60c1000-1.cnf", "60v/s3v60c1200-1.cnf","4SAT/HG-4SAT-V100-C900-1.cnf","4SAT/HG-4SAT-V150-C1350-100.cnf", "5SAT/HG-5SAT-V50-C900-1.cnf", 
 		"5SAT/HG-5SAT-V50-C900-5.cnf","5SAT/HG-5SAT-V100-C1800-100.cnf"};
 	static int[] maxValues= {38,78,0,0, 226,140,170,188,200,165,  167,166,165,35,53,69,1,0,0,0,0};
 
-	// Set these for GA
+	// Set these for GA experiments
 	static int[] popSize = {200, 400, 700, 1000, /* end pop*/ 200, 200, /*end selection*/ 200, /*end crossover*/ 200, 200, 200, /*end crossover prob*/ 200, 200, 200};
 	static String[] selectionType = {"rs", "rs", "rs", "rs", /* end pop*/ "ts", "bs", /*end selection*/ "rs", /*end crossover*/ "rs", "rs", "rs", /*end crossover prob*/ "rs", "rs", "rs"};
 	static String[] crossoverType = {"1c", "1c", "1c", "1c", /* end pop*/ "1c", "1c", /*end selection*/ "uc", /*end crossover*/ "1c", "1c", "1c", /*end crossover prob*/ "1c", "1c", "1c"};
@@ -23,7 +23,7 @@ public class TestController {
 	static int maxIterations = Integer.MAX_VALUE;
 	//
 
-	// Set these for PBIL
+	// Set these for PBIL experiments
 	static int[] PBIL_samples = {100, 300, 600, 1000, /* end pop*/ 100, 100, 100, 100, /*end lr*/ 100, 100, 100, /*end -lr*/ 100, 100, 100, /*end mutProb*/ 100, 100, 100, 100 /*end mutShift*/};
 	static double[] PBIL_learningRate = {0.1, 0.1, 0.1, 0.1, /* end pop*/ 0.01, 0.3, 0.5, 1, /*end lr*/ 0.1, 0.1, 0.1, /*end -lr*/ 0.1, 0.1, 0.1, /*end mutProb*/ 0.1, 0.1, 0.1, 0.1 /*end mutShift*/};
 	static double[] PBIL_negLearningRate = {0.075, 0.075, 0.075, 0.075, /* end pop*/ 0.075, 0.075, 0.075, 0.075, /*end lr*/ 0.02, 0.15, 0.3, /*end -lr*/ 0.075, 0.075, 0.075, /*end mutProb*/ 0.075, 0.075, 0.075, 0.075 /*end mutShift*/};
@@ -96,11 +96,7 @@ public class TestController {
 				thr4.join();
 	} catch (InterruptedException e) {
 		e.printStackTrace();
-		}
-			
-
-
-		
+		}		
 	}
 	
 	public static void tests(int numOfTrials, String algorithm, String problemLocation, int index, int maxValue, int i) throws IOException {
@@ -223,7 +219,7 @@ public class TestController {
 		if( numTimeouts != 0){
 			averageBestGenerationT = averageBestGenerationT / numTimeouts;
 			averageUnsatisfiedClausesT = averageUnsatisfiedClausesT / numTimeouts;
-			averagePercentSatisfiedClausesT = (totalNumClauses - averageUnsatisfiedClausesT) / (totalNumClauses - maxValue);
+			averagePercentSatisfiedClausesT = (double) (totalNumClauses - averageUnsatisfiedClausesT) / (double) (totalNumClauses - maxValue);
 			outputWriter.newLine();
 		}else{
 			averageBestGenerationT = -1;
@@ -362,11 +358,9 @@ public class TestController {
 	static void testThread( int start, int end) throws IOException {
 		for (int p = start; p < end; p++) {
 			for (int trialIndex = 0; trialIndex < popSize.length; trialIndex++) {
-				tests(10, "p", root + files[p], p,maxValues[p], trialIndex);
-				tests(10, "g", root + files[p], p,maxValues[p], trialIndex);
+				tests(10, "p", root + files[p], p, maxValues[p], trialIndex);
+				tests(10, "g", root + files[p], p, maxValues[p], trialIndex);
 			}
 		}
-		}
-
-
+	}
 }
