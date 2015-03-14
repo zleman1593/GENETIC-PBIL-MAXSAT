@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java. util.HashMap;
+import java.util.Map;
 
 public class AnalyzeResults {
 	
@@ -17,6 +18,30 @@ public class AnalyzeResults {
 	private static final String BEST_PERCENTAGE = "best percentage"; // The best percentage of: clauses solved/clauses solved by best known algorithm.
 	private static final String AVG_PERCENTAGE = "average percentage"; // Percentage defined as above, but the average percentage.
 	private static final String PARAMETER_SETTINGS = "parameter settings"; // A list of parameter settings, comma-separated
+	
+	
+	private int numLiterals;
+	private int numClauses;
+	// GA
+	private int numExperiments_GA;
+	private int numTimeOuts_GA;
+	private long fastestTime_GA;
+	private long avgTime_GA;
+	private int bestGeneration_GA;
+	private int avgGeneration_GA;
+	private double bestPercentage_GA;
+	private double avgPercentage_GA;
+	private String parameterSettings_GA;
+	// PBIL
+	private int numExperiments_PBIL;
+	private int numTimeOuts_PBIL;
+	private long fastestTime_PBIL;
+	private long avgTime_PBIL;
+	private int bestGeneration_PBIL;
+	private int avgGeneration_PBIL;
+	private double bestPercentage_PBIL;
+	private double avgPercentage_PBIL;
+	private String parameterSettings_PBIL;
 	
 	
 	// A list of the names of MAXSAT problems.
@@ -38,7 +63,7 @@ public class AnalyzeResults {
 	
 	/* HashMap that groups the different files by problem name to allow faster operation for the above HashMaps.
 	 * KEY - String: Name of MAXSAT problem.
-	 * VALUE - ArrayList<String>: An ArrayList of file pathss for this problem.
+	 * VALUE - ArrayList<String>: An ArrayList of file paths for this problem.
 	 * */
 	HashMap<String, ArrayList<String>> filesGroupedByProblem = new HashMap<String, ArrayList<String>>();
 
@@ -144,11 +169,11 @@ public class AnalyzeResults {
 			parsedResults_GA.put(problem, new HashMap<String, String>());
 			
 			HashMap<String, String> values = parsedResults_GA.get(problem);
-			values.put(NUM_LITERALS, getNumOfLiterals(problem));
-			values.put(NUM_CLAUSES, getNumOfClauses(problem));
-			values.put(NUM_EXPERIMENTS, getNumOfExperiments_GA(problem));
-			values.put(FASTEST_TIME, getFastestTime_GA(problem));
-			values.put(AVG_TIME, getAverageTime_GA(problem));
+			values.put(NUM_LITERALS, String.valueOf(numLiterals));
+			values.put(NUM_CLAUSES, String.valueOf(numClauses));
+			values.put(NUM_EXPERIMENTS, String.valueOf(numExperiments_GA));
+			values.put(FASTEST_TIME, String.valueOf(fastestTime_GA));
+			values.put(AVG_TIME, String.valueOf(avgTime_GA));
 		}
 	}
 	
@@ -158,47 +183,57 @@ public class AnalyzeResults {
 	}
 	
 	// Return the number of literals for this problem.
-	private String getNumOfLiterals(String prob) throws IOException {
-		String filePath = filesGroupedByProblem.get(prob).get(0);
-		String numLiterals = "";
-		try {
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
-			for (int i = 0; i < LineNumber.NUM_VARS.getNumVal(); i++) {
-				bufferedReader.readLine();
-			}
-			numLiterals = bufferedReader.readLine();
-			bufferedReader.close();
-		}
-		catch (FileNotFoundException e) {
-			printFileNotFound(filePath);
-		}
-		 
-		return numLiterals;
-	}
-	
-	// Return the number of clauses for this problem.
-	private String getNumOfClauses(String prob) throws IOException {
-		String filePath = filesGroupedByProblem.get(prob).get(0);
-		String numClauses = "";
-		try {
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
-			for (int i = 0; i < LineNumber.NUM_CLAUSES.getNumVal(); i++) {
-				bufferedReader.readLine();
-			}
-			numClauses = bufferedReader.readLine();
-			bufferedReader.close();
-		}
-		catch (FileNotFoundException e) {
-			printFileNotFound(filePath);
-		}
-		 
-		return numClauses;
-	}
-	
+//	private void getNumOfLiteralsAndClauses(String prob) throws IOException {
+//		String filePath = filesGroupedByProblem.get(prob).get(0);
+//		try {
+//			BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
+//			for (int i = 0; i < LineNumber.NUM_VARS.getNumVal(); i++) {
+//				bufferedReader.readLine();
+//			}
+//			numLiterals = bufferedReader.readLine();
+//			numClauses = bufferedReader.readLine();
+//			bufferedReader.close();
+//			
+//		}
+//		catch (FileNotFoundException e) {
+//			printFileNotFound(filePath);
+//		}
+//	}	
 	// The number of experiments run on this problem
-	private String getNumOfExperiments_GA(String prob) {
-		int num = 0;
-		return String.valueOf(num);
+	private void initializeValues_GA(String prob) throws IOException {
+		ArrayList<String> files = filesGroupedByProblem.get(prob);
+		for (int i = 0; i< files.size(); i++) {
+			String filePath = files.get(i);
+			try {
+				BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
+				String line;
+				int lineNum = 1;
+				while ((line = bufferedReader.readLine()) != null) {
+					if (lineNum == LineNumber.NUM_VARS.getNumVal()) {
+						numLiterals = Integer.parseInt(line);
+					} else if (lineNum == LineNumber.NUM_CLAUSES.getNumVal()) {
+						numClauses = Integer.parseInt(line);
+					} else if (lineNum == LineNumber.AVG_BEST_GENERATION.getNumVal()) {
+						avgGeneration_GA += Integer.parseInt(line);
+					} else if (lineNum == LineNumber.BEST_GENERATION.getNumVal()) {
+						int currentBestGeneration = Integer.parseInt(line);
+						if (currentBestGeneration < bestGeneration_GA) {
+							bestGeneration_GA = currentBestGeneration;
+						}
+					} else if (lineNum == LineNumber.AVG_UNSAT_CLAUSES.getNumVal()) {
+						// TODO 
+					} else if (lineNum == LineNumber.FEWEST_UNSAT_CLAUSES.getNumVal()) {
+						// TODO
+					} else if (lineNum == LineNumber.AVG_EXECUTION_TIME.getNumVal()) {
+						avgTime_GA +=
+					}
+					lineNum++;
+				}
+			}
+			catch(FileNotFoundException e) {
+				printFileNotFound(filePath);
+			}
+		}
 	}
 	
 	private String getNumOfExperiments_PBIL(String prob) {
@@ -209,6 +244,15 @@ public class AnalyzeResults {
 	// 
 	private String getFastestTime_GA(String prob) {
 		long fastest = Long.MAX_VALUE;
+		ArrayList<String> filePaths = filesGroupedByProblem.get(prob);
+		for(String filePath : filePaths) {
+			BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
+			for (int i = 0; i < )
+			if () {
+				
+			}
+		}
+		
 		
 		return String.valueOf(fastest);
 	}
