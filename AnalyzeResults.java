@@ -175,7 +175,8 @@ public class AnalyzeResults {
 		
 		int totalNumExperiments = files.size();
 		int numNonTimeOutExperiments = totalNumExperiments;
-		int numTimeOuts = 0;
+		int totalNumTimeOuts = 0;
+		int avgNumTimeOuts = 0;
 		long bestExecutionTime =  Long.MAX_VALUE;
 		long avgExecutionTime = 0;
 		int bestGeneration = Integer.MAX_VALUE;
@@ -198,12 +199,8 @@ public class AnalyzeResults {
 					int lineNum_AvgBestGeneration_Timeout = LineNumber.AVG_BEST_GENERATION_TIMEOUT.getNumVal();					
 
 					if (lineNum == lineNum_AvgBestGeneration) {
-						// TODO: divide by number of files.
 						if (lineNum_AvgBestGeneration != NO_DATA) {
 							avgBestGeneration += Integer.parseInt(line);
-						} else {
-							numNonTimeOutExperiments--;
-							numTimeOuts++;
 						}
 					} else if (lineNum == lineNum_AvgBestGeneration_Timeout) {
 						if (lineNum_AvgBestGeneration_Timeout != NO_DATA) {
@@ -231,14 +228,16 @@ public class AnalyzeResults {
 						if (currentExecutionTime < bestExecutionTime) {
 							bestExecutionTime = currentExecutionTime; 
 						}
+					} else if (lineNum == LineNumber.NUM_TIMEOUTS.getNumVal()) {
+						totalNumTimeOuts++;
 					}
 					lineNum++;
 				}
 				bufferedReader.close();
 				
 				avgBestGeneration = avgBestGeneration / numNonTimeOutExperiments;
-				avgBestGeneration_TimeOut = avgBestGeneration_TimeOut / (totalNumExperiments - numNonTimeOutExperiments);
-				numTimeOuts = numTimeOuts / totalNumExperiments;
+				avgBestGeneration_TimeOut = avgBestGeneration_TimeOut / totalNumTimeOuts;
+				avgNumTimeOuts = totalNumTimeOuts / totalNumExperiments;
 			}
 			catch(FileNotFoundException e) {
 				printFileNotFound(filePath);
