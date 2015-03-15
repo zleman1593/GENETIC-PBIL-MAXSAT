@@ -1,11 +1,14 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java. util.HashMap;
 import java.util.Map;
 
 public class AnalyzeResults {
-	
 	/* Names of factors we are considering. */
 	private static final String NUM_LITERALS = "number of literals";
 	private static final String NUM_CLAUSES = "nuber of clauses";
@@ -26,23 +29,13 @@ public class AnalyzeResults {
 	 * Order - PBIL:
 	 * */
 	private static final String PARAMETER_SETTINGS = "parameter settings"; 
-	
+	private static final int NO_DATA = -1;
 	
 	/* Actual values of factors we are considering. */
 	private int numLiterals;
 	private int numClauses;
 	// GA
-	private int numExperiments_GA;
-	private int numTimeOuts_GA;
-	private long bestExecutionTime_GA;
-	private long avgExecutionTime_GA;
-	private int bestGeneration_GA;
-	private int bestGeneration_TimeOut_GA;
-	private int avgBestGeneration_GA;
-	private int avgBestGeneration_TimeOut_GA;
-	private double bestPercentage_GA;
-	private double avgPercentage_GA;
-	private String parameterSettings_GA;
+	
 	// PBIL
 	private int numExperiments_PBIL;
 	private int numTimeOuts_PBIL;
@@ -53,7 +46,6 @@ public class AnalyzeResults {
 	private double bestPercentage_PBIL;
 	private double avgPercentage_PBIL;
 	private String parameterSettings_PBIL;
-	
 	
 	/* Files */
 	String[] MAXSATProblems = TestController.files; 		// A list of the names of MAXSAT problems.
@@ -80,16 +72,13 @@ public class AnalyzeResults {
 	public AnalyzeResults() throws IOException {
 		// Sort the files.
 		groupFilesByProblemName();
-		
-		// Initialize the values for the factors we are considering.
+		// Initialize.
+		initializeHashMaps();
+		// Fill in HashMap values.
 		for (int i = 0; i < MAXSATProblems.length; i++) {
-			initializeValues_GA(MAXSATProblems[i]);
-			initializeValues_PBIL(MAXSATProblems[i]);
+			analyzeResults_GA(MAXSATProblems[i]);
+			analyzeResults_PBIL(MAXSATProblems[i]);
 		}
-		
-		// Push values to HashMaps.
-		analyzeResults_GA();
-		analyzeResults_PBIL();
 	}
 	
 	// Getter method: Return parsed results for GA in a HashMap.
@@ -136,6 +125,14 @@ public class AnalyzeResults {
 		}
 	}
 	
+	private void initializeHashMaps() {
+		for (int i = 0; i < MAXSATProblems.length; i++) {
+			String prob = MAXSATProblems[i];
+			parsedResults_GA.put(prob, new HashMap<String, String>());
+			parsedResults_PBIL.put(prob, new HashMap<String, String>());
+		}
+	}
+	
 	// Helper method: Strip the "File:" and get the actual name of file.
 	private String getProblemName(String line) {
 		int fileNameStartIndex = line.indexOf(":") + 1;
@@ -152,47 +149,7 @@ public class AnalyzeResults {
 	private void printFileNotFound(String path) {
 		System.out.println("Unable to open file '" + path + "'");
 	}
-	
-	// Return the number of literals for this problem.
-	private String getNumOfLiterals(String prob) throws IOException {
-		String filePath = filesGroupedByProblem.get(prob).get(0);
-		String numLiterals = "";
-		try {
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
-			for (int i = 0; i < LineNumber.NUM_LITERALS.getNumVal(); i++) {
-				bufferedReader.readLine();
-			}
-			numLiterals = bufferedReader.readLine();
-			bufferedReader.close();
-			
-		}
-		catch (FileNotFoundException e) {
-			printFileNotFound(filePath);
-		}
-		return numLiterals;
 		
-	}	
-	
-	// Return the number of clauses for this problem.
-	private String getNumOfClauses(String prob) throws IOException {
-		String filePath = filesGroupedByProblem.get(prob).get(0);
-		String numClauses = "";
-		try {
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
-			for (int i = 0; i < LineNumber.NUM_CLAUSES.getNumVal(); i++) {
-				bufferedReader.readLine();
-			}
-			numClauses = bufferedReader.readLine();
-			bufferedReader.close();
-			
-		}
-		catch (FileNotFoundException e) {
-			printFileNotFound(filePath);
-		}
-		return numClauses;
-		
-	}
-	
 	// Return the number of experiments run on this problem for GA.
 	private String getNumOfExperiments_GA(String prob) {
 		int num = 0;
@@ -232,48 +189,46 @@ public class AnalyzeResults {
 	}
 	
 	// Run the analysis for GA.
-	private void analyzeResults_GA() throws IOException {
-		// Initialize HashMap value for all MAXSAT problems.
-		for (int i = 0; i < MAXSATProblems.length; i++) {
-			String problem = MAXSATProblems[i];
-			parsedResults_GA.put(problem, new HashMap<String, String>());
-			
-			HashMap<String, String> values = parsedResults_GA.get(problem);
-			values.put(NUM_LITERALS, getNumOfLiterals(problem));
-			values.put(NUM_CLAUSES, getNumOfClauses(problem));
-			values.put(NUM_EXPERIMENTS, String.valueOf(numExperiments_GA));
-			values.put(BEST_EXECUTION_TIME, String.valueOf(bestExecutionTime_GA));
-			values.put(AVG_EXECUTION_TIME, String.valueOf(avgExecutionTime_GA));
-		}
-	}
-	
-	// Run the analysis for PBIL.
-	private void analyzeResults_PBIL() {
-		
-	}
-
-	// 
-	private void initializeValues_GA(String prob) throws IOException {
+	private void analyzeResults_GA(String prob) throws IOException {
 		ArrayList<String> files = filesGroupedByProblem.get(prob);
-		for (int i = 0; i< files.size(); i++) {
+		int totalNumExperiments = files.size();
+		
+		// Iterate through all files associated with this problem.
+		for (int i = 0; i< totalNumExperiments; i++) {
 			String filePath = files.get(i);
+			int numNonTimeOutExperiments = totalNumExperiments;
+			int totalNumTimeouts = 0;
+			
 			try {
 				BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
 				String line;
 				int lineNum = 1;
 				while ((line = bufferedReader.readLine()) != null) {
-					if (lineNum == LineNumber.NUM_LITERALS.getNumVal()) {
-						numLiterals = Integer.parseInt(line);
-					} else if (lineNum == LineNumber.NUM_CLAUSES.getNumVal()) {
-						numClauses = Integer.parseInt(line);
-					} else if (lineNum == LineNumber.AVG_BEST_GENERATION.getNumVal()) {
+					int lineNum_AvgBestGeneration = LineNumber.AVG_BEST_GENERATION.getNumVal();
+					int lineNum_AvgBestGeneration_Timeout = LineNumber.AVG_BEST_GENERATION_TIMEOUT.getNumVal();					
+
+					if (lineNum == lineNum_AvgBestGeneration) {
 						// TODO: divide by number of files.
-						avgBestGeneration_GA += Integer.parseInt(line);
+						if (lineNum_AvgBestGeneration != NO_DATA) {
+							avgBestGeneration_GA += Integer.parseInt(line);
+						} else {
+							numNonTimeOutExperiments--;
+							totalNumTimeouts++;
+						}
+					} else if (lineNum == lineNum_AvgBestGeneration_Timeout) {
+						if (lineNum_AvgBestGeneration_Timeout != NO_DATA) {
+							lineNum_AvgBestGeneration_Timeout += Integer.parseInt(line);
+						}
 					} else if (lineNum == LineNumber.BEST_GENERATION.getNumVal()) {
 						int currentBestGeneration = Integer.parseInt(line);
 						if (currentBestGeneration < bestGeneration_GA) {
 							bestGeneration_GA = currentBestGeneration;
 						}
+					} else if (lineNum == LineNumber.BEST_GENERATION_TIMEOUT.getNumVal()) {
+						int currentBestGeneration = Integer.parseInt(line);
+						if (currentBestGeneration < bestGeneration_TimeOut_GA) {
+							bestGeneration_TimeOut_GA = currentBestGeneration;
+						} 
 					} else if (lineNum == LineNumber.AVG_UNSAT_CLAUSES.getNumVal()) {
 						// TODO 
 					} else if (lineNum == LineNumber.FEWEST_UNSAT_CLAUSES.getNumVal()) {
@@ -291,13 +246,21 @@ public class AnalyzeResults {
 				}
 				bufferedReader.close();
 				
-				// Number of experiments (i.e. different parameter settings) ran on this problem.
-				numExperiments_GA = Integer.parseInt(getNumOfExperiments_GA(prob));
+				avgBestGeneration_GA = avgBestGeneration_GA / numNonTimeOutExperiments;
+				avgBestGeneration_TimeOut_GA = avgBestGeneration_TimeOut_GA / (totalNumExperiments - numNonTimeOutExperiments);
+				totalNumTimeouts = totalNumTimeouts / totalNumExperiments;
 			}
 			catch(FileNotFoundException e) {
 				printFileNotFound(filePath);
 			}
 		}
+		
+		HashMap<String, String> values = parsedResults_GA.get(prob);
+		values.put(NUM_LITERALS, String.valueOf());
+		values.put(NUM_CLAUSES, getNumOfClauses(prob));
+		values.put(NUM_EXPERIMENTS, String.valueOf(getNumOfExperiments_GA(prob)));
+		values.put(BEST_EXECUTION_TIME, String.valueOf(bestExecutionTime_GA));
+		values.put(AVG_EXECUTION_TIME, String.valueOf(avgExecutionTime_GA));
 	}
 	
 	private void initializeValues_PBIL(String prob) throws IOException {
