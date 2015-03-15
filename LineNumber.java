@@ -20,6 +20,7 @@ public enum LineNumber {
 	AVG_UNSAT_CLAUSES_TIMEOUT(19),
 	FEWEST_UNSAT_CLAUSES_TIMEOUT(20),
 	NUM_TIMEOUTS(21),
+	ALGORITHM_SETTING(23),
 	// For both algorithms.
 	POP_SIZE(24);
 	
