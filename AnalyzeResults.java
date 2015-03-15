@@ -128,6 +128,7 @@ public class AnalyzeResults {
 				// Read problem name.
 				BufferedReader bufferReader = new BufferedReader(new FileReader(filePath));
 				String problemName = getProblemName(bufferReader.readLine());
+				
 				for (int i = 2; i < LineNumber.ALGORITHM_SETTING.getNumVal(); i++) {
 					bufferReader.readLine();
 				}
@@ -172,10 +173,14 @@ public class AnalyzeResults {
 		} else {
 			throw new InvalidParameterException("Invalid algorithm name.");
 		}
-		
-		int totalNumExperiments = files.size();
-		int numNonTimeOutExperiments = totalNumExperiments;
+
+		// Stats that help.
+		int numExperiments = files.size();
+		int numNonTimeOutExperiments = numExperiments;
 		int totalNumTimeOuts = 0;
+		// Factors we care about.
+		int numLiterals = 0;
+		int numClauses = 0;
 		int avgNumTimeOuts = 0;
 		long bestExecutionTime =  Long.MAX_VALUE;
 		long avgExecutionTime = 0;
@@ -188,17 +193,22 @@ public class AnalyzeResults {
 		String parameterSettings;
 		
 		// Iterate through all files associated with this problem.
-		for (int i = 0; i< totalNumExperiments; i++) {
+		for (int i = 0; i< numExperiments; i++) {
 			String filePath = files.get(i);
 			try {
 				BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
 				String line;
 				int lineNum = 1;
+				
 				while ((line = bufferedReader.readLine()) != null) {
 					int lineNum_AvgBestGeneration = LineNumber.AVG_BEST_GENERATION.getNumVal();
 					int lineNum_AvgBestGeneration_Timeout = LineNumber.AVG_BEST_GENERATION_TIMEOUT.getNumVal();					
 
-					if (lineNum == lineNum_AvgBestGeneration) {
+					if (lineNum == LineNumber.NUM_LITERALS.getNumVal()) {
+						numLiterals = Integer.parseInt(line);
+					} else if (lineNum == LineNumber.NUM_CLAUSES.getNumVal()) {
+						numClauses = Integer.parseInt(line);
+					} else if (lineNum == lineNum_AvgBestGeneration) {
 						if (lineNum_AvgBestGeneration != NO_DATA) {
 							avgBestGeneration += Integer.parseInt(line);
 						}
@@ -235,9 +245,10 @@ public class AnalyzeResults {
 				}
 				bufferedReader.close();
 				
+				// Divide by number of files to get the average.
 				avgBestGeneration = avgBestGeneration / numNonTimeOutExperiments;
 				avgBestGeneration_TimeOut = avgBestGeneration_TimeOut / totalNumTimeOuts;
-				avgNumTimeOuts = totalNumTimeOuts / totalNumExperiments;
+				avgNumTimeOuts = totalNumTimeOuts / numExperiments;
 			}
 			catch(FileNotFoundException e) {
 				printFileNotFound(filePath);
@@ -245,18 +256,17 @@ public class AnalyzeResults {
 		}
 		
 		HashMap<String, String> values = parsedResults_GA.get(prob);
-		values.put(NUM_LITERALS, String.valueOf());
-		values.put(NUM_CLAUSES, getNumOfClauses(prob));
-		values.put(NUM_EXPERIMENTS, String.valueOf(getNumOfExperiments_GA(prob)));
-		values.put(BEST_EXECUTION_TIME, String.valueOf(bestExecutionTime_GA));
-		values.put(AVG_EXECUTION_TIME, String.valueOf(avgExecutionTime_GA));
+		values.put(NUM_LITERALS, String.valueOf(numLiterals));
+		values.put(NUM_CLAUSES, String.valueOf(numClauses));
+		values.put(NUM_EXPERIMENTS, String.valueOf(numExperiments));
+		values.put(BEST_EXECUTION_TIME, String.valueOf(bestExecutionTime));
+		values.put(AVG_EXECUTION_TIME, String.valueOf(avgExecutionTime));
 	}
 	
 	private void initializeValues_PBIL(String prob) throws IOException {
 	}
 	
 	/* 
-	private int numTimeOuts_GA;
 	private double bestPercentage_GA;
 	private double avgPercentage_GA;
 	private String parameterSettings_GA;
