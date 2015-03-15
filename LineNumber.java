@@ -5,7 +5,7 @@ public enum LineNumber {
 	PROBLEM_NAME(1),
 	// General info. about the problem.
 	NUM_TRIALS(6),
-	NUM_VARS(7),
+	NUM_LITERALS(7),
 	NUM_CLAUSES(8),
 	// Stats for non-timed out trials.
 	AVG_BEST_GENERATION(10),

@@ -6,29 +6,40 @@ import java.util.Map;
 
 public class AnalyzeResults {
 	
-	/* The factors we are considering.*/
+	/* Names of factors we are considering. */
 	private static final String NUM_LITERALS = "number of literals";
 	private static final String NUM_CLAUSES = "nuber of clauses";
-	private static final String NUM_EXPERIMENTS = "number of experiments"; // The number of experiments run on this problem.
-	private static final String NUM_TIMEOUTS = "total number of timeouts"; // The total number of timeouts on this problem. 
-	private static final String FASTEST_TIME = "fastest time"; // The fastest time the algorithm took to solve this problem.
-	private static final String AVG_TIME = "average time"; // The average time the algorithm took to solve this problem.
-	private static final String BEST_GENERATION = "best generation"; 
-	private static final String AVG_GENERATION = "average best generation";
-	private static final String BEST_PERCENTAGE = "best percentage"; // The best percentage of: clauses solved/clauses solved by best known algorithm.
-	private static final String AVG_PERCENTAGE = "average percentage"; // Percentage defined as above, but the average percentage.
-	private static final String PARAMETER_SETTINGS = "parameter settings"; // A list of parameter settings, comma-separated
+	private static final String NUM_EXPERIMENTS = "number of experiments"; // The number of different parameters used for this problem.
+	private static final String AVG_NUM_TIMEOUTS = "average number of timeouts"; // Average number of timeouts per experiment. 	
+	private static final String BEST_EXECUTION_TIME = "best execution time"; // The fastest time the algorithm took to solve this problem.
+	private static final String AVG_EXECUTION_TIME = "average execution time"; // The average time the algorithm took to solve this problem.
+	private static final String BEST_GENERATION = "best generation"; // The generation the algorithm found the best solution.    
+	private static final String AVG_BEST_GENERATION = "average best generation";  // Average of best generations over all non-timed out trials.
+	private static final String BEST_GENERATION_TIMEOUT = "best generation timeout"; // Same as above but for timed out trials.
+	private static final String AVG_BEST_GENERATION_TIMEOUT = "average best generation timeout"; // Same as above but for timed out trials.
+	/* NOTE: 
+	 * Percentage defined as: clauses solved/clauses solved by best known algorithm. */
+	private static final String BEST_PERCENTAGE = "best percentage"; 
+	private static final String AVG_PERCENTAGE = "average percentage"; 
+	/* A list of parameter settings, comma-separated. 
+	 * Order - GA:
+	 * Order - PBIL:
+	 * */
+	private static final String PARAMETER_SETTINGS = "parameter settings"; 
 	
 	
+	/* Actual values of factors we are considering. */
 	private int numLiterals;
 	private int numClauses;
 	// GA
 	private int numExperiments_GA;
 	private int numTimeOuts_GA;
-	private long fastestTime_GA;
-	private long avgTime_GA;
+	private long bestExecutionTime_GA;
+	private long avgExecutionTime_GA;
 	private int bestGeneration_GA;
-	private int avgGeneration_GA;
+	private int bestGeneration_TimeOut_GA;
+	private int avgBestGeneration_GA;
+	private int avgBestGeneration_TimeOut_GA;
 	private double bestPercentage_GA;
 	private double avgPercentage_GA;
 	private String parameterSettings_GA;
@@ -44,12 +55,10 @@ public class AnalyzeResults {
 	private String parameterSettings_PBIL;
 	
 	
-	// A list of the names of MAXSAT problems.
-	String[] MAXSATProblems = TestController.files;
-	// Path of source folder that contains all the results.
-	String folderPath = "Combined_Results";
-	// A list of all the result files.
-	File[] resultsFiles = new File(folderPath).listFiles();
+	/* Files */
+	String[] MAXSATProblems = TestController.files; 		// A list of the names of MAXSAT problems.
+	String folderPath = "Combined_Results"; 				// Path of source folder that contains all the results.
+	File[] resultsFiles = new File(folderPath).listFiles(); // A list of all the result files.
 	
 	/* HashMap<String, HashMap> for GA to store information on each problem for quick lookup.
 	 * KEY- String: Name of MAXSAT problem.
@@ -69,7 +78,16 @@ public class AnalyzeResults {
 
 	// Constructor.
 	public AnalyzeResults() throws IOException {
+		// Sort the files.
 		groupFilesByProblemName();
+		
+		// Initialize the values for the factors we are considering.
+		for (int i = 0; i < MAXSATProblems.length; i++) {
+			initializeValues_GA(MAXSATProblems[i]);
+			initializeValues_PBIL(MAXSATProblems[i]);
+		}
+		
+		// Push values to HashMaps.
 		analyzeResults_GA();
 		analyzeResults_PBIL();
 	}
@@ -135,6 +153,58 @@ public class AnalyzeResults {
 		System.out.println("Unable to open file '" + path + "'");
 	}
 	
+	// Return the number of literals for this problem.
+	private String getNumOfLiterals(String prob) throws IOException {
+		String filePath = filesGroupedByProblem.get(prob).get(0);
+		String numLiterals = "";
+		try {
+			BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
+			for (int i = 0; i < LineNumber.NUM_LITERALS.getNumVal(); i++) {
+				bufferedReader.readLine();
+			}
+			numLiterals = bufferedReader.readLine();
+			bufferedReader.close();
+			
+		}
+		catch (FileNotFoundException e) {
+			printFileNotFound(filePath);
+		}
+		return numLiterals;
+		
+	}	
+	
+	// Return the number of clauses for this problem.
+	private String getNumOfClauses(String prob) throws IOException {
+		String filePath = filesGroupedByProblem.get(prob).get(0);
+		String numClauses = "";
+		try {
+			BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
+			for (int i = 0; i < LineNumber.NUM_CLAUSES.getNumVal(); i++) {
+				bufferedReader.readLine();
+			}
+			numClauses = bufferedReader.readLine();
+			bufferedReader.close();
+			
+		}
+		catch (FileNotFoundException e) {
+			printFileNotFound(filePath);
+		}
+		return numClauses;
+		
+	}
+	
+	// Return the number of experiments run on this problem for GA.
+	private String getNumOfExperiments_GA(String prob) {
+		int num = 0;
+		return String.valueOf(num);
+	}
+	 
+	// Return the number of experiments run on this problem for PBIL.
+	private String getNumOfExperiments_PBIL(String prob) {
+		int num = 0;
+		return String.valueOf(num);
+	}
+	
 	// Group all the results file paths by problem name to allow fast look up.
 	private void groupFilesByProblemName() throws IOException {
 		for (File file : resultsFiles) {
@@ -169,11 +239,11 @@ public class AnalyzeResults {
 			parsedResults_GA.put(problem, new HashMap<String, String>());
 			
 			HashMap<String, String> values = parsedResults_GA.get(problem);
-			values.put(NUM_LITERALS, String.valueOf(numLiterals));
-			values.put(NUM_CLAUSES, String.valueOf(numClauses));
+			values.put(NUM_LITERALS, getNumOfLiterals(problem));
+			values.put(NUM_CLAUSES, getNumOfClauses(problem));
 			values.put(NUM_EXPERIMENTS, String.valueOf(numExperiments_GA));
-			values.put(FASTEST_TIME, String.valueOf(fastestTime_GA));
-			values.put(AVG_TIME, String.valueOf(avgTime_GA));
+			values.put(BEST_EXECUTION_TIME, String.valueOf(bestExecutionTime_GA));
+			values.put(AVG_EXECUTION_TIME, String.valueOf(avgExecutionTime_GA));
 		}
 	}
 	
@@ -181,25 +251,8 @@ public class AnalyzeResults {
 	private void analyzeResults_PBIL() {
 		
 	}
-	
-	// Return the number of literals for this problem.
-//	private void getNumOfLiteralsAndClauses(String prob) throws IOException {
-//		String filePath = filesGroupedByProblem.get(prob).get(0);
-//		try {
-//			BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
-//			for (int i = 0; i < LineNumber.NUM_VARS.getNumVal(); i++) {
-//				bufferedReader.readLine();
-//			}
-//			numLiterals = bufferedReader.readLine();
-//			numClauses = bufferedReader.readLine();
-//			bufferedReader.close();
-//			
-//		}
-//		catch (FileNotFoundException e) {
-//			printFileNotFound(filePath);
-//		}
-//	}	
-	// The number of experiments run on this problem
+
+	// 
 	private void initializeValues_GA(String prob) throws IOException {
 		ArrayList<String> files = filesGroupedByProblem.get(prob);
 		for (int i = 0; i< files.size(); i++) {
@@ -209,12 +262,13 @@ public class AnalyzeResults {
 				String line;
 				int lineNum = 1;
 				while ((line = bufferedReader.readLine()) != null) {
-					if (lineNum == LineNumber.NUM_VARS.getNumVal()) {
+					if (lineNum == LineNumber.NUM_LITERALS.getNumVal()) {
 						numLiterals = Integer.parseInt(line);
 					} else if (lineNum == LineNumber.NUM_CLAUSES.getNumVal()) {
 						numClauses = Integer.parseInt(line);
 					} else if (lineNum == LineNumber.AVG_BEST_GENERATION.getNumVal()) {
-						avgGeneration_GA += Integer.parseInt(line);
+						// TODO: divide by number of files.
+						avgBestGeneration_GA += Integer.parseInt(line);
 					} else if (lineNum == LineNumber.BEST_GENERATION.getNumVal()) {
 						int currentBestGeneration = Integer.parseInt(line);
 						if (currentBestGeneration < bestGeneration_GA) {
@@ -225,10 +279,20 @@ public class AnalyzeResults {
 					} else if (lineNum == LineNumber.FEWEST_UNSAT_CLAUSES.getNumVal()) {
 						// TODO
 					} else if (lineNum == LineNumber.AVG_EXECUTION_TIME.getNumVal()) {
-						avgTime_GA +=
+						// TODO: divide by number of files
+						avgExecutionTime_GA += Long.parseLong(line);
+					} else if (lineNum == LineNumber.BEST_EXECUTION_TIME.getNumVal()) {
+						long currentExecutionTime = Long.parseLong(line);
+						if (currentExecutionTime < bestExecutionTime_GA) {
+							bestExecutionTime_GA = currentExecutionTime; 
+						}
 					}
 					lineNum++;
 				}
+				bufferedReader.close();
+				
+				// Number of experiments (i.e. different parameter settings) ran on this problem.
+				numExperiments_GA = Integer.parseInt(getNumOfExperiments_GA(prob));
 			}
 			catch(FileNotFoundException e) {
 				printFileNotFound(filePath);
@@ -236,42 +300,13 @@ public class AnalyzeResults {
 		}
 	}
 	
-	private String getNumOfExperiments_PBIL(String prob) {
-		int num = 0;
-		return String.valueOf(num);
+	private void initializeValues_PBIL(String prob) throws IOException {
 	}
 	
-	// 
-	private String getFastestTime_GA(String prob) {
-		long fastest = Long.MAX_VALUE;
-		ArrayList<String> filePaths = filesGroupedByProblem.get(prob);
-		for(String filePath : filePaths) {
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
-			for (int i = 0; i < )
-			if () {
-				
-			}
-		}
-		
-		
-		return String.valueOf(fastest);
-	}
-	
-	private String getFastestTime_PBIL(String prob) {
-		long fastest = Long.MAX_VALUE;
-		
-		return String.valueOf(fastest);
-	}
-	
-	private String getAverageTime_GA(String prob) {
-		long average = 0;
-		
-		return String.valueOf(average);
-	}
-	
-	private String getAverageTime_PBIL(String prob) {
-		long average = 0;
-		
-		return String.valueOf(average);
-	}
+	/* 
+	private int numTimeOuts_GA;
+	private double bestPercentage_GA;
+	private double avgPercentage_GA;
+	private String parameterSettings_GA;
+	 */
 }
