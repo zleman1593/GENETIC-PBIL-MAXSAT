@@ -19,34 +19,20 @@ public class AnalyzeResults {
 	private static final String AVG_EXECUTION_TIME = "average execution time"; // The average time the algorithm took to solve this problem.
 	private static final String BEST_GENERATION = "best generation"; // The generation the algorithm found the best solution.    
 	private static final String AVG_BEST_GENERATION = "average best generation";  // Average of best generations over all non-timed out trials.
-	private static final String BEST_GENERATION_TIMEOUT = "best generation timeout"; // Same as above but for timed out trials.
-	private static final String AVG_BEST_GENERATION_TIMEOUT = "average best generation timeout"; // Same as above but for timed out trials.
+	private static final String BEST_GENERATION_TIMEOUT = "best generation for timeouts"; // Same as above but for timed out trials.
+	private static final String AVG_BEST_GENERATION_TIMEOUT = "average best generation for timeout"; // Same as above but for timed out trials.
 	/* NOTE: 
 	 * Percentage defined as: clauses solved/clauses solved by best known algorithm. */
 	private static final String BEST_PERCENTAGE = "best percentage"; 
+	private static final String BEST_PERCENTAGE_TIMEOUT = "best percentage for timeouts"; 
 	private static final String AVG_PERCENTAGE = "average percentage"; 
+	private static final String AVG_PERCENTAGE_TIMEOUT = "average percentage for timeouts"; 
 	/* A list of parameter settings, comma-separated. 
 	 * Order - GA:
 	 * Order - PBIL:
 	 * */
 	private static final String PARAMETER_SETTINGS = "parameter settings"; 
 	private static final int NO_DATA = -1;
-	
-	/* Actual values of factors we are considering. */
-	private int numLiterals;
-	private int numClauses;
-	// GA
-	
-	// PBIL
-	private int numExperiments_PBIL;
-	private int numTimeOuts_PBIL;
-	private long fastestTime_PBIL;
-	private long avgTime_PBIL;
-	private int bestGeneration_PBIL;
-	private int avgGeneration_PBIL;
-	private double bestPercentage_PBIL;
-	private double avgPercentage_PBIL;
-	private String parameterSettings_PBIL;
 	
 	/* Files */
 	String[] MAXSATProblems = TestController.files; 		// A list of the names of MAXSAT problems.
@@ -78,8 +64,8 @@ public class AnalyzeResults {
 		initializeHashMaps();
 		// Fill in HashMap values.
 		for (int i = 0; i < MAXSATProblems.length; i++) {
-			analyzeResults_GA(MAXSATProblems[i]);
-			analyzeResults_PBIL(MAXSATProblems[i]);
+			analyzeResults(MAXSATProblems[i], "GA");
+			analyzeResults(MAXSATProblems[i], "PBIL");
 		}
 	}
 	
@@ -164,7 +150,7 @@ public class AnalyzeResults {
 	}
 	
 	// Run analysis and fill in values for the HashMaps.
-	private void analyzeResults_GA(String prob, String algorithm) throws IOException {
+	private void analyzeResults(String prob, String algorithm) throws IOException {
 		ArrayList<String> files;
 		if (algorithm.equalsIgnoreCase("GA")) {
 			files = filesGroupedByProblem_GA.get(prob);
@@ -176,12 +162,11 @@ public class AnalyzeResults {
 
 		// Stats that help.
 		int numExperiments = files.size();
-		int numNonTimeOutExperiments = numExperiments;
 		int totalNumTimeOuts = 0;
 		// Factors we care about.
 		int numLiterals = 0;
 		int numClauses = 0;
-		int avgNumTimeOuts = 0;
+		int avgNumTimeOuts = 0; // per file/experiment
 		long bestExecutionTime =  Long.MAX_VALUE;
 		long avgExecutionTime = 0;
 		int bestGeneration = Integer.MAX_VALUE;
@@ -189,7 +174,9 @@ public class AnalyzeResults {
 		int avgBestGeneration = 0;
 		int avgBestGeneration_TimeOut = 0;
 		double bestPercentage = Double.MAX_VALUE;
+		double bestPercentage_TimeOut = Double.MAX_VALUE;
 		double avgPercentage = 0.0;
+		double avgPercentage_TimeOut = 0.0;
 		String parameterSettings;
 		
 		// Iterate through all files associated with this problem.
@@ -231,7 +218,6 @@ public class AnalyzeResults {
 					} else if (lineNum == LineNumber.FEWEST_UNSAT_CLAUSES.getNumVal()) {
 						// TODO
 					} else if (lineNum == LineNumber.AVG_EXECUTION_TIME.getNumVal()) {
-						// TODO: divide by number of files
 						avgExecutionTime += Long.parseLong(line);
 					} else if (lineNum == LineNumber.BEST_EXECUTION_TIME.getNumVal()) {
 						long currentExecutionTime = Long.parseLong(line);
@@ -239,39 +225,44 @@ public class AnalyzeResults {
 							bestExecutionTime = currentExecutionTime; 
 						}
 					} else if (lineNum == LineNumber.NUM_TIMEOUTS.getNumVal()) {
-						totalNumTimeOuts++;
+						totalNumTimeOuts += LineNumber.NUM_TIMEOUTS.getNumVal();
 					}
 					lineNum++;
 				}
 				bufferedReader.close();
 				
+				int totalNumNonTimeOutTrials = LineNumber.NUM_TRIALS.getNumVal() * numExperiments - totalNumTimeOuts;
 				// Divide by number of files to get the average.
-				avgBestGeneration = avgBestGeneration / numNonTimeOutExperiments;
+				avgBestGeneration = avgBestGeneration / totalNumNonTimeOutTrials;
 				avgBestGeneration_TimeOut = avgBestGeneration_TimeOut / totalNumTimeOuts;
 				avgNumTimeOuts = totalNumTimeOuts / numExperiments;
+				avgPercentage = avgPercentage / (double) totalNumNonTimeOutTrials;
+				avgPercentage_TimeOut = avgPercentage_TimeOut / (double) totalNumTimeOuts;
+				
+				HashMap<String, String> values = parsedResults_GA.get(prob);
+				values.put(NUM_LITERALS, String.valueOf(numLiterals));
+				values.put(NUM_CLAUSES, String.valueOf(numClauses));
+				values.put(NUM_EXPERIMENTS, String.valueOf(numExperiments));
+				values.put(AVG_NUM_TIMEOUTS, String.valueOf(avgNumTimeOuts));
+				values.put(BEST_EXECUTION_TIME, String.valueOf(bestExecutionTime));
+				values.put(AVG_EXECUTION_TIME, String.valueOf(avgExecutionTime));
+				values.put(BEST_GENERATION, String.valueOf(bestGeneration));
+				values.put(BEST_GENERATION_TIMEOUT, String.valueOf(bestGeneration_TimeOut));
+				values.put(AVG_BEST_GENERATION, String.valueOf(avgBestGeneration));
+				values.put(AVG_BEST_GENERATION_TIMEOUT, String.valueOf(avgBestGeneration_TimeOut));
+				values.put(BEST_PERCENTAGE, String.valueOf(bestPercentage));
+				values.put(BEST_PERCENTAGE_TIMEOUT, String.valueOf(bestPercentage_TimeOut));
+				values.put(AVG_PERCENTAGE, String.valueOf(avgPercentage));
+				values.put(AVG_PERCENTAGE_TIMEOUT, String.valueOf(avgPercentage_TimeOut));
+				
+				/* String parameterSettings; */
 			}
 			catch(FileNotFoundException e) {
 				printFileNotFound(filePath);
 			}
 		}
+	}
 		
-		HashMap<String, String> values = parsedResults_GA.get(prob);
-		values.put(NUM_LITERALS, String.valueOf(numLiterals));
-		values.put(NUM_CLAUSES, String.valueOf(numClauses));
-		values.put(NUM_EXPERIMENTS, String.valueOf(numExperiments));
-		values.put(BEST_EXECUTION_TIME, String.valueOf(bestExecutionTime));
-		values.put(AVG_EXECUTION_TIME, String.valueOf(avgExecutionTime));
-	}
-	
-	private void initializeValues_PBIL(String prob) throws IOException {
-	}
-	
-	/* 
-	private double bestPercentage_GA;
-	private double avgPercentage_GA;
-	private String parameterSettings_GA;
-	 */
-	
 	// Find out which problems are unused, if any, because of some unfinished experiments.
 	public void printUnusedProblems() throws IOException {
 		HashSet<String> setOfUsedProblems = new HashSet<String>();
