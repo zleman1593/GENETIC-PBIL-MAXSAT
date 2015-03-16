@@ -321,6 +321,13 @@ public class AnalyzeResults {
 				values.put(AVG_PERCENTAGE, String.valueOf(avgPercentage));
 				values.put(AVG_PERCENTAGE_TIMEOUT, String.valueOf(avgPercentage_TimeOut));
 				values.put(PARAMETER_SETTINGS, parameterSettings);
+				
+				// Push HashMaps to Vectors.
+				if (algorithm.equalsIgnoreCase("GA")) {
+					parsedResults_GA.put(prob, values);
+				} else {
+					parsedResults_PBIL.put(prob, values);
+				}
 			}
 			catch(FileNotFoundException e) {
 				printFileNotFound(filePath);
