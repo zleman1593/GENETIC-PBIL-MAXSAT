@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java. util.HashMap;
 
@@ -73,10 +74,11 @@ public class AnalyzeResults {
 	
 	// Initialize with problem names.
 	private void initializeHashMaps() {
-		for (int i = 0; i < MAXSATProblems.length; i++) {
-			String prob = MAXSATProblems[i];
-			parsedResults_GA.put(prob, new HashMap<String, String>());
-			parsedResults_PBIL.put(prob, new HashMap<String, String>());
+		for (String problem : filesGroupedByProblem_GA.keySet()) {
+			parsedResults_GA.put(problem, new HashMap<String, String>());
+		}
+		for (String problem : filesGroupedByProblem_PBIL.keySet()) {
+			parsedResults_PBIL.put(problem, new HashMap<String, String>());
 		}
 	}
 	
@@ -94,7 +96,7 @@ public class AnalyzeResults {
 	private String getProblemName(String line) {
 		int fileNameStartIndex = line.indexOf(":") + 1;
 		String problemFileName = (line.substring(fileNameStartIndex));
-		return problemFileName;
+		return problemFileName.trim();
 	}
 	
 	// Helper method: Return path to specified file.
@@ -154,18 +156,19 @@ public class AnalyzeResults {
 	// Run analysis and fill in values for the HashMaps.
 	private void analyzeResults(String prob, String algorithm) throws IOException {
 		ArrayList<String> files;
+		int numExperiments;
 		if (algorithm.equalsIgnoreCase("GA")) {
 			files = filesGroupedByProblem_GA.get(prob);
+			numExperiments = filesGroupedByProblem_GA.keySet().size();
 		} else if (algorithm.equalsIgnoreCase("PBIL")) {
-			files = filesGroupedByProblem_GA.get(prob);
+			files = filesGroupedByProblem_PBIL.get(prob);
+			numExperiments = filesGroupedByProblem_PBIL.keySet().size();
 		} else {
 			throw new InvalidParameterException("Invalid algorithm name.");
 		}
 
-		// Stats that help.
-		int numExperiments = files.size();
-		int totalNumTimeOuts = 0;
 		// Factors we care about.
+		int totalNumTimeOuts = 0;
 		int numLiterals = 0;
 		int numClauses = 0;
 		long bestExecutionTime =  Long.MAX_VALUE;
@@ -181,7 +184,7 @@ public class AnalyzeResults {
 		String parameterSettings = null;
 		
 		// Iterate through all files associated with this problem.
-		for (int i = 0; i< numExperiments; i++) {
+		for (int i = 0; i < files.size(); i++) {
 			String filePath = files.get(i);
 			try {
 				BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
@@ -271,23 +274,37 @@ public class AnalyzeResults {
 				}
 				bufferedReader.close();
 				
+				// Get values and other info.
 				int totalNumNonTimeOutTrials = LineNumber.NUM_TRIALS.getNumVal() * numExperiments - totalNumTimeOuts;
-				double bestKnownNumUnsatClauses = (double)MAXSATSolutions[i];
-
-				int avgBestGeneration = totalBestGeneration / totalNumNonTimeOutTrials;
-				int avgBestGeneration_TimeOut = totalBestGeneration_TimeOut / totalNumTimeOuts;
+				int index = Arrays.asList(MAXSATProblems).indexOf(prob);
+				int bestKnownNumUnsatClauses = MAXSATSolutions[index];
 				int avgNumTimeOuts = totalNumTimeOuts / numExperiments;
 				long avgExecutionTime = totalExecutionTime / (long) numExperiments;
-				double avgPercentage = (double)totalUnsatClauses / (double)totalNumNonTimeOutTrials / (double)bestKnownNumUnsatClauses;
-				double avgPercentage_TimeOut = (double)totalUnsatClauses_TimeOut / (double)totalNumTimeOuts / (double)bestKnownNumUnsatClauses;
-				double bestPercentage = (double)fewestUnsatClauses / (double)bestKnownNumUnsatClauses;
-				double bestPercentage_TimeOut = (double)fewestUnsatClauses_TimeOut / (double)bestKnownNumUnsatClauses;
+				// Values to be calculated.
+				int avgBestGeneration = NO_DATA;
+				int avgBestGeneration_TimeOut = NO_DATA; 
+				double avgPercentage = NO_DATA;
+				double avgPercentage_TimeOut = NO_DATA;
+				double bestPercentage = NO_DATA;
+				double bestPercentage_TimeOut = NO_DATA;
+				// Calculations.
+				if (totalNumNonTimeOutTrials > 0) {
+					avgBestGeneration = totalBestGeneration / totalNumNonTimeOutTrials;
+				}
+				if (totalNumTimeOuts > 0) {
+					avgBestGeneration_TimeOut = totalBestGeneration_TimeOut / totalNumTimeOuts;
+				}
+				
+				if (bestKnownNumUnsatClauses > 0) {
+					avgPercentage = (double)totalUnsatClauses / (double)totalNumNonTimeOutTrials / (double)bestKnownNumUnsatClauses;
+					avgPercentage_TimeOut = (double)totalUnsatClauses_TimeOut / (double)totalNumTimeOuts / (double)bestKnownNumUnsatClauses;
+					bestPercentage = (double)fewestUnsatClauses / (double)bestKnownNumUnsatClauses;
+					bestPercentage_TimeOut = (double)fewestUnsatClauses_TimeOut / (double)bestKnownNumUnsatClauses;
+				}
 				
 				// Push values to HashMap.
 				HashMap<String, String> values = parsedResults_GA.get(prob);
-				
-				// DEBUGGING
-				
+				values = new HashMap<String, String>();
 				
 				values.put(NUM_LITERALS, String.valueOf(numLiterals));
 				values.put(NUM_CLAUSES, String.valueOf(numClauses));
@@ -345,3 +362,5 @@ public class AnalyzeResults {
 		}
 	}
 }
+
+
