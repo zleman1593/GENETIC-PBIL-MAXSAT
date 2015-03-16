@@ -63,9 +63,11 @@ public class AnalyzeResults {
 		// Initialize.
 		initializeHashMaps();
 		// Fill in HashMap values.
-		for (int i = 0; i < MAXSATProblems.length; i++) {
-			analyzeResults(MAXSATProblems[i], "GA");
-			analyzeResults(MAXSATProblems[i], "PBIL");
+		for (String problem : filesGroupedByProblem_GA.keySet()) {
+			analyzeResults(problem, "GA");
+		}
+		for (String problem : filesGroupedByProblem_PBIL.keySet()) {
+			analyzeResults(problem, "PBIL");
 		}
 	}
 	
@@ -120,10 +122,6 @@ public class AnalyzeResults {
 				}
 				String algorithm = bufferReader.readLine();
 				isGA  = algorithm.endsWith("GA") ? true : false;
-				
-				// DEBUGGING
-				System.out.println("Algorithm line: " +  algorithm);
-				
 				bufferReader.close();
 				
 				// Add file to HashMap.
@@ -287,6 +285,10 @@ public class AnalyzeResults {
 				
 				// Push values to HashMap.
 				HashMap<String, String> values = parsedResults_GA.get(prob);
+				
+				// DEBUGGING
+				
+				
 				values.put(NUM_LITERALS, String.valueOf(numLiterals));
 				values.put(NUM_CLAUSES, String.valueOf(numClauses));
 				values.put(NUM_EXPERIMENTS, String.valueOf(numExperiments));
