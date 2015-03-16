@@ -69,6 +69,15 @@ public class AnalyzeResults {
 		}
 	}
 	
+	// Initialize with problem names.
+	private void initializeHashMaps() {
+		for (int i = 0; i < MAXSATProblems.length; i++) {
+			String prob = MAXSATProblems[i];
+			parsedResults_GA.put(prob, new HashMap<String, String>());
+			parsedResults_PBIL.put(prob, new HashMap<String, String>());
+		}
+	}
+	
 	// Getter method: Return parsed results for GA in a HashMap.
 	public HashMap<String, HashMap<String, String>>  getParsedResults_GA() {
 		return parsedResults_GA;
@@ -77,15 +86,6 @@ public class AnalyzeResults {
 	// Getter method: Return parsed results for PBIL in a HashMap.
 	public HashMap<String, HashMap<String, String>>  getParsedResults_PBIL() {
 		return parsedResults_PBIL;
-	}
-	
-	// Initialize with problem names.
-	private void initializeHashMaps() {
-		for (int i = 0; i < MAXSATProblems.length; i++) {
-			String prob = MAXSATProblems[i];
-			parsedResults_GA.put(prob, new HashMap<String, String>());
-			parsedResults_PBIL.put(prob, new HashMap<String, String>());
-		}
 	}
 	
 	// Helper method: Strip the "File:" and get the actual name of file.
@@ -120,6 +120,10 @@ public class AnalyzeResults {
 				}
 				String algorithm = bufferReader.readLine();
 				isGA  = algorithm.endsWith("GA") ? true : false;
+				
+				// DEBUGGING
+				System.out.println("Algorithm line: " +  algorithm);
+				
 				bufferReader.close();
 				
 				// Add file to HashMap.
@@ -166,7 +170,7 @@ public class AnalyzeResults {
 		// Factors we care about.
 		int numLiterals = 0;
 		int numClauses = 0;
-		int avgNumTimeOuts = 0; // per file/experiment
+		int avgNumTimeOuts = 0; // on average per experiment
 		long bestExecutionTime =  Long.MAX_VALUE;
 		long avgExecutionTime = 0;
 		int bestGeneration = Integer.MAX_VALUE;
@@ -188,30 +192,29 @@ public class AnalyzeResults {
 				int lineNum = 1;
 				
 				while ((line = bufferedReader.readLine()) != null) {
-					int lineNum_AvgBestGeneration = LineNumber.AVG_BEST_GENERATION.getNumVal();
-					int lineNum_AvgBestGeneration_Timeout = LineNumber.AVG_BEST_GENERATION_TIMEOUT.getNumVal();					
-
 					if (lineNum == LineNumber.NUM_LITERALS.getNumVal()) {
 						numLiterals = Integer.parseInt(line);
 					} else if (lineNum == LineNumber.NUM_CLAUSES.getNumVal()) {
 						numClauses = Integer.parseInt(line);
-					} else if (lineNum == lineNum_AvgBestGeneration) {
-						if (lineNum_AvgBestGeneration != NO_DATA) {
-							avgBestGeneration += Integer.parseInt(line);
+					} else if (lineNum == LineNumber.AVG_BEST_GENERATION.getNumVal()) {
+						int data = Integer.parseInt(line);
+						if (data != NO_DATA) {
+							avgBestGeneration += data;
 						}
-					} else if (lineNum == lineNum_AvgBestGeneration_Timeout) {
-						if (lineNum_AvgBestGeneration_Timeout != NO_DATA) {
-							lineNum_AvgBestGeneration_Timeout += Integer.parseInt(line);
+					} else if (lineNum == LineNumber.AVG_BEST_GENERATION_TIMEOUT.getNumVal()) {
+						int data = Integer.parseInt(line);
+						if (data != NO_DATA) {
+							avgBestGeneration_TimeOut += data;
 						}
 					} else if (lineNum == LineNumber.BEST_GENERATION.getNumVal()) {
-						int currentBestGeneration = Integer.parseInt(line);
-						if (currentBestGeneration < bestGeneration) {
-							bestGeneration = currentBestGeneration;
+						int current= Integer.parseInt(line);
+						if (current < bestGeneration) {
+							bestGeneration = current;
 						}
 					} else if (lineNum == LineNumber.BEST_GENERATION_TIMEOUT.getNumVal()) {
-						int currentBestGeneration = Integer.parseInt(line);
-						if (currentBestGeneration < bestGeneration_TimeOut) {
-							bestGeneration_TimeOut = currentBestGeneration;
+						int current = Integer.parseInt(line);
+						if (current < bestGeneration_TimeOut) {
+							bestGeneration_TimeOut = current;
 						} 
 					} else if (lineNum == LineNumber.AVG_UNSAT_CLAUSES.getNumVal()) {
 						// TODO 
