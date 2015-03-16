@@ -3,7 +3,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,17 +21,18 @@ public class AnalyzeResults {
 	private static final String BEST_GENERATION_TIMEOUT = "best generation for timeouts"; // Same as above but for timed out trials.
 	private static final String AVG_BEST_GENERATION_TIMEOUT = "average best generation for timeout"; // Same as above but for timed out trials.
 	/* NOTE: 
-	 * Percentage defined as: clauses solved/clauses solved by best known algorithm. */
+	 * Percentage defined as: clauses solved/clauses solved by best known algorithm. 
+	 * */
 	private static final String BEST_PERCENTAGE = "best percentage"; 
 	private static final String BEST_PERCENTAGE_TIMEOUT = "best percentage for timeouts"; 
 	private static final String AVG_PERCENTAGE = "average percentage"; 
 	private static final String AVG_PERCENTAGE_TIMEOUT = "average percentage for timeouts"; 
 	/* A list of parameter settings, comma-separated. 
-	 * Order - GA:
-	 * Order - PBIL:
+	 * GA order: population size, selection type, crossover type, crossover probability, mutation probability.
+	 * PBIL order: population size, learning rate, negative learning rate, mutation probability, mutation shift.
 	 * */
 	private static final String PARAMETER_SETTINGS = "parameter settings"; 
-	private static final int NO_DATA = -1;
+	private static final int NO_DATA = -1; // When data is not recorded because the algorithm timed out.
 	
 	/* Files */
 	String[] MAXSATProblems = TestController.files; 		// A list of the names of MAXSAT problems.
@@ -59,11 +59,11 @@ public class AnalyzeResults {
 
 	// Constructor.
 	public AnalyzeResults() throws IOException {
-		// Sort the files.
+		// Sort files by problem name for each algorithm.
 		groupFilesByProblem();
-		// Initialize.
+		// Initialize parsed results.
 		initializeHashMaps();
-		// Fill in HashMap values.
+		// Parse results.
 		for (String problem : filesGroupedByProblem_GA.keySet()) {
 			analyzeResults(problem, "GA");
 		}
@@ -92,10 +92,10 @@ public class AnalyzeResults {
 		return parsedResults_PBIL;
 	}
 	
-	// Helper method: Strip the "File:" and get the actual name of file.
+	// Helper method: Strip the word "File:" and get the actual name of file without spaces.
 	private String getProblemName(String line) {
 		int fileNameStartIndex = line.indexOf(":") + 1;
-		String problemFileName = (line.substring(fileNameStartIndex));
+		String problemFileName = line.substring(fileNameStartIndex);
 		return problemFileName.trim();
 	}
 	
@@ -104,49 +104,38 @@ public class AnalyzeResults {
 		return folderPath + "/" + file.getName();
 	}
 	
-	// Helper method: File not found error.
+	// Helper method: Print file not found error.
 	private void printFileNotFound(String path) {
 		System.out.println("Unable to open file '" + path + "'");
 	}
 			
-	// Group all the results file paths by problem name to allow fast look up.
+	// Group all the result file paths by problem name for fast look up.
 	private void groupFilesByProblem() throws IOException {
 		for (File file : resultsFiles) {
 			String filePath = getFilePath(file);
 			boolean isGA = true;
 			try {
 				// Read problem name.
-				BufferedReader bufferReader = new BufferedReader(new FileReader(filePath));
-				String problemName = getProblemName(bufferReader.readLine());
-				
+				BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
+				String problemName = getProblemName(bufferedReader.readLine());
+				// Let buffered reader proceed until we reach the desired line.
 				for (int i = 2; i < LineNumber.ALGORITHM_SETTING.getNumVal(); i++) {
-					bufferReader.readLine();
+					bufferedReader.readLine();
 				}
-				String algorithm = bufferReader.readLine();
+				String algorithm = bufferedReader.readLine();
 				isGA  = algorithm.endsWith("GA") ? true : false;
-				bufferReader.close();
+				bufferedReader.close();
 				
-				// Add file to HashMap.
+				HashMap<String, ArrayList<String>> listOfProblems = isGA ? filesGroupedByProblem_GA : filesGroupedByProblem_PBIL; 
 				ArrayList<String> listOfFiles;
-				if (isGA) { 
-					// Add to the list of files for GA.
-					if (filesGroupedByProblem_GA.containsKey(problemName)) {
-						listOfFiles = filesGroupedByProblem_GA.get(problemName);
-						listOfFiles.add(filePath);
-					} else {
-						listOfFiles = new ArrayList<String>();
-					}
-					filesGroupedByProblem_GA.put(problemName, listOfFiles);
+				if (listOfProblems.containsKey(problemName)) {
+					listOfFiles = listOfProblems.get(problemName);
+					listOfFiles.add(filePath);
 				} else {
-					// Add to the list of files for PBIL.
-					if (filesGroupedByProblem_PBIL.containsKey(problemName)) {
-						listOfFiles = filesGroupedByProblem_PBIL.get(problemName);
-						listOfFiles.add(filePath);
-					} else {
-						listOfFiles = new ArrayList<String>();
-					}
-					filesGroupedByProblem_PBIL.put(problemName, listOfFiles);
+					listOfFiles = new ArrayList<String>();
 				}
+				// Push to map.
+				listOfProblems.put(problemName, listOfFiles);
 			} catch (FileNotFoundException e) {
 				printFileNotFound(filePath);
 			}
@@ -160,14 +149,12 @@ public class AnalyzeResults {
 		if (algorithm.equalsIgnoreCase("GA")) {
 			files = filesGroupedByProblem_GA.get(prob);
 			numExperiments = filesGroupedByProblem_GA.keySet().size();
-		} else if (algorithm.equalsIgnoreCase("PBIL")) {
+		} else {
 			files = filesGroupedByProblem_PBIL.get(prob);
 			numExperiments = filesGroupedByProblem_PBIL.keySet().size();
-		} else {
-			throw new InvalidParameterException("Invalid algorithm name.");
 		}
 
-		// Factors we care about.
+		// Factors we are considering.
 		int totalNumTimeOuts = 0;
 		int numLiterals = 0;
 		int numClauses = 0;
@@ -177,11 +164,11 @@ public class AnalyzeResults {
 		int bestGeneration_TimeOut = Integer.MAX_VALUE;
 		int totalBestGeneration = 0;
 		int totalBestGeneration_TimeOut = 0;
-		double totalUnsatClauses = 0.0;
-		double totalUnsatClauses_TimeOut = 0.0;
-		double fewestUnsatClauses = Double.MAX_VALUE;
-		double fewestUnsatClauses_TimeOut = Double.MAX_VALUE;
-		String parameterSettings = null;
+		int fewestUnsatClauses = Integer.MAX_VALUE;
+		int fewestUnsatClauses_TimeOut = Integer.MAX_VALUE;
+		int totalUnsatClauses = 0;
+		int totalUnsatClauses_TimeOut = 0;
+		String parameterSettings = "";
 		
 		// Iterate through all files associated with this problem.
 		for (int i = 0; i < files.size(); i++) {
@@ -276,18 +263,18 @@ public class AnalyzeResults {
 				
 				// Get values and other info.
 				int totalNumNonTimeOutTrials = LineNumber.NUM_TRIALS.getNumVal() * numExperiments - totalNumTimeOuts;
-				int index = Arrays.asList(MAXSATProblems).indexOf(prob);
-				int bestKnownNumUnsatClauses = MAXSATSolutions[index];
 				int avgNumTimeOuts = totalNumTimeOuts / numExperiments;
 				long avgExecutionTime = totalExecutionTime / (long) numExperiments;
-				// Values to be calculated.
+				int solutionIndex = Arrays.asList(MAXSATProblems).indexOf(prob);
+				int bestKnownNumUnsatClauses = MAXSATSolutions[solutionIndex];
+				// Initialize values to be calculated.
 				int avgBestGeneration = NO_DATA;
 				int avgBestGeneration_TimeOut = NO_DATA; 
 				double avgPercentage = NO_DATA;
 				double avgPercentage_TimeOut = NO_DATA;
 				double bestPercentage = NO_DATA;
 				double bestPercentage_TimeOut = NO_DATA;
-				// Calculations.
+				// Calculate.
 				if (totalNumNonTimeOutTrials > 0) {
 					avgBestGeneration = totalBestGeneration / totalNumNonTimeOutTrials;
 				}
@@ -303,30 +290,30 @@ public class AnalyzeResults {
 				}
 				
 				// Push values to HashMap.
-				HashMap<String, String> values = parsedResults_GA.get(prob);
-				values = new HashMap<String, String>();
+				HashMap<String, String> results = parsedResults_GA.get(prob);
+				results = new HashMap<String, String>();
 				
-				values.put(NUM_LITERALS, String.valueOf(numLiterals));
-				values.put(NUM_CLAUSES, String.valueOf(numClauses));
-				values.put(NUM_EXPERIMENTS, String.valueOf(numExperiments));
-				values.put(AVG_NUM_TIMEOUTS, String.valueOf(avgNumTimeOuts));
-				values.put(BEST_EXECUTION_TIME, String.valueOf(bestExecutionTime));
-				values.put(AVG_EXECUTION_TIME, String.valueOf(avgExecutionTime));
-				values.put(BEST_GENERATION, String.valueOf(bestGeneration));
-				values.put(BEST_GENERATION_TIMEOUT, String.valueOf(bestGeneration_TimeOut));
-				values.put(AVG_BEST_GENERATION, String.valueOf(avgBestGeneration));
-				values.put(AVG_BEST_GENERATION_TIMEOUT, String.valueOf(avgBestGeneration_TimeOut));
-				values.put(BEST_PERCENTAGE, String.valueOf(bestPercentage));
-				values.put(BEST_PERCENTAGE_TIMEOUT, String.valueOf(bestPercentage_TimeOut));
-				values.put(AVG_PERCENTAGE, String.valueOf(avgPercentage));
-				values.put(AVG_PERCENTAGE_TIMEOUT, String.valueOf(avgPercentage_TimeOut));
-				values.put(PARAMETER_SETTINGS, parameterSettings);
+				results.put(NUM_LITERALS, String.valueOf(numLiterals));
+				results.put(NUM_CLAUSES, String.valueOf(numClauses));
+				results.put(NUM_EXPERIMENTS, String.valueOf(numExperiments));
+				results.put(AVG_NUM_TIMEOUTS, String.valueOf(avgNumTimeOuts));
+				results.put(BEST_EXECUTION_TIME, String.valueOf(bestExecutionTime));
+				results.put(AVG_EXECUTION_TIME, String.valueOf(avgExecutionTime));
+				results.put(BEST_GENERATION, String.valueOf(bestGeneration));
+				results.put(BEST_GENERATION_TIMEOUT, String.valueOf(bestGeneration_TimeOut));
+				results.put(AVG_BEST_GENERATION, String.valueOf(avgBestGeneration));
+				results.put(AVG_BEST_GENERATION_TIMEOUT, String.valueOf(avgBestGeneration_TimeOut));
+				results.put(BEST_PERCENTAGE, String.valueOf(bestPercentage));
+				results.put(BEST_PERCENTAGE_TIMEOUT, String.valueOf(bestPercentage_TimeOut));
+				results.put(AVG_PERCENTAGE, String.valueOf(avgPercentage));
+				results.put(AVG_PERCENTAGE_TIMEOUT, String.valueOf(avgPercentage_TimeOut));
+				results.put(PARAMETER_SETTINGS, parameterSettings);
 				
-				// Push HashMaps to Vectors.
+				// Push HashMaps to parsed results as a value.
 				if (algorithm.equalsIgnoreCase("GA")) {
-					parsedResults_GA.put(prob, values);
+					parsedResults_GA.put(prob, results);
 				} else {
-					parsedResults_PBIL.put(prob, values);
+					parsedResults_PBIL.put(prob, results);
 				}
 			}
 			catch(FileNotFoundException e) {
@@ -351,7 +338,7 @@ public class AnalyzeResults {
 					bufferReader.close();
 				} 
 				catch(FileNotFoundException e) {
-					System.out.println("Unable to open file '" + resultFilePath + "'");
+					printFileNotFound(resultFilePath);
 				}
 			} 
 		}

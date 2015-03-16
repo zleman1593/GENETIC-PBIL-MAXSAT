@@ -29,11 +29,6 @@ public class AnalyzeResultsController {
 		
 		for (String problem : results.keySet()) {
 			HashMap<String, String> map = results.get(problem);
-			
-			// DEBUGGING
-			System.out.println("Result size: " + results.size());
-			System.out.println("Map size:" + map.size());
-			
 			for (String key : map.keySet()) {
 				System.out.println(key);
 				System.out.println(map.get(key));
