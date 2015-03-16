@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.Comparator;
-
 
 public class ArrayWithFitness implements Comparable<ArrayWithFitness> {
 	public int fitness;

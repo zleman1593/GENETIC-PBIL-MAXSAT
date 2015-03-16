@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.Random;
-
 //Store Results for Averaging
 public class Results {
 	public String algorithm;

@@ -1,25 +1,39 @@
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AnalyzeResultsController {
-	static String[] MAXSATProblems = TestController.files;
-	static String folderPath = "Combined_Results";
-	
-	/* For all the array lists below: 
-	 * Index 0 stores a list of what's described by the variable name
-	 * Index 1 stores a list of the corresponding MAXSAT problem names
-	 * Index 2 stores an array list of array list of parameter settings 
-	 * Sorry about the complication. */ 
-	ArrayList<ArrayList<String>> fastestTimeGA = new ArrayList<ArrayList<String>>();
-	ArrayList<ArrayList<String>> fastestTimePBIL = new ArrayList<ArrayList<String>>();
-	
+	public static HashMap<String, HashMap<String, String>> results_GA;
+	public static HashMap<String, HashMap<String, String>> results_PBIL;
 	
 	public static void main(String[] args) throws IOException {		
 		AnalyzeResults analyzeResults = new AnalyzeResults();
+
+		results_GA = analyzeResults.getParsedResults_GA();
+		results_PBIL = analyzeResults.getParsedResults_PBIL();
+		
+		test("GA");
+		test("PBIL");
 		
 		// Check if any problem is unused.
 		analyzeResults.printUnusedProblems();
 		
+	}
+	
+	public static void test(String algorithm) {
+		HashMap<String, HashMap<String, String>> results; 
+		if (algorithm.equalsIgnoreCase("GA")) {
+			results = results_GA;
+		} else {
+			results = results_PBIL;
+		}
+		
+		for (String problem : results.keySet()) {
+			HashMap<String, String> map = results.get(problem);
+			for (String key : map.keySet()) {
+				System.out.println(key);
+				System.out.println(map.get(key));
+			}
+		}
 	}
 
 }

@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Controller {
 	// Todo include ts sample size and winner size
