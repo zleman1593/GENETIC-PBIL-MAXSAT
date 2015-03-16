@@ -7,7 +7,6 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java. util.HashMap;
-import java.util.Map;
 
 public class AnalyzeResults {
 	/* Names of factors we are considering. */
@@ -36,6 +35,7 @@ public class AnalyzeResults {
 	
 	/* Files */
 	String[] MAXSATProblems = TestController.files; 		// A list of the names of MAXSAT problems.
+	int[] MAXSATSolutions = TestController.maxValues;		// Unsatisfied clauses from currently known best algorithm.
 	String folderPath = "Combined_Results"; 				// Path of source folder that contains all the results.
 	File[] resultsFiles = new File(folderPath).listFiles(); // A list of all the result files.
 	
@@ -170,18 +170,17 @@ public class AnalyzeResults {
 		// Factors we care about.
 		int numLiterals = 0;
 		int numClauses = 0;
-		int avgNumTimeOuts = 0; // on average per experiment
 		long bestExecutionTime =  Long.MAX_VALUE;
-		long avgExecutionTime = 0;
+		long totalExecutionTime = 0;
 		int bestGeneration = Integer.MAX_VALUE;
 		int bestGeneration_TimeOut = Integer.MAX_VALUE;
-		int avgBestGeneration = 0;
-		int avgBestGeneration_TimeOut = 0;
-		double bestPercentage = Double.MAX_VALUE;
-		double bestPercentage_TimeOut = Double.MAX_VALUE;
-		double avgPercentage = 0.0;
-		double avgPercentage_TimeOut = 0.0;
-		String parameterSettings;
+		int totalBestGeneration = 0;
+		int totalBestGeneration_TimeOut = 0;
+		double totalUnsatClauses = 0.0;
+		double totalUnsatClauses_TimeOut = 0.0;
+		double fewestUnsatClauses = Double.MAX_VALUE;
+		double fewestUnsatClauses_TimeOut = Double.MAX_VALUE;
+		String parameterSettings = null;
 		
 		// Iterate through all files associated with this problem.
 		for (int i = 0; i< numExperiments; i++) {
@@ -199,49 +198,94 @@ public class AnalyzeResults {
 					} else if (lineNum == LineNumber.AVG_BEST_GENERATION.getNumVal()) {
 						int data = Integer.parseInt(line);
 						if (data != NO_DATA) {
-							avgBestGeneration += data;
+							totalBestGeneration += data;
 						}
 					} else if (lineNum == LineNumber.AVG_BEST_GENERATION_TIMEOUT.getNumVal()) {
 						int data = Integer.parseInt(line);
 						if (data != NO_DATA) {
-							avgBestGeneration_TimeOut += data;
+							totalBestGeneration_TimeOut += data;
 						}
 					} else if (lineNum == LineNumber.BEST_GENERATION.getNumVal()) {
-						int current= Integer.parseInt(line);
-						if (current < bestGeneration) {
+						int current = Integer.parseInt(line);
+						if (current != NO_DATA && current < bestGeneration) {
 							bestGeneration = current;
 						}
 					} else if (lineNum == LineNumber.BEST_GENERATION_TIMEOUT.getNumVal()) {
 						int current = Integer.parseInt(line);
-						if (current < bestGeneration_TimeOut) {
+						if (current != NO_DATA && current < bestGeneration_TimeOut) {
 							bestGeneration_TimeOut = current;
 						} 
 					} else if (lineNum == LineNumber.AVG_UNSAT_CLAUSES.getNumVal()) {
-						// TODO 
+						int current = Integer.parseInt(line);
+						if (current != NO_DATA) {
+							totalUnsatClauses += current;
+						}
+					} else if (lineNum == LineNumber.AVG_UNSAT_CLAUSES_TIMEOUT.getNumVal()) {
+						int current = Integer.parseInt(line);
+						if (current != NO_DATA) {
+							totalUnsatClauses_TimeOut += current;
+						}
 					} else if (lineNum == LineNumber.FEWEST_UNSAT_CLAUSES.getNumVal()) {
-						// TODO
-					} else if (lineNum == LineNumber.AVG_EXECUTION_TIME.getNumVal()) {
-						avgExecutionTime += Long.parseLong(line);
+						int current = Integer.parseInt(line);
+						if (current != NO_DATA && current < fewestUnsatClauses) {
+							fewestUnsatClauses = current;
+						}
+					} else if (lineNum == LineNumber.FEWEST_UNSAT_CLAUSES_TIMEOUT.getNumVal()) {
+						int current = Integer.parseInt(line);
+						if (current != NO_DATA && current < fewestUnsatClauses_TimeOut) {
+							fewestUnsatClauses_TimeOut = current;
+						}
+					}  else if (lineNum == LineNumber.AVG_EXECUTION_TIME.getNumVal()) {
+						long current = Long.parseLong(line);
+						if ((int)current != NO_DATA) {
+							totalExecutionTime += Long.parseLong(line);
+						}
 					} else if (lineNum == LineNumber.BEST_EXECUTION_TIME.getNumVal()) {
-						long currentExecutionTime = Long.parseLong(line);
-						if (currentExecutionTime < bestExecutionTime) {
-							bestExecutionTime = currentExecutionTime; 
+						long current = Long.parseLong(line);
+						if ((int)current != NO_DATA && current < bestExecutionTime) {
+							bestExecutionTime = current; 
 						}
 					} else if (lineNum == LineNumber.NUM_TIMEOUTS.getNumVal()) {
 						totalNumTimeOuts += LineNumber.NUM_TIMEOUTS.getNumVal();
 					}
+					
+					if (algorithm.equalsIgnoreCase("GA")) {
+						// GA parameter settings.
+						if (lineNum == LineNumberGA.POP_SIZE.getNumVal() ||
+								lineNum == LineNumberGA.SELECTION_TYPE.getNumVal() ||
+								lineNum == LineNumberGA.CROSSOVER_TYPE.getNumVal() ||
+								lineNum == LineNumberGA.CROSSOVER_PROB.getNumVal() ||
+								lineNum == LineNumberGA.MUTATION_PROB.getNumVal()) {
+							parameterSettings += line += ",";
+						}
+					} else {
+						// PBIL parameter settings.
+						if (lineNum == LineNumberPBIL.POP_SIZE.getNumVal() ||
+								lineNum == LineNumberPBIL.LEARNING_RATE.getNumVal() ||
+								lineNum == LineNumberPBIL.NEG_LEARNING_RATE.getNumVal() ||
+								lineNum == LineNumberPBIL.MUTATION_PROB.getNumVal() ||
+								lineNum == LineNumberPBIL.MUTATION_SHIFT.getNumVal()) {
+							parameterSettings += line += ",";
+						}
+					}
+					
 					lineNum++;
 				}
 				bufferedReader.close();
 				
 				int totalNumNonTimeOutTrials = LineNumber.NUM_TRIALS.getNumVal() * numExperiments - totalNumTimeOuts;
-				// Divide by number of files to get the average.
-				avgBestGeneration = avgBestGeneration / totalNumNonTimeOutTrials;
-				avgBestGeneration_TimeOut = avgBestGeneration_TimeOut / totalNumTimeOuts;
-				avgNumTimeOuts = totalNumTimeOuts / numExperiments;
-				avgPercentage = avgPercentage / (double) totalNumNonTimeOutTrials;
-				avgPercentage_TimeOut = avgPercentage_TimeOut / (double) totalNumTimeOuts;
+				double bestKnownNumUnsatClauses = (double)MAXSATSolutions[i];
+
+				int avgBestGeneration = totalBestGeneration / totalNumNonTimeOutTrials;
+				int avgBestGeneration_TimeOut = totalBestGeneration_TimeOut / totalNumTimeOuts;
+				int avgNumTimeOuts = totalNumTimeOuts / numExperiments;
+				long avgExecutionTime = totalExecutionTime / (long) numExperiments;
+				double avgPercentage = (double)totalUnsatClauses / (double)totalNumNonTimeOutTrials / (double)bestKnownNumUnsatClauses;
+				double avgPercentage_TimeOut = (double)totalUnsatClauses_TimeOut / (double)totalNumTimeOuts / (double)bestKnownNumUnsatClauses;
+				double bestPercentage = (double)fewestUnsatClauses / (double)bestKnownNumUnsatClauses;
+				double bestPercentage_TimeOut = (double)fewestUnsatClauses_TimeOut / (double)bestKnownNumUnsatClauses;
 				
+				// Push values to HashMap.
 				HashMap<String, String> values = parsedResults_GA.get(prob);
 				values.put(NUM_LITERALS, String.valueOf(numLiterals));
 				values.put(NUM_CLAUSES, String.valueOf(numClauses));
@@ -257,8 +301,7 @@ public class AnalyzeResults {
 				values.put(BEST_PERCENTAGE_TIMEOUT, String.valueOf(bestPercentage_TimeOut));
 				values.put(AVG_PERCENTAGE, String.valueOf(avgPercentage));
 				values.put(AVG_PERCENTAGE_TIMEOUT, String.valueOf(avgPercentage_TimeOut));
-				
-				/* String parameterSettings; */
+				values.put(PARAMETER_SETTINGS, parameterSettings);
 			}
 			catch(FileNotFoundException e) {
 				printFileNotFound(filePath);

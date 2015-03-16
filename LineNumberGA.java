@@ -1,6 +1,7 @@
 
 // Line number in results files specific to GA setting
-public enum StatsGA {
+public enum LineNumberGA {
+	POP_SIZE(24),
 	SELECTION_TYPE(25),
 	CROSSOVER_TYPE(26),
 	CROSSOVER_PROB(27),
@@ -8,7 +9,7 @@ public enum StatsGA {
 	
 	private int numVal;
 
-    StatsGA(int numVal) {
+    LineNumberGA(int numVal) {
         this.numVal = numVal;
     }
 

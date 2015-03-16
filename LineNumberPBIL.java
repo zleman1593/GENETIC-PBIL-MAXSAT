@@ -1,5 +1,6 @@
 // Line number in results files specific to PBIL setting
-public enum StatsPBIL {
+public enum LineNumberPBIL {
+	POP_SIZE(24),
 	LEARNING_RATE(25),
 	NEG_LEARNING_RATE(26),
 	MUTATION_PROB(27),
@@ -7,7 +8,7 @@ public enum StatsPBIL {
 	
 	private int numVal;
 
-    StatsPBIL(int numVal) {
+    LineNumberPBIL(int numVal) {
         this.numVal = numVal;
     }
 
