@@ -270,10 +270,6 @@ public class AnalyzeResults {
 				// Initialize values to be calculated.
 				int avgBestGeneration = NO_DATA;
 				int avgBestGeneration_TimeOut = NO_DATA; 
-				double avgPercentage = NO_DATA;
-				double avgPercentage_TimeOut = NO_DATA;
-				double bestPercentage = NO_DATA;
-				double bestPercentage_TimeOut = NO_DATA;
 				// Calculate.
 				if (totalNumNonTimeOutTrials > 0) {
 					avgBestGeneration = totalBestGeneration / totalNumNonTimeOutTrials;
@@ -281,13 +277,17 @@ public class AnalyzeResults {
 				if (totalNumTimeOuts > 0) {
 					avgBestGeneration_TimeOut = totalBestGeneration_TimeOut / totalNumTimeOuts;
 				}
-				
-				if (bestKnownNumUnsatClauses > 0) {
-					avgPercentage = (double)totalUnsatClauses / (double)totalNumNonTimeOutTrials / (double)bestKnownNumUnsatClauses;
-					avgPercentage_TimeOut = (double)totalUnsatClauses_TimeOut / (double)totalNumTimeOuts / (double)bestKnownNumUnsatClauses;
-					bestPercentage = (double)fewestUnsatClauses / (double)bestKnownNumUnsatClauses;
-					bestPercentage_TimeOut = (double)fewestUnsatClauses_TimeOut / (double)bestKnownNumUnsatClauses;
-				}
+				// Helper variables.
+				double bestKnownSatClauses = numClauses - bestKnownNumUnsatClauses;
+				double averageSatClauses = numClauses - totalUnsatClauses / totalNumNonTimeOutTrials;  
+				double averageSatClauses_Timeout = numClauses - totalUnsatClauses_TimeOut / totalNumTimeOuts;  
+				double mostSatClauses = numClauses - fewestUnsatClauses;
+				double mostSatClauses_TimeOut = numClauses - fewestUnsatClauses_TimeOut;
+				// Calculate performance percentages.
+				double avgPercentage = averageSatClauses / bestKnownSatClauses;
+				double avgPercentage_TimeOut = averageSatClauses_Timeout / bestKnownSatClauses;
+				double bestPercentage = mostSatClauses / bestKnownSatClauses;
+				double bestPercentage_TimeOut = mostSatClauses_TimeOut / bestKnownSatClauses;
 				
 				// Push values to HashMap.
 				HashMap<String, String> results = parsedResults_GA.get(prob);
