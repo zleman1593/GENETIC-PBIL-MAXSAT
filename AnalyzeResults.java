@@ -9,53 +9,77 @@ import java.util.HashSet;
 import java. util.HashMap;
 
 public class AnalyzeResults {
-	/* Names of factors we are considering. */
-	private static final String NUM_LITERALS = "number of literals";
-	private static final String NUM_CLAUSES = "nuber of clauses";
-	private static final String NUM_EXPERIMENTS = "number of experiments"; // The number of different parameters used for this problem.
-	private static final String AVG_NUM_TIMEOUTS = "average number of timeouts"; // Average number of timeouts per experiment. 	
-	private static final String BEST_EXECUTION_TIME = "best execution time"; // The fastest time the algorithm took to solve this problem.
-	private static final String AVG_EXECUTION_TIME = "average execution time"; // The average time the algorithm took to solve this problem.
-	private static final String BEST_GENERATION = "best generation"; // The generation the algorithm found the best solution.    
-	private static final String AVG_BEST_GENERATION = "average best generation";  // Average of best generations over all non-timed out trials.
-	private static final String BEST_GENERATION_TIMEOUT = "best generation for timeouts"; // Same as above but for timed out trials.
-	private static final String AVG_BEST_GENERATION_TIMEOUT = "average best generation for timeout"; // Same as above but for timed out trials.
+	/* Names of factors we are considering for each problem. */
+	// Number of literals this problem contains.
+	static final String NUM_LITERALS = "number of literals";
+	// Number of clauses this problem contains.
+	static final String NUM_CLAUSES = "nuber of clauses";
+	// The number of different parameters used for this problem.
+	static final String NUM_EXPERIMENTS = "number of experiments"; 
+	// Average number of timeouts per experiment.
+	static final String AVG_NUM_TIMEOUTS = "average number of timeouts";
+	// The fastest time the algorithm took to solve this problem.
+	static final String BEST_EXECUTION_TIME = "best execution time"; 
+	// The average time the algorithm took to solve this problem.
+	static final String AVG_EXECUTION_TIME = "average execution time";
+	// The generation the algorithm found the best solution.
+	static final String BEST_GENERATION = "best generation";     
+	// Average of best generations over all non-timed out trials.
+	static final String AVG_BEST_GENERATION = "average best generation";  
+	// Same as above but for timed out trials.
+	static final String BEST_GENERATION_TIMEOUT = "best generation for timeouts"; 
+	// Same as above but for timed out trials.
+	static final String AVG_BEST_GENERATION_TIMEOUT = "average best generation for timeout"; 
 	/* NOTE: 
-	 * Percentage defined as: clauses solved/clauses solved by best known algorithm. 
+	 * Percentage defined as: clauses solved by our algorithm divided by 
+	 * 	clauses solved by best known algorithm. 
 	 * */
-	private static final String BEST_PERCENTAGE = "best percentage"; 
-	private static final String BEST_PERCENTAGE_TIMEOUT = "best percentage for timeouts"; 
-	private static final String AVG_PERCENTAGE = "average percentage"; 
-	private static final String AVG_PERCENTAGE_TIMEOUT = "average percentage for timeouts"; 
+	// The highest percentage of clauses solved / clauses solved by best known algorithm.
+	static final String BEST_PERCENTAGE = "best percentage";
+	// Same as above but for trials that timed out.
+	static final String BEST_PERCENTAGE_TIMEOUT = "best percentage for timeouts";
+	// The average percentage of clauses solved / clauses solved by best known algorithm.
+	static final String AVG_PERCENTAGE = "average percentage";
+	// Same as above but for trials that timed out.
+	static final String AVG_PERCENTAGE_TIMEOUT = "average percentage for timeouts"; 
 	/* A list of parameter settings, comma-separated. 
-	 * GA order: population size, selection type, crossover type, crossover probability, mutation probability.
-	 * PBIL order: population size, learning rate, negative learning rate, mutation probability, mutation shift.
+	 * GA order: population size, selection type, crossover type, 
+	 * 					crossover probability, mutation probability.
+	 * PBIL order: population size, learning rate, negative learning rate, 
+	 * 					mutation probability, mutation shift.
 	 * */
-	private static final String PARAMETER_SETTINGS = "parameter settings"; 
-	private static final int NO_DATA = -1; // When data is not recorded because the algorithm timed out.
+	static final String PARAMETER_SETTINGS = "parameter settings";
+	// When data is not recorded because the algorithm timed out.
+	static final int NO_DATA = -1; 
 	
 	/* Files */
-	String[] MAXSATProblems = TestController.files; 		// A list of the names of MAXSAT problems.
-	int[] MAXSATSolutions = TestController.maxValues;		// Unsatisfied clauses from currently known best algorithm.
-	String folderPath = "Combined_Results"; 				// Path of source folder that contains all the results.
-	File[] resultsFiles = new File(folderPath).listFiles(); // A list of all the result files.
+	// A list of the names of MAXSAT problems.
+	String[] MAXSATProblems = TestController.files; 		
+	// Unsatisfied clauses from currently known best algorithm.
+	int[] MAXSATSolutions = TestController.maxValues;		
+	// Path of source folder that contains all the results.
+	String folderPath = "Combined_Results"; 				
+	// A list of all the result files.
+	File[] resultsFiles = new File(folderPath).listFiles(); 
 	
-	/* HashMap<String, HashMap> for GA to store information on each problem for quick lookup.
-	 * KEY- String: Name of MAXSAT problem.
+	/* HashMap<String, HashMap> to store information on each problem for quick lookup.
+	 * KEY - String: Name of MAXSAT problem.
 	 * VALUE - HashMap<String, String>: A HashMap where 
 	 * 				KEY - String: a factor we're analyzing/considering (e.g. fastest time to solve the problem).
 	 * 				VALUE - String: the value for this factor, after searching through all files.
+	 * 
+	 * NOTE: These maps may have different lengths because (after ~40 hours, on two computer, with multi-threading) 
+	 * 		not all experiments were finished, so some problems were not used for some experiments on one algorithm. 
 	 * */
-	HashMap<String, HashMap<String, String>> parsedResults_GA = new HashMap<String, HashMap<String, String>>();
-	// Same as above, for PBIL.
-	HashMap<String, HashMap<String, String>> parsedResults_PBIL = new HashMap<String, HashMap<String, String>>(); 
+	private HashMap<String, HashMap<String, String>> parsedResults_GA = new HashMap<String, HashMap<String, String>>();
+	private HashMap<String, HashMap<String, String>> parsedResults_PBIL = new HashMap<String, HashMap<String, String>>(); 
 	
 	/* HashMap that groups the different files by problem name to allow faster operation for the above HashMaps.
 	 * KEY - String: Name of MAXSAT problem.
 	 * VALUE - ArrayList<String>: An ArrayList of file paths for this problem.
 	 * */
-	HashMap<String, ArrayList<String>> filesGroupedByProblem_GA = new HashMap<String, ArrayList<String>>();
-	HashMap<String, ArrayList<String>> filesGroupedByProblem_PBIL = new HashMap<String, ArrayList<String>>();
+	private HashMap<String, ArrayList<String>> filesGroupedByProblem_GA = new HashMap<String, ArrayList<String>>();
+	private HashMap<String, ArrayList<String>> filesGroupedByProblem_PBIL = new HashMap<String, ArrayList<String>>();
 
 	// Constructor.
 	public AnalyzeResults() throws IOException {
@@ -72,16 +96,6 @@ public class AnalyzeResults {
 		}
 	}
 	
-	// Initialize with problem names.
-	private void initializeHashMaps() {
-		for (String problem : filesGroupedByProblem_GA.keySet()) {
-			parsedResults_GA.put(problem, new HashMap<String, String>());
-		}
-		for (String problem : filesGroupedByProblem_PBIL.keySet()) {
-			parsedResults_PBIL.put(problem, new HashMap<String, String>());
-		}
-	}
-	
 	// Getter method: Return parsed results for GA in a HashMap.
 	public HashMap<String, HashMap<String, String>>  getParsedResults_GA() {
 		return parsedResults_GA;
@@ -92,7 +106,17 @@ public class AnalyzeResults {
 		return parsedResults_PBIL;
 	}
 	
-	// Helper method: Strip the word "File:" and get the actual name of file without spaces.
+	// Initialize with problem names.
+	private void initializeHashMaps() {
+		for (String problem : filesGroupedByProblem_GA.keySet()) {
+			parsedResults_GA.put(problem, new HashMap<String, String>());
+		}
+		for (String problem : filesGroupedByProblem_PBIL.keySet()) {
+			parsedResults_PBIL.put(problem, new HashMap<String, String>());
+		}
+	}
+
+	// Helper method: Strip the word "File:" and extra spaces.
 	private String getProblemName(String line) {
 		int fileNameStartIndex = line.indexOf(":") + 1;
 		String problemFileName = line.substring(fileNameStartIndex);
@@ -126,7 +150,8 @@ public class AnalyzeResults {
 				isGA  = algorithm.endsWith("GA") ? true : false;
 				bufferedReader.close();
 				
-				HashMap<String, ArrayList<String>> listOfProblems = isGA ? filesGroupedByProblem_GA : filesGroupedByProblem_PBIL; 
+				HashMap<String, ArrayList<String>> listOfProblems = isGA ?  
+						filesGroupedByProblem_GA : filesGroupedByProblem_PBIL; 
 				ArrayList<String> listOfFiles;
 				if (listOfProblems.containsKey(problemName)) {
 					listOfFiles = listOfProblems.get(problemName);
@@ -324,7 +349,11 @@ public class AnalyzeResults {
 		}
 	}
 		
-	// Find out which problems are unused, if any, because of some unfinished experiments.
+	/* Find out which problems are unused, if any, because of some unfinished experiments.
+	 * 
+	 * NOTE: When all problems are used, it means they are used for both algorithms combined,
+	 * 		 so each of the algorithms may not have used all the problems.
+	 */
 	public void printUnusedProblems() throws IOException {
 		HashSet<String> setOfUsedProblems = new HashSet<String>();
 				
@@ -358,5 +387,3 @@ public class AnalyzeResults {
 		}
 	}
 }
-
-
