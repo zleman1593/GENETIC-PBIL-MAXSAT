@@ -244,10 +244,6 @@ public class AnalyzeResults {
 						if (current != MAX_ITERATION && current < fewestUnsatClauses) {
 							fewestUnsatClauses = current;
 						} 
-
-						// DEBUGGING
-						System.out.println("Fewest unsat clauses" + fewestUnsatClauses);
-					
 					} else if (lineNum == LineNumber.FEWEST_UNSAT_CLAUSES_TIMEOUT.getNumVal()) {
 						int current = Integer.parseInt(line);
 						if (current != MAX_ITERATION && current < fewestUnsatClauses_TimeOut) {
