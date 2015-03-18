@@ -243,11 +243,11 @@ public class AnalyzeResults {
 						int current = Integer.parseInt(line);
 						if (current != MAX_ITERATION && current < fewestUnsatClauses) {
 							fewestUnsatClauses = current;
-							
-							// DEBUGGING
-							System.out.println("Fewest unsat clauses" + fewestUnsatClauses);
-						
-						}
+						} 
+
+						// DEBUGGING
+						System.out.println("Fewest unsat clauses" + fewestUnsatClauses);
+					
 					} else if (lineNum == LineNumber.FEWEST_UNSAT_CLAUSES_TIMEOUT.getNumVal()) {
 						int current = Integer.parseInt(line);
 						if (current != MAX_ITERATION && current < fewestUnsatClauses_TimeOut) {
@@ -313,16 +313,14 @@ public class AnalyzeResults {
 					avgBestGeneration_TimeOut = totalBestGeneration_TimeOut / totalNumTimeOuts;
 				}
 				if (totalNumNonTimeOutTrials > 0) {
-					double averageSatClauses = numClauses - totalUnsatClauses / totalNumNonTimeOutTrials;
-					avgPercentage = averageSatClauses / (double)bestKnownSatClauses;
-					bestPercentage = (double)(numClauses - fewestUnsatClauses)/ (double)bestKnownSatClauses;
-					
-					// DEBUGGING
-//					System.out.println("total num of non-timeout trials " + totalNumNonTimeOutTrials);
-//					System.out.println("total num of timeouts " + totalNumTimeOuts);
-					System.out.println("UNSAT clauses: " + fewestUnsatClauses);
-//					System.out.println("Best percentage " + bestPercentage);
- 
+					if (fewestUnsatClauses == MAX_ITERATION) {
+						fewestUnsatClauses = NO_DATA;
+						bestPercentage = NO_DATA;
+					} else {
+						double averageSatClauses = numClauses - totalUnsatClauses / totalNumNonTimeOutTrials;
+						avgPercentage = averageSatClauses / (double)bestKnownSatClauses;
+						bestPercentage = (double)(numClauses - fewestUnsatClauses)/ (double)bestKnownSatClauses;
+					}
 				}
 				if (totalNumTimeOuts > 0) {
 					double averageSatClauses_TimeOut = numClauses - totalUnsatClauses_TimeOut / totalNumTimeOuts;

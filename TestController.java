@@ -209,7 +209,6 @@ public class TestController {
 					;
 				}
 			}
-
 		}
 
 		int totalNumClauses = results.get(0).numClauses;
