@@ -249,7 +249,6 @@ public class GenerateGraphData {
 			throws IOException {
 		File file = new File(getFilePath(graphIndex));
 		if (!file.exists()) {
-			System.out.println("NEW FILE");
 			file.createNewFile();
 		}
 		try {

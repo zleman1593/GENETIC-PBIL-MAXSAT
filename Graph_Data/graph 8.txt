@@ -21,7 +21,7 @@ number of clauses
 1260
 1258
 
-best percentage
+average percentage
 -1.0
 -1.0
 -1.0

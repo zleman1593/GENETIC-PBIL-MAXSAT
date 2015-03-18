@@ -1,0 +1,36 @@
+GA
+number of literals
+50
+140
+140
+64
+140
+125
+140
+60
+343
+60
+140
+216
+140
+150
+100
+140
+
+average best generation for timeout
+3
+74
+24
+12
+8
+6
+4
+6
+3
+4
+5
+3
+4
+4
+5
+6

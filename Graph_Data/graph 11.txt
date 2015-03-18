@@ -1,10 +1,9 @@
-PBIL
+GA
 number of clauses
 900
 1258
 1200
 384
-1600
 1260
 750
 1500
@@ -13,19 +12,12 @@ number of clauses
 800
 1400
 1296
-1000
-900
-1350
 1300
+1350
 900
 1260
-1258
 
-best percentage
--1.0
--1.0
--1.0
--1.0
+best percentage for timeouts
 -1.0
 -1.0
 -1.0

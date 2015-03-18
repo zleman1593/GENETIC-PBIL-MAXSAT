@@ -13,7 +13,7 @@ public class AnalyzeResults {
 	// Number of literals this problem contains.
 	static final String NUM_LITERALS = "number of literals";
 	// Number of clauses this problem contains.
-	static final String NUM_CLAUSES = "nuber of clauses";
+	static final String NUM_CLAUSES = "number of clauses";
 	// The number of different parameters used for this problem.
 	static final String NUM_EXPERIMENTS = "number of experiments"; 
 	// Average number of timeouts per experiment.
