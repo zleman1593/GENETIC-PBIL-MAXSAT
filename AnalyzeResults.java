@@ -51,6 +51,7 @@ public class AnalyzeResults {
 	static final String PARAMETER_SETTINGS = "parameter settings";
 	// When data is not recorded because the algorithm timed out.
 	static final int NO_DATA = -1; 
+	static final int MAX_ITERATION = Integer.MAX_VALUE;
 	
 	/* Files */
 	// A list of the names of MAXSAT problems.
@@ -220,12 +221,12 @@ public class AnalyzeResults {
 						}
 					} else if (lineNum == LineNumber.BEST_GENERATION.getNumVal()) {
 						int current = Integer.parseInt(line);
-						if (current != NO_DATA && current < bestGeneration) {
+						if (current != MAX_ITERATION && current < bestGeneration) {
 							bestGeneration = current;
 						}
 					} else if (lineNum == LineNumber.BEST_GENERATION_TIMEOUT.getNumVal()) {
 						int current = Integer.parseInt(line);
-						if (current != NO_DATA && current < bestGeneration_TimeOut) {
+						if (current != MAX_ITERATION && current < bestGeneration_TimeOut) {
 							bestGeneration_TimeOut = current;
 						} 
 					} else if (lineNum == LineNumber.AVG_UNSAT_CLAUSES.getNumVal()) {
@@ -240,12 +241,16 @@ public class AnalyzeResults {
 						}
 					} else if (lineNum == LineNumber.FEWEST_UNSAT_CLAUSES.getNumVal()) {
 						int current = Integer.parseInt(line);
-						if (current != NO_DATA && current < fewestUnsatClauses) {
+						if (current != MAX_ITERATION && current < fewestUnsatClauses) {
 							fewestUnsatClauses = current;
+							
+							// DEBUGGING
+							System.out.println("Fewest unsat clauses" + fewestUnsatClauses);
+						
 						}
 					} else if (lineNum == LineNumber.FEWEST_UNSAT_CLAUSES_TIMEOUT.getNumVal()) {
 						int current = Integer.parseInt(line);
-						if (current != NO_DATA && current < fewestUnsatClauses_TimeOut) {
+						if (current != MAX_ITERATION && current < fewestUnsatClauses_TimeOut) {
 							fewestUnsatClauses_TimeOut = current;
 						}
 					}  else if (lineNum == LineNumber.AVG_EXECUTION_TIME.getNumVal()) {
@@ -298,6 +303,8 @@ public class AnalyzeResults {
 				int avgBestGeneration_TimeOut = NO_DATA; 
 				double avgPercentage = NO_DATA;
 				double avgPercentage_TimeOut = NO_DATA;
+				double bestPercentage = NO_DATA;
+				double bestPercentage_TimeOut = NO_DATA;
 				// Calculate.
 				if (totalNumNonTimeOutTrials > 0) {
 					avgBestGeneration = totalBestGeneration / totalNumNonTimeOutTrials;
@@ -308,13 +315,20 @@ public class AnalyzeResults {
 				if (totalNumNonTimeOutTrials > 0) {
 					double averageSatClauses = numClauses - totalUnsatClauses / totalNumNonTimeOutTrials;
 					avgPercentage = averageSatClauses / (double)bestKnownSatClauses;
+					bestPercentage = (double)(numClauses - fewestUnsatClauses)/ (double)bestKnownSatClauses;
+					
+					// DEBUGGING
+//					System.out.println("total num of non-timeout trials " + totalNumNonTimeOutTrials);
+//					System.out.println("total num of timeouts " + totalNumTimeOuts);
+					System.out.println("UNSAT clauses: " + fewestUnsatClauses);
+//					System.out.println("Best percentage " + bestPercentage);
+
 				}
 				if (totalNumNonTimeOutTrials > 0) {
 					double averageSatClauses_TimeOut = numClauses - totalUnsatClauses_TimeOut / totalNumTimeOuts;
 					avgPercentage_TimeOut = averageSatClauses_TimeOut / (double)bestKnownSatClauses;
+					
 				}
-				double bestPercentage = (double)(numClauses - fewestUnsatClauses)/ (double)bestKnownSatClauses;
-				double bestPercentage_TimeOut = (double)(numClauses - fewestUnsatClauses_TimeOut) / (double)bestKnownSatClauses;
 				
 				// Push values to HashMap.
 				HashMap<String, String> results = parsedResults_GA.get(prob);

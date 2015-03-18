@@ -1,4 +1,5 @@
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -6,6 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GenerateGraphData {
+	static final String GA = "GA";
+	static final String PBIL = "PBIL";
+	
 	// All results.
 	private HashMap<String, HashMap<String, String>> results_GA;
 	private HashMap<String, HashMap<String, String>> results_PBIL;
@@ -53,15 +57,15 @@ public class GenerateGraphData {
 		this.results_GA = results_GA;
 		this.results_PBIL = results_PBIL;
 		// Initialize.
-		initializeArrayList("GA");
-		initializeArrayList("PBIL");
+		initializeArrayList(GA);
+		initializeArrayList(PBIL);
 		// Write to all files.
 		writeGraphData();
 	}
 
 	private void initializeArrayList(String algorithm) {
 		HashMap<String, HashMap<String, String>> results;
-		if (algorithm.equalsIgnoreCase("GA")) {
+		if (algorithm.equalsIgnoreCase(GA)) {
 			results = results_GA;
 		} else {
 			results = results_PBIL;
@@ -84,7 +88,7 @@ public class GenerateGraphData {
 			String avgPercentage = resultsValues.get(AnalyzeResults.AVG_PERCENTAGE);
 			String avgPercentage_TimeOut = resultsValues.get(AnalyzeResults.AVG_PERCENTAGE_TIMEOUT);
 			
-			if (algorithm.equalsIgnoreCase("GA")) {
+			if (algorithm.equalsIgnoreCase(GA)) {
 				numLiterals_GA.add(numLiterals);
 				numClauses_GA.add(numClauses);
 				avgNumTimeOuts_GA.add(avgNumTimeOuts);
@@ -119,31 +123,38 @@ public class GenerateGraphData {
 	// Decide which graph data to write to files.
 	private void writeGraphData() throws IOException {
 		// Number of literals vs.best percentage solved. 
-		writeToFile(AnalyzeResults.NUM_LITERALS, numLiterals_GA, 
+		writeToFile(GA, AnalyzeResults.NUM_LITERALS, numLiterals_GA, 
 				AnalyzeResults.BEST_PERCENTAGE, bestPercentage_GA);
-		writeToFile(AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
+		writeToFile(PBIL, AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
 				AnalyzeResults.BEST_PERCENTAGE, bestPercentage_PBIL);
 		// Number of literals vs.average percentage solved.
-		writeToFile(AnalyzeResults.NUM_LITERALS, numLiterals_GA, 
+		writeToFile(GA, AnalyzeResults.NUM_LITERALS, numLiterals_GA, 
 				AnalyzeResults.AVG_PERCENTAGE, avgPercentage_GA);
-		writeToFile(AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
+		writeToFile(PBIL, AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
 				AnalyzeResults.AVG_PERCENTAGE, avgPercentage_PBIL);
-		
 	}
 
 	// Write the specified data to the specified file.
-	private void writeToFile(String x_name, ArrayList<String> x_data, 
+	private void writeToFile(String algorithm, String x_name, ArrayList<String> x_data, 
 			String y_name, ArrayList<String> y_data)
 			throws IOException {
-		String filePath = getFilePath(graphIndex);
+		File file = new File(getFilePath(graphIndex));
+		if (!file.exists()) {
+			System.out.println("NEW FILE");
+			file.createNewFile();
+		}
 		try {
-			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
+			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+			bufferedWriter.write(algorithm);
+			bufferedWriter.newLine();
 			// Data for x-axis.
 			bufferedWriter.write(x_name);
 			bufferedWriter.newLine();
 			for (String data : x_data) { 
-				bufferedWriter.write(data);
-				bufferedWriter.newLine();
+				if (data != null) {
+					bufferedWriter.write(data);
+					bufferedWriter.newLine();
+				}
 			}
 			bufferedWriter.newLine();
 			
@@ -151,8 +162,10 @@ public class GenerateGraphData {
 			bufferedWriter.write(y_name);
 			bufferedWriter.newLine();
 			for (String data : y_data) {
-				bufferedWriter.write(data);
-				bufferedWriter.newLine();
+				if (data != null) {
+					bufferedWriter.write(data);
+					bufferedWriter.newLine();
+				}
 			}
 			
 			graphIndex++;
@@ -160,7 +173,7 @@ public class GenerateGraphData {
 			bufferedWriter.close();
 		} 
 		catch (FileNotFoundException e) {
-			System.out.println("Unable to find file '" + filePath + "'");
+			System.out.println("Unable to open or create file '" + file.getName() + "'");
 		}
 	}
 

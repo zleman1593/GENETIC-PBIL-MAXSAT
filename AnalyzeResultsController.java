@@ -11,8 +11,8 @@ public class AnalyzeResultsController {
 		results_GA = analyzeResults.getParsedResults_GA();
 		results_PBIL = analyzeResults.getParsedResults_PBIL();
 		// Print out results.
-		test("GA");
-		test("PBIL");
+//		test("GA");
+//		test("PBIL");
 		// Check if any problem is unused.
 		analyzeResults.printUnusedProblems();
 		// Write to all graph data files.
