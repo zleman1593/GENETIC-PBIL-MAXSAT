@@ -322,9 +322,9 @@ public class AnalyzeResults {
 //					System.out.println("total num of timeouts " + totalNumTimeOuts);
 					System.out.println("UNSAT clauses: " + fewestUnsatClauses);
 //					System.out.println("Best percentage " + bestPercentage);
-
+ 
 				}
-				if (totalNumNonTimeOutTrials > 0) {
+				if (totalNumTimeOuts > 0) {
 					double averageSatClauses_TimeOut = numClauses - totalUnsatClauses_TimeOut / totalNumTimeOuts;
 					avgPercentage_TimeOut = averageSatClauses_TimeOut / (double)bestKnownSatClauses;
 					
