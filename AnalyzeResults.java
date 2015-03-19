@@ -148,7 +148,7 @@ public class AnalyzeResults {
 					bufferedReader.readLine();
 				}
 				String algorithm = bufferedReader.readLine();
-				isGA  = algorithm.endsWith("GA") ? true : false;
+				isGA = algorithm.endsWith("GA") ? true : false;
 				bufferedReader.close();
 				
 				HashMap<String, ArrayList<String>> listOfProblems = isGA ?  
@@ -156,11 +156,11 @@ public class AnalyzeResults {
 				ArrayList<String> listOfFiles;
 				if (listOfProblems.containsKey(problemName)) {
 					listOfFiles = listOfProblems.get(problemName);
-					listOfFiles.add(filePath);
 				} else {
 					listOfFiles = new ArrayList<String>();
 				}
 				// Push to map.
+				listOfFiles.add(filePath);
 				listOfProblems.put(problemName, listOfFiles);
 			} catch (FileNotFoundException e) {
 				printFileNotFound(filePath);
@@ -203,10 +203,10 @@ public class AnalyzeResults {
 				BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
 				String line;
 				int lineNum = 1;
-				
 				while ((line = bufferedReader.readLine()) != null) {
 					if (lineNum == LineNumber.NUM_LITERALS.getNumVal()) {
 						numLiterals = Integer.parseInt(line);
+						
 					} else if (lineNum == LineNumber.NUM_CLAUSES.getNumVal()) {
 						numClauses = Integer.parseInt(line);
 					} else if (lineNum == LineNumber.AVG_BEST_GENERATION.getNumVal()) {
@@ -374,6 +374,12 @@ public class AnalyzeResults {
 					String problemFileName = getProblemName(bufferReader.readLine());
 					// Add to set.
 					setOfUsedProblems.add(problemFileName.trim());
+					
+					// DEBUGGING
+					if (problemFileName.trim().equalsIgnoreCase("5SAT/HG-5SAT-V100-C1800-100.cnf")) {
+						System.out.println(resultFilePath);
+					}
+					
 					bufferReader.close();
 				} 
 				catch(FileNotFoundException e) {

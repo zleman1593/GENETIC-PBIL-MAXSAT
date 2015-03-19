@@ -58,10 +58,23 @@ public class GenerateGraphData {
 			HashMap<String, HashMap<String, String>> results_GA,
 			HashMap<String, HashMap<String, String>> results_PBIL)
 			throws IOException {
-		this.results_sortedByLiterals_GA = new TreeMap<String, HashMap<String, String>>(results_GA);
-		this.results_sortedByLiterals_PBIL = new TreeMap<String, HashMap<String, String>>(results_PBIL);
-		this.results_sortedByClauses_GA = new TreeMap<String, HashMap<String, String>>(results_PBIL);
-		this.results_sortedByClauses_PBIL = new TreeMap<String, HashMap<String, String>>(results_PBIL);
+		// Maintain a map sorted by number of literals for GA.
+		this.results_sortedByLiterals_GA = new TreeMap<String, HashMap<String, String>> (new 
+				NumLiteralsOrClausesComparator(results_GA, AnalyzeResults.NUM_LITERALS));
+		this.results_sortedByLiterals_GA.putAll(results_GA);
+		// Maintain a map sorted by number of clauses for GA.
+		this.results_sortedByClauses_GA = new TreeMap<String, HashMap<String, String>> (new 
+				NumLiteralsOrClausesComparator(results_GA, AnalyzeResults.NUM_CLAUSES));
+		this.results_sortedByClauses_GA.putAll(results_GA);
+		// Maintain a map sorted by number of literals for PBIL.
+		this.results_sortedByLiterals_PBIL = new TreeMap<String, HashMap<String, String>> (new 
+				NumLiteralsOrClausesComparator(results_PBIL, AnalyzeResults.NUM_LITERALS));
+		this.results_sortedByLiterals_PBIL.putAll(results_PBIL);		
+		// Maintain a map sorted by number of clauses for PBIL.
+		this.results_sortedByClauses_PBIL = new TreeMap<String, HashMap<String, String>> (new 
+				NumLiteralsOrClausesComparator(results_PBIL, AnalyzeResults.NUM_CLAUSES));
+		this.results_sortedByClauses_PBIL.putAll(results_PBIL);		
+		
 		// Initialize.
 		initializeArrayList(GA);
 		initializeArrayList(PBIL);
@@ -72,9 +85,9 @@ public class GenerateGraphData {
 	private void initializeArrayList(String algorithm) {
 		TreeMap<String, HashMap<String, String>> results;
 		if (algorithm.equalsIgnoreCase(GA)) {
-			results = results_GA;
+			results = results_sortedByLiterals_GA;
 		} else {
-			results = results_PBIL;
+			results = results_sortedByLiterals_PBIL;
 		}
 		// Populate the values in ArrayLists.
 		for (String problem : results.keySet()) {
