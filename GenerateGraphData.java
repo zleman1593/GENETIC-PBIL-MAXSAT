@@ -75,19 +75,32 @@ public class GenerateGraphData {
 				NumLiteralsOrClausesComparator(results_PBIL, AnalyzeResults.NUM_CLAUSES));
 		this.results_sortedByClauses_PBIL.putAll(results_PBIL);		
 		
-		// Initialize.
-		initializeArrayList(GA);
-		initializeArrayList(PBIL);
-		// Write to all files.
-		writeGraphData();
+		// Sort problems by number of literals.
+		initializeArrayList(GA, AnalyzeResults.NUM_LITERALS);
+		initializeArrayList(PBIL, AnalyzeResults.NUM_LITERALS);
+		// Write to files involving number of literals.
+		writeGraphData_sortedByLiterals();
+		// Sort problems by number of clauses.
+		initializeArrayList(GA, AnalyzeResults.NUM_CLAUSES);
+		initializeArrayList(PBIL, AnalyzeResults.NUM_CLAUSES);
+		// Write to files involving number of clauses.
+		writeGraphData_sortedByLiterals();
 	}
 
-	private void initializeArrayList(String algorithm) {
+	private void initializeArrayList(String algorithm, String sortedKey) {
 		TreeMap<String, HashMap<String, String>> results;
-		if (algorithm.equalsIgnoreCase(GA)) {
-			results = results_sortedByLiterals_GA;
+		if (sortedKey.equalsIgnoreCase(AnalyzeResults.NUM_LITERALS)) {
+			if (algorithm.equalsIgnoreCase(GA)) {
+				results = results_sortedByLiterals_GA;
+			} else {
+				results = results_sortedByLiterals_PBIL;
+			} 
 		} else {
-			results = results_sortedByLiterals_PBIL;
+			if (algorithm.equalsIgnoreCase(GA)) {
+				results = results_sortedByClauses_GA;
+			} else {
+				results = results_sortedByClauses_PBIL;
+			} 
 		}
 		// Populate the values in ArrayLists.
 		for (String problem : results.keySet()) {
@@ -138,29 +151,20 @@ public class GenerateGraphData {
 			}
 		}
 	}
-
-	// Decide which graph data to write to files.
-	private void writeGraphData() throws IOException {
+	
+	
+	// Graph data to write to files, with problems sorted by number of literals.
+	private void writeGraphData_sortedByLiterals() throws IOException {
 		/* Percentage-related, for non-timed-out trials */
 		// Number of literals vs.best percentage solved. 
 		writeToFile(GA, AnalyzeResults.NUM_LITERALS, numLiterals_GA, 
 				AnalyzeResults.BEST_PERCENTAGE, bestPercentage_GA);
 		writeToFile(PBIL, AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
 				AnalyzeResults.BEST_PERCENTAGE, bestPercentage_PBIL);
-		// Number of clauses vs. best percentage solved.
-		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
-				AnalyzeResults.BEST_PERCENTAGE, bestPercentage_GA);
-		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
-				AnalyzeResults.BEST_PERCENTAGE, bestPercentage_PBIL);
 		// Number of literals vs.average percentage solved.
 		writeToFile(GA, AnalyzeResults.NUM_LITERALS, numLiterals_GA, 
 				AnalyzeResults.AVG_PERCENTAGE, avgPercentage_GA);
 		writeToFile(PBIL, AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
-				AnalyzeResults.AVG_PERCENTAGE, avgPercentage_PBIL);
-		// Number of clauses vs.average percentage solved.
-		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
-				AnalyzeResults.AVG_PERCENTAGE, avgPercentage_GA);
-		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL,
 				AnalyzeResults.AVG_PERCENTAGE, avgPercentage_PBIL);
 		
 		/* Percentage-related, for timed-out trials */
@@ -169,20 +173,10 @@ public class GenerateGraphData {
 				AnalyzeResults.BEST_PERCENTAGE_TIMEOUT, bestPercentage_TimeOut_GA);
 		writeToFile(PBIL, AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
 				AnalyzeResults.BEST_PERCENTAGE_TIMEOUT, bestPercentage_TimeOut_PBIL);
-		// Number of clauses vs. best percentage solved.
-		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
-				AnalyzeResults.BEST_PERCENTAGE_TIMEOUT, bestPercentage_TimeOut_GA);
-		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
-				AnalyzeResults.BEST_PERCENTAGE_TIMEOUT, bestPercentage_TimeOut_PBIL);
 		// Number of literals vs.average percentage solved.
 		writeToFile(GA, AnalyzeResults.NUM_LITERALS, numLiterals_GA, 
 				AnalyzeResults.AVG_PERCENTAGE_TIMEOUT, avgPercentage_TimeOut_GA);
 		writeToFile(PBIL, AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
-				AnalyzeResults.AVG_PERCENTAGE_TIMEOUT, avgPercentage_TimeOut_PBIL);
-		// Number of clauses vs.average percentage solved.
-		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
-				AnalyzeResults.AVG_PERCENTAGE_TIMEOUT, avgPercentage_TimeOut_GA);
-		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL,
 				AnalyzeResults.AVG_PERCENTAGE_TIMEOUT, avgPercentage_TimeOut_PBIL);
 		
 		/* Best generation-related for non timed-out trials */
@@ -191,42 +185,22 @@ public class GenerateGraphData {
 				AnalyzeResults.BEST_GENERATION, bestGeneration_GA);
 		writeToFile(PBIL, AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
 				AnalyzeResults.BEST_GENERATION, bestGeneration_PBIL);
-		// Number of clauses vs. best generation.
-		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
-				AnalyzeResults.BEST_GENERATION, bestGeneration_GA);
-		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
-				AnalyzeResults.BEST_GENERATION, bestGeneration_PBIL);
 		// Number of literals vs. average best generation.
 		writeToFile(GA, AnalyzeResults.NUM_LITERALS, numLiterals_GA, 
 				AnalyzeResults.AVG_BEST_GENERATION, avgBestGeneration_GA);
 		writeToFile(PBIL, AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
 				AnalyzeResults.AVG_BEST_GENERATION, avgBestGeneration_PBIL);
-		// Number of clauses vs. average best generation.
-		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
-				AnalyzeResults.AVG_BEST_GENERATION, avgBestGeneration_GA);
-		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
-				AnalyzeResults.AVG_BEST_GENERATION, avgBestGeneration_PBIL);
-		
+	
 		/* Best generation-related for timed-out trials */
 		// Number of literals vs. best generation.
 		writeToFile(GA, AnalyzeResults.NUM_LITERALS, numLiterals_GA, 
 				AnalyzeResults.BEST_GENERATION_TIMEOUT, bestGeneration_TimeOut_GA);
 		writeToFile(PBIL, AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
 				AnalyzeResults.BEST_GENERATION_TIMEOUT, bestGeneration_TimeOut_PBIL);
-		// Number of clauses vs. best generation.
-		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
-				AnalyzeResults.BEST_GENERATION_TIMEOUT, bestGeneration_TimeOut_GA);
-		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
-				AnalyzeResults.BEST_GENERATION_TIMEOUT, bestGeneration_TimeOut_PBIL);
 		// Number of literals vs. average best generation.
 		writeToFile(GA, AnalyzeResults.NUM_LITERALS, numLiterals_GA, 
 				AnalyzeResults.AVG_BEST_GENERATION_TIMEOUT, avgBestGeneration_TimeOut_GA);
 		writeToFile(PBIL, AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
-				AnalyzeResults.AVG_BEST_GENERATION_TIMEOUT, avgBestGeneration_TimeOut_PBIL);
-		// Number of clauses vs. average best generation.
-		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
-				AnalyzeResults.AVG_BEST_GENERATION_TIMEOUT, avgBestGeneration_TimeOut_GA);
-		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
 				AnalyzeResults.AVG_BEST_GENERATION_TIMEOUT, avgBestGeneration_TimeOut_PBIL);
 		
 		/* Time-related */
@@ -234,27 +208,80 @@ public class GenerateGraphData {
 		writeToFile(GA, AnalyzeResults.NUM_LITERALS, numLiterals_GA, 
 				AnalyzeResults.AVG_NUM_TIMEOUTS, avgNumTimeOuts_GA);
 		writeToFile(PBIL, AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
-				AnalyzeResults.AVG_NUM_TIMEOUTS, avgNumTimeOuts_PBIL);
-		// Number of clauses vs. average number of time outs.
-		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
-				AnalyzeResults.AVG_NUM_TIMEOUTS, avgNumTimeOuts_GA);
-		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
-				AnalyzeResults.AVG_NUM_TIMEOUTS, avgNumTimeOuts_PBIL);
+				AnalyzeResults.AVG_NUM_TIMEOUTS, avgNumTimeOuts_PBIL);	
 		// Number of literals vs. best execution time.
 		writeToFile(GA, AnalyzeResults.NUM_LITERALS, numLiterals_GA, 
 				AnalyzeResults.BEST_EXECUTION_TIME, bestExecutionTime_GA);
 		writeToFile(PBIL, AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
-				AnalyzeResults.BEST_EXECUTION_TIME, bestExecutionTime_PBIL);
-		// Number of clauses vs. best execution time.
-		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
-				AnalyzeResults.BEST_EXECUTION_TIME, bestExecutionTime_GA);
-		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
 				AnalyzeResults.BEST_EXECUTION_TIME, bestExecutionTime_PBIL);
 		// Number of literals vs. average execution time.
 		writeToFile(GA, AnalyzeResults.NUM_LITERALS, numLiterals_GA, 
 				AnalyzeResults.AVG_EXECUTION_TIME, avgExecutionTime_GA);
 		writeToFile(PBIL, AnalyzeResults.NUM_LITERALS, numLiterals_PBIL, 
 				AnalyzeResults.AVG_EXECUTION_TIME, avgExecutionTime_PBIL);
+	}
+
+	// Graph data to write to files, with problems sorted by number of clauses.
+	private void writeGraphData_sortedByClauses() throws IOException {
+		/* Percentage-related, for non-timed-out trials */
+		// Number of clauses vs. best percentage solved.
+		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
+				AnalyzeResults.BEST_PERCENTAGE, bestPercentage_GA);
+		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
+				AnalyzeResults.BEST_PERCENTAGE, bestPercentage_PBIL);
+		// Number of clauses vs.average percentage solved.
+		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
+				AnalyzeResults.AVG_PERCENTAGE, avgPercentage_GA);
+		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL,
+				AnalyzeResults.AVG_PERCENTAGE, avgPercentage_PBIL);
+		
+		/* Percentage-related, for timed-out trials */
+		// Number of clauses vs. best percentage solved.
+		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
+				AnalyzeResults.BEST_PERCENTAGE_TIMEOUT, bestPercentage_TimeOut_GA);
+		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
+				AnalyzeResults.BEST_PERCENTAGE_TIMEOUT, bestPercentage_TimeOut_PBIL);
+		// Number of clauses vs.average percentage solved.
+		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
+				AnalyzeResults.AVG_PERCENTAGE_TIMEOUT, avgPercentage_TimeOut_GA);
+		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL,
+				AnalyzeResults.AVG_PERCENTAGE_TIMEOUT, avgPercentage_TimeOut_PBIL);
+		
+		/* Best generation-related for non timed-out trials */
+		// Number of clauses vs. best generation.
+		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
+				AnalyzeResults.BEST_GENERATION, bestGeneration_GA);
+		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
+				AnalyzeResults.BEST_GENERATION, bestGeneration_PBIL);
+		// Number of clauses vs. average best generation.
+		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
+				AnalyzeResults.AVG_BEST_GENERATION, avgBestGeneration_GA);
+		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
+				AnalyzeResults.AVG_BEST_GENERATION, avgBestGeneration_PBIL);
+		
+		/* Best generation-related for timed-out trials */
+		// Number of clauses vs. best generation.
+		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
+				AnalyzeResults.BEST_GENERATION_TIMEOUT, bestGeneration_TimeOut_GA);
+		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
+				AnalyzeResults.BEST_GENERATION_TIMEOUT, bestGeneration_TimeOut_PBIL);
+		// Number of clauses vs. average best generation.
+		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
+				AnalyzeResults.AVG_BEST_GENERATION_TIMEOUT, avgBestGeneration_TimeOut_GA);
+		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
+				AnalyzeResults.AVG_BEST_GENERATION_TIMEOUT, avgBestGeneration_TimeOut_PBIL);
+		
+		/* Time-related */
+		// Number of clauses vs. average number of time outs.
+		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
+				AnalyzeResults.AVG_NUM_TIMEOUTS, avgNumTimeOuts_GA);
+		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
+				AnalyzeResults.AVG_NUM_TIMEOUTS, avgNumTimeOuts_PBIL);
+		// Number of clauses vs. best execution time.
+		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
+				AnalyzeResults.BEST_EXECUTION_TIME, bestExecutionTime_GA);
+		writeToFile(PBIL, AnalyzeResults.NUM_CLAUSES, numClauses_PBIL, 
+				AnalyzeResults.BEST_EXECUTION_TIME, bestExecutionTime_PBIL);
 		// Number of clauses vs. average execution time.
 		writeToFile(GA, AnalyzeResults.NUM_CLAUSES, numClauses_GA, 
 				AnalyzeResults.AVG_EXECUTION_TIME, avgExecutionTime_GA);
