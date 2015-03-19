@@ -11,9 +11,12 @@ public class GenerateGraphData {
 	static final String GA = "GA";
 	static final String PBIL = "PBIL";
 	
-	// All results.
-	private TreeMap<String, HashMap<String, String>> results_GA;
-	private TreeMap<String, HashMap<String, String>> results_PBIL;
+	// Results where the problems are sorted by the number of literals, in increasing order.
+	private TreeMap<String, HashMap<String, String>> results_sortedByLiterals_GA;
+	private TreeMap<String, HashMap<String, String>> results_sortedByLiterals_PBIL;
+	// Results where the problems are sorted by the number of clauses, in increasing order.
+	private TreeMap<String, HashMap<String, String>> results_sortedByClauses_GA;
+	private TreeMap<String, HashMap<String, String>> results_sortedByClauses_PBIL;
 	// Folder path.
 	String folderPath = "Graph_Data";
 	// Current graph file number.
@@ -55,8 +58,10 @@ public class GenerateGraphData {
 			HashMap<String, HashMap<String, String>> results_GA,
 			HashMap<String, HashMap<String, String>> results_PBIL)
 			throws IOException {
-		this.results_GA = new TreeMap<String, HashMap<String, String>>(results_GA);
-		this.results_PBIL = new TreeMap<String, HashMap<String, String>>(results_PBIL);
+		this.results_sortedByLiterals_GA = new TreeMap<String, HashMap<String, String>>(results_GA);
+		this.results_sortedByLiterals_PBIL = new TreeMap<String, HashMap<String, String>>(results_PBIL);
+		this.results_sortedByClauses_GA = new TreeMap<String, HashMap<String, String>>(results_PBIL);
+		this.results_sortedByClauses_PBIL = new TreeMap<String, HashMap<String, String>>(results_PBIL);
 		// Initialize.
 		initializeArrayList(GA);
 		initializeArrayList(PBIL);
