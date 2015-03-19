@@ -1,22 +1,30 @@
 GA
-number of literals
-50
-60
-64
-100
-125
-140
-150
-216
-343
+number of clauses
+384
+750
+800
+900
+1200
+1258
+1260
+1296
+1300
+1350
+1400
+1500
+2058
 
-average number of timeouts
-5
-5
-17
-17
-17
-17
-17
-6
-17
+average best generation
+-1
+-1
+15
+-1
+-1
+-1
+-1
+-1
+-1
+-1
+-1
+-1
+-1

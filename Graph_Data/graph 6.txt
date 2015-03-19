@@ -10,7 +10,7 @@ number of literals
 216
 343
 
-average percentage
+best percentage for timeouts
 -1.0
 -1.0
 -1.0

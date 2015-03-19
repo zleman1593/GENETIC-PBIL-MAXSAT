@@ -84,24 +84,29 @@ public class GenerateGraphData {
 		initializeArrayList(GA, AnalyzeResults.NUM_CLAUSES);
 		initializeArrayList(PBIL, AnalyzeResults.NUM_CLAUSES);
 		// Write to files involving number of clauses.
-		writeGraphData_sortedByLiterals();
+		writeGraphData_sortedByClauses();
+		
+		System.out.println("Finished writing all data.");
 	}
 
 	private void initializeArrayList(String algorithm, String sortedKey) {
 		TreeMap<String, HashMap<String, String>> results;
-		if (sortedKey.equalsIgnoreCase(AnalyzeResults.NUM_LITERALS)) {
-			if (algorithm.equalsIgnoreCase(GA)) {
+		if (algorithm.equalsIgnoreCase(GA)) {
+			if (sortedKey.equalsIgnoreCase(AnalyzeResults.NUM_LITERALS)) {
 				results = results_sortedByLiterals_GA;
 			} else {
-				results = results_sortedByLiterals_PBIL;
-			} 
-		} else {
-			if (algorithm.equalsIgnoreCase(GA)) {
 				results = results_sortedByClauses_GA;
+			}
+			clearArrayLists_GA();
+		} else {
+			if (sortedKey.equalsIgnoreCase(AnalyzeResults.NUM_LITERALS)) {
+				results = results_sortedByLiterals_PBIL;
 			} else {
 				results = results_sortedByClauses_PBIL;
-			} 
-		}
+			}
+			clearArrayLists_PBIL();
+		} 
+		
 		// Populate the values in ArrayLists.
 		for (String problem : results.keySet()) {
 			HashMap<String, String> resultsValues = results.get(problem);
@@ -152,6 +157,39 @@ public class GenerateGraphData {
 		}
 	}
 	
+	// Clears GA ArrayList entries.
+	private void clearArrayLists_GA() {
+		numLiterals_GA.clear();
+		numClauses_GA.clear();
+		avgNumTimeOuts_GA.clear();
+		bestExecutionTime_GA.clear();
+		avgExecutionTime_GA.clear();
+		bestGeneration_GA.clear();
+		bestGeneration_TimeOut_GA.clear();
+		avgBestGeneration_GA.clear();
+		avgBestGeneration_TimeOut_GA.clear();
+		bestPercentage_GA.clear();
+		bestPercentage_TimeOut_GA.clear();
+		avgPercentage_GA.clear();
+		avgPercentage_TimeOut_GA.clear();
+	}
+	
+	// Clears PBIL ArrayList entries.
+	private void clearArrayLists_PBIL() {
+		numLiterals_PBIL.clear();
+		numClauses_PBIL.clear();
+		avgNumTimeOuts_PBIL.clear();
+		bestExecutionTime_PBIL.clear();
+		avgExecutionTime_PBIL.clear();
+		bestGeneration_PBIL.clear();
+		bestGeneration_TimeOut_PBIL.clear();
+		avgBestGeneration_PBIL.clear();
+		avgBestGeneration_TimeOut_PBIL.clear();
+		bestPercentage_PBIL.clear();
+		bestPercentage_TimeOut_PBIL.clear();
+		avgPercentage_PBIL.clear();
+		avgPercentage_TimeOut_PBIL.clear();
+	}
 	
 	// Graph data to write to files, with problems sorted by number of literals.
 	private void writeGraphData_sortedByLiterals() throws IOException {

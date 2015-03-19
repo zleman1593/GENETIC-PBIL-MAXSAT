@@ -1,16 +1,16 @@
 PBIL
-number of clauses
-900
-1000
-384
-900
-750
-1258
-1350
-1296
-2058
+number of literals
+50
+60
+64
+100
+125
+140
+150
+216
+343
 
-best generation
+best execution time
 2147483647
 2147483647
 2147483647
