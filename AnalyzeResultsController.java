@@ -11,12 +11,6 @@ public class AnalyzeResultsController {
 		results_GA = analyzeResults.getParsedResults_GA();
 		results_PBIL = analyzeResults.getParsedResults_PBIL();
 		
-		// DEBUGGING
-		
-		int num = results_PBIL.get("5SAT/HG-5SAT-V100-C1800-100.cnf").size();
-		System.out.println("NUMBER OF LITERALS " + num);
-				
-				
 		// Print out results.
 //		test("GA");
 //		test("PBIL");

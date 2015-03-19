@@ -14,15 +14,6 @@ public class NumLiteralsOrClausesComparator implements Comparator<String> {
 		public int compare(String problemA, String problemB) {
 			String valueA = map.get(problemA).get(key);
 			String valueB = map.get(problemB).get(key);
-
-			if (valueA == null) {
-				System.out.println(problemA);
-				System.out.println(key);
-			}
-			if (valueB == null) {
-				System.out.println(problemB);
-				System.out.println(key);
-			}
 			return Integer.parseInt(valueA) - (Integer.parseInt(valueB));
 		}
 }

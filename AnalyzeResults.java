@@ -374,12 +374,6 @@ public class AnalyzeResults {
 					String problemFileName = getProblemName(bufferReader.readLine());
 					// Add to set.
 					setOfUsedProblems.add(problemFileName.trim());
-					
-					// DEBUGGING
-					if (problemFileName.trim().equalsIgnoreCase("5SAT/HG-5SAT-V100-C1800-100.cnf")) {
-						System.out.println(resultFilePath);
-					}
-					
 					bufferReader.close();
 				} 
 				catch(FileNotFoundException e) {
