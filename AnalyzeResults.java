@@ -337,6 +337,10 @@ public class AnalyzeResults {
 				results.put(AVG_EXECUTION_TIME, String.valueOf(avgExecutionTime));
 				results.put(BEST_GENERATION, String.valueOf(bestGeneration));
 				results.put(BEST_GENERATION_TIMEOUT, String.valueOf(bestGeneration_TimeOut));
+				
+				// DEBUGGING
+				System.out.println("AVG BEST GEN " + avgBestGeneration);
+				
 				results.put(AVG_BEST_GENERATION, String.valueOf(avgBestGeneration));
 				results.put(AVG_BEST_GENERATION_TIMEOUT, String.valueOf(avgBestGeneration_TimeOut));
 				results.put(BEST_PERCENTAGE, String.valueOf(bestPercentage));

@@ -58,19 +58,18 @@ public class GenerateGraphData {
 			HashMap<String, HashMap<String, String>> results_GA,
 			HashMap<String, HashMap<String, String>> results_PBIL)
 			throws IOException {
+		processResults(results_GA);
+		processResults(results_PBIL);
+		
+		// DEBUGGING
+		for (String prob : results_GA.keySet()) {
+			System.out.println("NUM CLAUSES: " + results_GA.get(prob).get(AnalyzeResults.NUM_CLAUSES));
+		}
+		
 		// Maintain a map sorted by number of literals for GA.
 		this.results_sortedByLiterals_GA = new TreeMap<String, HashMap<String, String>> (new 
 				NumLiteralsOrClausesComparator(results_GA, AnalyzeResults.NUM_LITERALS));
 		this.results_sortedByLiterals_GA.putAll(results_GA);
-		
-		//DEBUGGING
-		System.out.println("ORIGINAL SIZE " + results_GA.keySet().size());
-		for (String prob : results_GA.keySet()) {
-			System.out.println("NUM LITERALS " + results_GA.get(prob).get(AnalyzeResults.NUM_LITERALS));
-		}
-		System.out.println("KEYSET SIZE " + this.results_sortedByLiterals_GA.keySet().size());
-		
-		
 		// Maintain a map sorted by number of clauses for GA.
 		this.results_sortedByClauses_GA = new TreeMap<String, HashMap<String, String>> (new 
 				NumLiteralsOrClausesComparator(results_GA, AnalyzeResults.NUM_CLAUSES));
@@ -381,5 +380,32 @@ public class GenerateGraphData {
 	// Helper method: Return path to specified file that ends with n.
 	private String getFilePath(int n) {
 		return folderPath + "/graph " + String.valueOf(n) + ".txt";
+	}
+	
+	private void processResults(HashMap<String, HashMap<String, String>> map) {
+		for (String problem : map.keySet()) {
+			int addLiteral = 1;
+			HashMap<String, String>values = map.get(problem);
+			int numLiterals = Integer.parseInt(values.get(AnalyzeResults.NUM_LITERALS));
+			int numClauses = Integer.parseInt(values.get(AnalyzeResults.NUM_CLAUSES));
+			
+			if (numLiterals == 60) {
+				values.put(AnalyzeResults.NUM_LITERALS, "61");
+			} else if (numLiterals == 140) {
+				int newNum = numLiterals + addLiteral;
+				values.put(AnalyzeResults.NUM_LITERALS, String.valueOf(newNum));
+				addLiteral++;
+			}
+			
+			if (numClauses == 900) {
+				values.put(AnalyzeResults.NUM_CLAUSES, "901");
+			} else if (numClauses == 1200) {
+				values.put(AnalyzeResults.NUM_CLAUSES, "1201");
+			} else if (numClauses == 1260) {			
+				values.put(AnalyzeResults.NUM_CLAUSES, "1261");
+			}
+			
+			map.put(problem, values);
+		}
 	}
 }
