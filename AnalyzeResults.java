@@ -322,6 +322,7 @@ public class AnalyzeResults {
 					double averageSatClauses_TimeOut = numClauses - totalUnsatClauses_TimeOut / totalNumTimeOuts;
 					avgPercentage_TimeOut = averageSatClauses_TimeOut / (double)bestKnownSatClauses;
 					
+					bestPercentage_TimeOut = (double)(numClauses - fewestUnsatClauses_TimeOut)/ (double)bestKnownSatClauses;
 				}
 				
 				// Push values to HashMap.

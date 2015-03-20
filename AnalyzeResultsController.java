@@ -11,6 +11,9 @@ public class AnalyzeResultsController {
 		results_GA = analyzeResults.getParsedResults_GA();
 		results_PBIL = analyzeResults.getParsedResults_PBIL();
 		
+		System.out.println("GA SIZE: " + results_GA.keySet().size());
+		System.out.println("PBIL SIZE: " + results_PBIL.keySet().size());
+		
 		// Print out results.
 //		test("GA");
 //		test("PBIL");

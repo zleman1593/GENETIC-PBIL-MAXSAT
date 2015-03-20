@@ -62,6 +62,15 @@ public class GenerateGraphData {
 		this.results_sortedByLiterals_GA = new TreeMap<String, HashMap<String, String>> (new 
 				NumLiteralsOrClausesComparator(results_GA, AnalyzeResults.NUM_LITERALS));
 		this.results_sortedByLiterals_GA.putAll(results_GA);
+		
+		//DEBUGGING
+		System.out.println("ORIGINAL SIZE " + results_GA.keySet().size());
+		for (String prob : results_GA.keySet()) {
+			System.out.println("NUM LITERALS " + results_GA.get(prob).get(AnalyzeResults.NUM_LITERALS));
+		}
+		System.out.println("KEYSET SIZE " + this.results_sortedByLiterals_GA.keySet().size());
+		
+		
 		// Maintain a map sorted by number of clauses for GA.
 		this.results_sortedByClauses_GA = new TreeMap<String, HashMap<String, String>> (new 
 				NumLiteralsOrClausesComparator(results_GA, AnalyzeResults.NUM_CLAUSES));
