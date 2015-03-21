@@ -62,9 +62,12 @@ public class GenerateGraphData {
 		processResults(results_PBIL);
 		
 		// DEBUGGING
-		for (String prob : results_GA.keySet()) {
-			System.out.println("NUM CLAUSES: " + results_GA.get(prob).get(AnalyzeResults.NUM_CLAUSES));
-		}
+//		for (String prob : results_GA.keySet()) {
+//			System.out.println("NUM CLAUSES: " + results_GA.get(prob).get(AnalyzeResults.NUM_CLAUSES));
+//		}
+		
+		
+		
 		
 		// Maintain a map sorted by number of literals for GA.
 		this.results_sortedByLiterals_GA = new TreeMap<String, HashMap<String, String>> (new 
@@ -81,7 +84,18 @@ public class GenerateGraphData {
 		// Maintain a map sorted by number of clauses for PBIL.
 		this.results_sortedByClauses_PBIL = new TreeMap<String, HashMap<String, String>> (new 
 				NumLiteralsOrClausesComparator(results_PBIL, AnalyzeResults.NUM_CLAUSES));
-		this.results_sortedByClauses_PBIL.putAll(results_PBIL);		
+		this.results_sortedByClauses_PBIL.putAll(results_PBIL);	
+		
+		reprocessResults(this.results_sortedByLiterals_GA);
+		reprocessResults(this.results_sortedByClauses_GA);
+		reprocessResults(this.results_sortedByLiterals_PBIL);
+		reprocessResults(this.results_sortedByClauses_PBIL);
+		
+		System.out.println("GA: " + results_GA.keySet().size());
+		System.out.println("PBIL: " + results_PBIL.keySet().size());
+		
+		System.out.println("GA SIZE: " + this.results_sortedByClauses_GA.keySet().size());
+		System.out.println("PBIL SIZE: " + this.results_sortedByClauses_PBIL.keySet().size());
 		
 		// Sort problems by number of literals.
 		initializeArrayList(GA, AnalyzeResults.NUM_LITERALS);
@@ -382,6 +396,10 @@ public class GenerateGraphData {
 		return folderPath + "/graph " + String.valueOf(n) + ".txt";
 	}
 	
+	// This is a temporary hack to deal with the issue where using the comparator 
+	// deletes problems with the same number of literals/clauses.
+	// The values are the duplicated number of literals/clauses.
+	// This horrible piece of code will need to be rewritten.
 	private void processResults(HashMap<String, HashMap<String, String>> map) {
 		for (String problem : map.keySet()) {
 			int addLiteral = 1;
@@ -403,6 +421,31 @@ public class GenerateGraphData {
 				values.put(AnalyzeResults.NUM_CLAUSES, "1201");
 			} else if (numClauses == 1260) {			
 				values.put(AnalyzeResults.NUM_CLAUSES, "1261");
+			}
+			
+			map.put(problem, values);
+		}
+	}
+	
+	// To undo the effects of the above.
+	private void reprocessResults(TreeMap<String, HashMap<String, String>> map) {
+		for (String problem : map.keySet()) {
+			HashMap<String, String>values = map.get(problem);
+			int numLiterals = Integer.parseInt(values.get(AnalyzeResults.NUM_LITERALS));
+			int numClauses = Integer.parseInt(values.get(AnalyzeResults.NUM_CLAUSES));
+			
+			if (numLiterals == 61) {
+				values.put(AnalyzeResults.NUM_LITERALS, "60");
+			} else if (numLiterals > 140 && numLiterals < 150) {
+				values.put(AnalyzeResults.NUM_LITERALS, String.valueOf(140));
+			}
+			
+			if (numClauses == 901) {
+				values.put(AnalyzeResults.NUM_CLAUSES, "900");
+			} else if (numClauses == 1201) {
+				values.put(AnalyzeResults.NUM_CLAUSES, "1200");
+			} else if (numClauses == 1261) {			
+				values.put(AnalyzeResults.NUM_CLAUSES, "1260");
 			}
 			
 			map.put(problem, values);

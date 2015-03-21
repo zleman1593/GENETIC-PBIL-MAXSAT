@@ -84,6 +84,18 @@ public class AnalyzeResults {
 
 	// Constructor.
 	public AnalyzeResults() throws IOException {
+		deleteProblemsUnusedByGA();
+		
+		// DEBUGGING
+		System.out.println("Length " + MAXSATProblems.length);
+		for (String prob : MAXSATProblems) {
+			System.out.println("Prob " + prob);
+		}
+		System.out.println("Length" + MAXSATSolutions.length);
+		for (int i : MAXSATSolutions) {
+			System.out.println("solution " + i);
+		}
+		
 		// Sort files by problem name for each algorithm.
 		groupFilesByProblem();
 		// Initialize parsed results.
@@ -337,10 +349,6 @@ public class AnalyzeResults {
 				results.put(AVG_EXECUTION_TIME, String.valueOf(avgExecutionTime));
 				results.put(BEST_GENERATION, String.valueOf(bestGeneration));
 				results.put(BEST_GENERATION_TIMEOUT, String.valueOf(bestGeneration_TimeOut));
-				
-				// DEBUGGING
-				System.out.println("AVG BEST GEN " + avgBestGeneration);
-				
 				results.put(AVG_BEST_GENERATION, String.valueOf(avgBestGeneration));
 				results.put(AVG_BEST_GENERATION_TIMEOUT, String.valueOf(avgBestGeneration_TimeOut));
 				results.put(BEST_PERCENTAGE, String.valueOf(bestPercentage));
@@ -361,6 +369,35 @@ public class AnalyzeResults {
 			}
 		}
 	}
+	
+	private void deleteProblemsUnusedByGA() {
+		int unusedProblems = 5;
+		String[] problemsUsedByBothAlgorithms = new String[MAXSATProblems.length - unusedProblems];
+		int[] solutionsUsedByBothAlgorithms = new int[MAXSATSolutions.length - unusedProblems];
+		ArrayList<Integer> usedIndices = new ArrayList<Integer>();
+
+		for (int i = 0; i < MAXSATProblems.length; i++) {
+			String problem = MAXSATProblems[i];
+			if (!problem.equals("140v/s2v140c1600-10.cnf") &&
+					!problem.equals("5SAT/HG-5SAT-V100-C1800-100.cnf") &&
+					!problem.equals("60v/s3v60c1000-1.cnf") &&
+					!problem.equals("5SAT/HG-5SAT-V50-C900-5.cnf") &&
+					!problem.equals("maxcut-140-630-0.8/maxcut-140-630-0.8-9.cnf")) {
+				usedIndices.add(i);
+			}
+		}
+		
+		int index = 0;
+		for (Integer i: usedIndices) {
+			problemsUsedByBothAlgorithms[index] = MAXSATProblems[i];
+			solutionsUsedByBothAlgorithms[index] = MAXSATSolutions[i];
+			index++;
+		}
+		
+		MAXSATProblems = problemsUsedByBothAlgorithms;
+		MAXSATSolutions = solutionsUsedByBothAlgorithms;
+	}
+	
 		
 	/* Find out which problems are unused, if any, because of some unfinished experiments.
 	 * 
