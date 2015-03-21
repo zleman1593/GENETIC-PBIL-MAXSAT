@@ -12,10 +12,10 @@ number of literals
 
 average execution time
 0
-18387
-35926
+73551
+44217
 0
-8061
+9921
 0
 0
 0

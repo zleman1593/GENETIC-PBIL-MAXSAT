@@ -11,8 +11,8 @@ number of literals
 343
 
 best percentage
-1.001111111111111
-1.0
+-1.0
+-1.0
 -1.0
 -1.0
 -1.0

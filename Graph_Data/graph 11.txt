@@ -11,8 +11,8 @@ number of literals
 343
 
 average best generation
-0
-15
+-1
+-1
 -1
 -1
 -1

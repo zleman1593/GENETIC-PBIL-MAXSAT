@@ -11,12 +11,12 @@ number of literals
 343
 
 best generation for timeouts
-15
-18
+5
+10
 12
 10
 12
-63
+11
 8
 13
 7

@@ -11,8 +11,8 @@ number of literals
 343
 
 average percentage
-1.0
-1.035294117647059
+-1.0
+-1.0
 -1.0
 -1.0
 -1.0

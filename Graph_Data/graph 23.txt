@@ -17,7 +17,7 @@ number of clauses
 best percentage
 -1.0
 -1.0
-1.0
+-1.0
 -1.0
 -1.0
 -1.0

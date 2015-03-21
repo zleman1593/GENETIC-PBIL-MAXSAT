@@ -54,14 +54,16 @@ public class AnalyzeResults {
 	static final int MAX_ITERATION = Integer.MAX_VALUE;
 	
 	/* Files */
-	// A list of the names of MAXSAT problems.
-	String[] MAXSATProblems = TestController.files; 		
-	// Unsatisfied clauses from currently known best algorithm.
-	int[] MAXSATSolutions = TestController.maxValues;		
 	// Path of source folder that contains all the results.
 	String folderPath = "Combined_Results"; 				
 	// A list of all the result files.
 	File[] resultsFiles = new File(folderPath).listFiles(); 
+	// Indices at the original TestController.problems array, of problems used by both algorithms. 
+	ArrayList<Integer> indicesOfProblemsUsed = indicesOfProblemsUsedByBothAlgorithms();
+	// A list of the names of MAXSAT problems used by both algorithms.
+	String[] MAXSATProblems = deleteProblemsUnusedByGA(); 		
+	// Unsatisfied clauses from currently known best algorithm.
+	int[] MAXSATSolutions = deleteSolutionsUnusedByGA();
 	
 	/* HashMap<String, HashMap> to store information on each problem for quick lookup.
 	 * KEY - String: Name of MAXSAT problem.
@@ -84,18 +86,6 @@ public class AnalyzeResults {
 
 	// Constructor.
 	public AnalyzeResults() throws IOException {
-		deleteProblemsUnusedByGA();
-		
-		// DEBUGGING
-		System.out.println("Length " + MAXSATProblems.length);
-		for (String prob : MAXSATProblems) {
-			System.out.println("Prob " + prob);
-		}
-		System.out.println("Length" + MAXSATSolutions.length);
-		for (int i : MAXSATSolutions) {
-			System.out.println("solution " + i);
-		}
-		
 		// Sort files by problem name for each algorithm.
 		groupFilesByProblem();
 		// Initialize parsed results.
@@ -173,7 +163,10 @@ public class AnalyzeResults {
 				}
 				// Push to map.
 				listOfFiles.add(filePath);
-				listOfProblems.put(problemName, listOfFiles);
+				// Only push if this problem is used by both GA and PBIL.
+				if (Arrays.asList(MAXSATProblems).contains(problemName)) {
+					listOfProblems.put(problemName, listOfFiles);
+				}
 			} catch (FileNotFoundException e) {
 				printFileNotFound(filePath);
 			}
@@ -183,16 +176,14 @@ public class AnalyzeResults {
 	// Run analysis and fill in values for the HashMaps.
 	private void analyzeResults(String prob, String algorithm) throws IOException {
 		ArrayList<String> files;
-		int numExperiments;
 		if (algorithm.equalsIgnoreCase("GA")) {
 			files = filesGroupedByProblem_GA.get(prob);
-			numExperiments = filesGroupedByProblem_GA.keySet().size();
 		} else {
 			files = filesGroupedByProblem_PBIL.get(prob);
-			numExperiments = filesGroupedByProblem_PBIL.keySet().size();
 		}
 
 		// Factors we are considering.
+		int numExperiments = files.size();
 		int totalNumTimeOuts = 0;
 		int numLiterals = 0;
 		int numClauses = 0;
@@ -370,14 +361,11 @@ public class AnalyzeResults {
 		}
 	}
 	
-	private void deleteProblemsUnusedByGA() {
-		int unusedProblems = 5;
-		String[] problemsUsedByBothAlgorithms = new String[MAXSATProblems.length - unusedProblems];
-		int[] solutionsUsedByBothAlgorithms = new int[MAXSATSolutions.length - unusedProblems];
+	
+	private ArrayList<Integer> indicesOfProblemsUsedByBothAlgorithms() {
 		ArrayList<Integer> usedIndices = new ArrayList<Integer>();
-
-		for (int i = 0; i < MAXSATProblems.length; i++) {
-			String problem = MAXSATProblems[i];
+		for (int i = 0; i < TestController.files.length; i++) {
+			String problem = TestController.files[i];
 			if (!problem.equals("140v/s2v140c1600-10.cnf") &&
 					!problem.equals("5SAT/HG-5SAT-V100-C1800-100.cnf") &&
 					!problem.equals("60v/s3v60c1000-1.cnf") &&
@@ -386,18 +374,28 @@ public class AnalyzeResults {
 				usedIndices.add(i);
 			}
 		}
-		
-		int index = 0;
-		for (Integer i: usedIndices) {
-			problemsUsedByBothAlgorithms[index] = MAXSATProblems[i];
-			solutionsUsedByBothAlgorithms[index] = MAXSATSolutions[i];
-			index++;
-		}
-		
-		MAXSATProblems = problemsUsedByBothAlgorithms;
-		MAXSATSolutions = solutionsUsedByBothAlgorithms;
+		return usedIndices;
 	}
 	
+	private String[] deleteProblemsUnusedByGA() {
+		String[] problemsUsedByBothAlgorithms = new String[indicesOfProblemsUsed.size()];
+		int index = 0;
+		for (Integer i: indicesOfProblemsUsed) {
+			problemsUsedByBothAlgorithms[index] = TestController.files[i];
+			index++;
+		}
+		return problemsUsedByBothAlgorithms;
+	}
+	
+	private int[] deleteSolutionsUnusedByGA() {
+		int[] solutionsUsedByBothAlgorithms = new int[indicesOfProblemsUsed.size()];
+		int index = 0;
+		for (Integer i: indicesOfProblemsUsed) {
+			solutionsUsedByBothAlgorithms[index] = TestController.maxValues[i];
+			index++;
+		}
+		return solutionsUsedByBothAlgorithms;
+	}
 		
 	/* Find out which problems are unused, if any, because of some unfinished experiments.
 	 * 
