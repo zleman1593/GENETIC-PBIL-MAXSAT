@@ -12,11 +12,9 @@ public class GenerateGraphData {
 	static final String PBIL = "PBIL";
 	
 	// Results where the problems are sorted by the number of literals, in increasing order.
-	private TreeMap<String, HashMap<String, String>> results_sortedByLiterals_GA;
-	private TreeMap<String, HashMap<String, String>> results_sortedByLiterals_PBIL;
+	private TreeMap<String, HashMap<String, String>> results_sorted_GA;
 	// Results where the problems are sorted by the number of clauses, in increasing order.
-	private TreeMap<String, HashMap<String, String>> results_sortedByClauses_GA;
-	private TreeMap<String, HashMap<String, String>> results_sortedByClauses_PBIL;
+	private TreeMap<String, HashMap<String, String>> results_sorted_PBIL;
 	// Folder path.
 	String folderPath = "Graph_Data";
 	// Current graph file number.
@@ -59,31 +57,29 @@ public class GenerateGraphData {
 			HashMap<String, HashMap<String, String>> results_PBIL)
 			throws IOException {
 		// Maintain a map sorted by number of literals/clauses for GA/PBIL.
-		this.results_sortedByLiterals_GA = new TreeMap<String, HashMap<String, String>>(results_GA);
-		this.results_sortedByClauses_GA = new TreeMap<String, HashMap<String, String>>(results_GA);
-		this.results_sortedByLiterals_PBIL = new TreeMap<String, HashMap<String, String>>(results_PBIL);		
-		this.results_sortedByClauses_PBIL = new TreeMap<String, HashMap<String, String>>(results_PBIL);	
+		this.results_sorted_GA = new TreeMap<String, HashMap<String, String>>(results_GA);
+		this.results_sorted_PBIL = new TreeMap<String, HashMap<String, String>>(results_PBIL);		
 
 		// Sort problems by number of literals.
-		processResults(this.results_sortedByLiterals_GA, AnalyzeResults.NUM_LITERALS);
+		processResults(this.results_sorted_GA, AnalyzeResults.NUM_LITERALS);
 		initializeArrayList(GA, AnalyzeResults.NUM_LITERALS);
-		undoProcessResults(this.results_sortedByLiterals_GA);
+		undoProcessResults(this.results_sorted_GA);
 		
-		processResults(this.results_sortedByLiterals_PBIL, AnalyzeResults.NUM_LITERALS);
+		processResults(this.results_sorted_PBIL, AnalyzeResults.NUM_LITERALS);
 		initializeArrayList(PBIL, AnalyzeResults.NUM_LITERALS);
-		undoProcessResults(this.results_sortedByLiterals_PBIL);
+		undoProcessResults(this.results_sorted_PBIL);
 		
 		// Write to files involving number of literals.
 		writeGraphData_sortedByLiterals();
 		
 		// Sort problems by number of clauses.
-		processResults(this.results_sortedByClauses_GA, AnalyzeResults.NUM_CLAUSES);
+		processResults(this.results_sorted_GA, AnalyzeResults.NUM_CLAUSES);
 		initializeArrayList(GA, AnalyzeResults.NUM_CLAUSES);
-		undoProcessResults(this.results_sortedByClauses_GA);
+		undoProcessResults(this.results_sorted_GA);
 
-		processResults(this.results_sortedByClauses_PBIL, AnalyzeResults.NUM_CLAUSES);
+		processResults(this.results_sorted_PBIL, AnalyzeResults.NUM_CLAUSES);
 		initializeArrayList(PBIL, AnalyzeResults.NUM_CLAUSES);
-		undoProcessResults(this.results_sortedByClauses_PBIL);
+		undoProcessResults(this.results_sorted_PBIL);
 		
 		// Write to files involving number of clauses.
 		writeGraphData_sortedByClauses();
@@ -94,18 +90,10 @@ public class GenerateGraphData {
 	private void initializeArrayList(String algorithm, String sortedKey) {
 		TreeMap<String, HashMap<String, String>> results;
 		if (algorithm.equalsIgnoreCase(GA)) {
-			if (sortedKey.equalsIgnoreCase(AnalyzeResults.NUM_LITERALS)) {
-				results = results_sortedByLiterals_GA;
-			} else {
-				results = results_sortedByClauses_GA;
-			}
+			results = results_sorted_GA;
 			clearArrayLists_GA();
 		} else {
-			if (sortedKey.equalsIgnoreCase(AnalyzeResults.NUM_LITERALS)) {
-				results = results_sortedByLiterals_PBIL;
-			} else {
-				results = results_sortedByClauses_PBIL;
-			}
+			results = results_sorted_PBIL;
 			clearArrayLists_PBIL();
 		} 
 		
