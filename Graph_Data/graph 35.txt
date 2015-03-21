@@ -4,8 +4,11 @@ number of clauses
 750
 800
 900
+900
+1200
 1200
 1258
+1260
 1260
 1296
 1300
@@ -19,8 +22,11 @@ best generation for timeouts
 6
 34
 1
+18
+6
 12
 3
+9
 17
 19
 2

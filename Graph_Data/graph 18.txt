@@ -1,4 +1,4 @@
-GA
+PBIL
 number of literals
 50
 60
@@ -17,20 +17,20 @@ number of literals
 216
 343
 
-best generation for timeouts
-18
-12
-34
-16
-1
-6
-6
-2
-15
-24
-9
-17
-3
-1
-19
-3
+average number of timeouts
+21
+21
+21
+21
+21
+21
+21
+21
+21
+21
+21
+21
+21
+21
+21
+21
