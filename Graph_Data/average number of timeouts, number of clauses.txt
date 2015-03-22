@@ -1,4 +1,4 @@
-GA
+PBIL
 number of clauses
 384
 750
@@ -18,19 +18,19 @@ number of clauses
 2058
 
 average number of timeouts
-21
-21
-21
-21
-21
-21
-21
-21
-21
-21
-21
-21
-21
-21
-21
-21
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10

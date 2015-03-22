@@ -1,4 +1,4 @@
-GA
+PBIL
 number of clauses
 384
 750
@@ -17,20 +17,20 @@ number of clauses
 1500
 2058
 
-average best generation for timeout
-12
-6
-3
-5
-2
-22
-6
-69
-8
-6
-3
-4
-4
-5
-3
-3
+average number of timeouts
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10

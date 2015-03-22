@@ -1,4 +1,4 @@
-GA
+PBIL
 number of literals
 50
 60

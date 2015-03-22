@@ -1,4 +1,4 @@
-PBIL
+GA
 number of literals
 50
 60
@@ -18,19 +18,19 @@ number of literals
 343
 
 average number of timeouts
-21
-21
-21
-21
-21
-21
-21
-21
-21
-21
-21
-21
-21
-21
-21
-21
+10
+9
+8
+8
+10
+9
+8
+10
+10
+10
+9
+10
+9
+10
+10
+10

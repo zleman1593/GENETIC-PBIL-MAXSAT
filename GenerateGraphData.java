@@ -321,7 +321,7 @@ public class GenerateGraphData {
 	private void writeToFile(String algorithm, String x_name, ArrayList<String> x_data, 
 			String y_name, ArrayList<String> y_data)
 			throws IOException {
-		File file = new File(getFilePath(graphIndex));
+		File file = new File(getFilePath(y_name + ", " + x_name + ", " + algorithm));
 		if (!file.exists()) {
 			file.createNewFile();
 		}
@@ -360,8 +360,8 @@ public class GenerateGraphData {
 	}
 
 	// Helper method: Return path to specified file that ends with n.
-	private String getFilePath(int n) {
-		return folderPath + "/graph " + String.valueOf(n) + ".txt";
+	private String getFilePath(String name) {
+		return folderPath + "/" + name + ".txt";
 	}
 	
 	// This is a temporary hack to deal with the issue where using the comparator 

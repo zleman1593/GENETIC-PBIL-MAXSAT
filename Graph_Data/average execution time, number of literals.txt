@@ -17,20 +17,20 @@ number of literals
 216
 343
 
-average best generation for timeout
-2
-3
-3
-4
-4
-5
-4
-5
-5
-4
-5
-5
-5
-4
-4
-5
+average execution time
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
