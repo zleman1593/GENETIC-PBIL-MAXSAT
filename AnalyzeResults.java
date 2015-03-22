@@ -184,7 +184,8 @@ public class AnalyzeResults {
 
 		// Factors we are considering.
 		int numExperiments = files.size();
-		int totalNumTimeOuts = 0;
+		int numExperimentsWithAllTrialsTimeOut = 0;
+		int totalNumTimeOutTrials = 0;
 		int numLiterals = 0;
 		int numClauses = 0;
 		long bestExecutionTime =  Long.MAX_VALUE;
@@ -216,6 +217,8 @@ public class AnalyzeResults {
 						int data = Integer.parseInt(line);
 						if (data != NO_DATA) {
 							totalBestGeneration += data;
+						} else {
+							numExperimentsWithAllTrialsTimeOut++;
 						}
 					} else if (lineNum == LineNumber.AVG_BEST_GENERATION_TIMEOUT.getNumVal()) {
 						int data = Integer.parseInt(line);
@@ -263,7 +266,8 @@ public class AnalyzeResults {
 							bestExecutionTime = current; 
 						}
 					} else if (lineNum == LineNumber.NUM_TIMEOUTS.getNumVal()) {
-						totalNumTimeOuts += LineNumber.NUM_TIMEOUTS.getNumVal();
+						int num = Integer.parseInt(line);
+						totalNumTimeOutTrials += num;
 					}
 					
 					if (algorithm.equalsIgnoreCase("GA")) {
@@ -291,8 +295,8 @@ public class AnalyzeResults {
 				bufferedReader.close();
 				
 				// Get values and other info.
-				int totalNumNonTimeOutTrials = LineNumber.NUM_TRIALS.getNumVal() * numExperiments - totalNumTimeOuts;
-				int avgNumTimeOuts = totalNumTimeOuts / numExperiments;
+				int avgNumTimeOuts = totalNumTimeOutTrials / numExperiments;
+				int numExperimentsWithNonTimeOutTrials = numExperiments - numExperimentsWithAllTrialsTimeOut;
 				long avgExecutionTime = totalExecutionTime / (long) numExperiments;
 				int solutionIndex = Arrays.asList(MAXSATProblems).indexOf(prob);
 				int bestKnownNumUnsatClauses = MAXSATSolutions[solutionIndex];
@@ -305,26 +309,25 @@ public class AnalyzeResults {
 				double bestPercentage = NO_DATA;
 				double bestPercentage_TimeOut = NO_DATA;
 				// Calculate.
-				if (totalNumNonTimeOutTrials > 0) {
-					avgBestGeneration = totalBestGeneration / totalNumNonTimeOutTrials;
+				if (numExperimentsWithNonTimeOutTrials > 0) {
+					avgBestGeneration = totalBestGeneration / numExperimentsWithNonTimeOutTrials;
 				}
-				if (totalNumTimeOuts > 0) {
-					avgBestGeneration_TimeOut = totalBestGeneration_TimeOut / totalNumTimeOuts;
+				if (totalNumTimeOutTrials > 0) {
+					avgBestGeneration_TimeOut = totalBestGeneration_TimeOut / numExperiments;
 				}
-				if (totalNumNonTimeOutTrials > 0) {
+				if (numExperimentsWithNonTimeOutTrials > 0) {
 					if (fewestUnsatClauses == MAX_ITERATION) {
 						fewestUnsatClauses = NO_DATA;
 						bestPercentage = NO_DATA;
 					} else {
-						double averageSatClauses = numClauses - totalUnsatClauses / totalNumNonTimeOutTrials;
+						double averageSatClauses = numClauses - totalUnsatClauses / numExperiments;
 						avgPercentage = averageSatClauses / (double)bestKnownSatClauses;
 						bestPercentage = (double)(numClauses - fewestUnsatClauses)/ (double)bestKnownSatClauses;
 					}
 				}
-				if (totalNumTimeOuts > 0) {
-					double averageSatClauses_TimeOut = numClauses - totalUnsatClauses_TimeOut / totalNumTimeOuts;
+				if (totalNumTimeOutTrials > 0) {
+					double averageSatClauses_TimeOut = numClauses - totalUnsatClauses_TimeOut / numExperiments;
 					avgPercentage_TimeOut = averageSatClauses_TimeOut / (double)bestKnownSatClauses;
-					
 					bestPercentage_TimeOut = (double)(numClauses - fewestUnsatClauses_TimeOut)/ (double)bestKnownSatClauses;
 				}
 				

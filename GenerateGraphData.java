@@ -374,6 +374,7 @@ public class GenerateGraphData {
 		for (String problem : problems) {
 			String numLiteralsOrClauses = map.get(problem).get(literalsOrClauses);
 			String newKey = ""; 
+			// So that something like "60" comes before "140" in the keys by natural order.
 			if (((literalsOrClauses.equals(AnalyzeResults.NUM_LITERALS) && 
 					numLiteralsOrClauses.length() == 2)) || 
 					 ((literalsOrClauses.equals(AnalyzeResults.NUM_CLAUSES) && 
