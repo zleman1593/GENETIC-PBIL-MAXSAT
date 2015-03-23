@@ -2,8 +2,6 @@ package Algorithms;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import AnalysisOfResults.Results;
-
 public class PBIL extends EvolAlgorithms {
 	// User inputs.
 	private int samples;

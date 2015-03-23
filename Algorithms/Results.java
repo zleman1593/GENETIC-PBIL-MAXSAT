@@ -1,4 +1,4 @@
-package AnalysisOfResults;
+package Algorithms;
 //Store Results for Averaging
 public class Results {
 	public String algorithm;

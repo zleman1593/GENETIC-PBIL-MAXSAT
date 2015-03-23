@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import AnalysisOfResults.Results;
-
 public class TestController {
 
 	static String root = "/Users/mxing/Desktop/GENETIC-PBIL-MAXSAT/Results/";

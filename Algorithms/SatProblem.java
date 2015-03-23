@@ -1,7 +1,6 @@
 package Algorithms;
 import java.io.*;
 import java.util.ArrayList;
-//TODO make more robust. Currently splits on single space. Will have error is there are 2 or more consecutive spaces
 //TODO make sure it doesnt read extra lines at the bottom of the file
 
 public class SatProblem {

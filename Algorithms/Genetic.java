@@ -1,8 +1,6 @@
 package Algorithms;
 import java.util.*;
 
-import AnalysisOfResults.Results;
-
 public class Genetic extends EvolAlgorithms {
 
 	// Population that is evolved
