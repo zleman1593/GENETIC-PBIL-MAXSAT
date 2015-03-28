@@ -186,7 +186,8 @@ public class AnalyzeResults {
 			files = filesGroupedByProblem_PBIL.get(prob);
 		}
 		
-		/* If we want to examine how the parameters affect performance,
+		/* Handling parameter queries:
+		 * If we want to examine how the parameters affect performance,
 		 * we only look at one experiment per problem (other parameters are fix.)
 		 * Now need to loop through the experiments to find the one we need.
 		 */
@@ -210,6 +211,13 @@ public class AnalyzeResults {
 				catch(FileNotFoundException e) {
 					printFileNotFound(file); 
 				}
+			}
+			
+			if (files.size() > 1) {
+				System.out.println("Didn't run this experiemnt due to early termination");
+				System.out.println("Algorithm: " + algorithm);
+				System.out.println("Parameter Line Number: " + paramLineNum);
+				System.out.println("Target Value: " + targetValue);
 			}
 		}
 
