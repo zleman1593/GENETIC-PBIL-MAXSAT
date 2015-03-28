@@ -5,12 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.TreeMap;
 import java.util.HashMap;
 
 public class GenerateGraphData {
 	// Results where the problems are sorted by the number of literals, in increasing order.
-	private TreeMap<String, HashMap<String, String>> results_sorted;
+	private HashMap<String, HashMap<String, String>> results;
 	// Folder path.
 	String folderPath = "Graph_Data";
 	// Current graph file number.
@@ -37,7 +36,7 @@ public class GenerateGraphData {
 	
 
 	public GenerateGraphData(HashMap<String, HashMap<String, String>> results, String algorithm) throws IOException {
-		this.results_sorted = new TreeMap<String, HashMap<String, String>>(results);
+		this.results = results;
 
 		// x-axis is the number of literals.
 		initializeArrayList(algorithm, AnalyzeResults.NUM_LITERALS);
@@ -55,8 +54,8 @@ public class GenerateGraphData {
 		clearArrayLists();
 		
 		// Populate the values in ArrayLists.
-		for (String problem : results_sorted.keySet()) {
-			HashMap<String, String> resultsValues = results_sorted.get(problem);
+		for (String problem : results.keySet()) {
+			HashMap<String, String> resultsValues = results.get(problem);
 			
 			String numLiterals_val = resultsValues.get(AnalyzeResults.NUM_LITERALS);
 			String numClauses_val = resultsValues.get(AnalyzeResults.NUM_CLAUSES);
