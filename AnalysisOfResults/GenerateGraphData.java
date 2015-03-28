@@ -45,8 +45,6 @@ public class GenerateGraphData {
 		// x-axis is the number of clauses.		
 		initializeArrayList(algorithm, AnalyzeResults.NUM_CLAUSES);
 		writeGraphData_sortedByClauses(algorithm);
-		
-		System.out.println("Finished writing all graph data for " + algorithm);
 	}
 
 	private void initializeArrayList(String algorithm, String sortedKey) {

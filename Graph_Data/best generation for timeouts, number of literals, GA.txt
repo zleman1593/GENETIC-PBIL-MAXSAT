@@ -1,4 +1,28 @@
 GA
 number of literals
+140
+140
+64
+140
+125
+60
+343
+140
+140
+150
+100
+140
 
 best generation for timeouts
+21
+6
+18
+9
+6
+18
+9
+15
+2
+1
+1
+17

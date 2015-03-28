@@ -194,11 +194,12 @@ public class AnalyzeResults {
 				String file = files.get(i);
 				try {
 					BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+					String line = "";
 					for (int l = 0; l < paramLineNum; l++) {
-						bufferedReader.readLine();
+						line = bufferedReader.readLine();
 					}
-					// Found the experiment file we care about.
-					if (bufferedReader.readLine().equalsIgnoreCase(targetValue)) {
+					// Found the experiment file we care about
+					if (line.trim().equalsIgnoreCase(targetValue)) {
 						// Now the files ArrayList contains only the experiment we care about.
 						foundExperiment = true;
 						files.clear();

@@ -33,11 +33,6 @@ public class AnalyzeResultsController {
 		// GA
 		initializeParameters_GA();
 		for (Integer lineNum : parameters_GA.keySet()) {
-			
-			// DEBUGGING
-			System.out.println("Line number " + lineNum);
-			System.out.println("Value " + parameters_GA.get(lineNum));
-			
 			for (String value: parameters_GA.get(lineNum)) {
 				AnalyzeResults analyzeResultsParameters_GA = new AnalyzeResults("GA", lineNum, value);
 				results_Parameters_GA = analyzeResultsParameters_GA.getParsedResults_GA();
@@ -46,7 +41,7 @@ public class AnalyzeResultsController {
 		}
 		
 		// DEBUGGING
-//		test(results_Parameters_GA);
+		test(results_Parameters_GA);
 		
 		// PBIL
 		initializeParameters_PBIL();
@@ -181,8 +176,8 @@ public class AnalyzeResultsController {
 		for (String problem : results.keySet()) {
 			HashMap<String, String> map = results.get(problem);
 			for (String key : map.keySet()) {
-				System.out.println(key);
-				System.out.println(map.get(key));
+				System.out.println("KEY " + key);
+				System.out.println("VALUE " + map.get(key));
 			}
 		}
 	}
