@@ -1,11 +1,7 @@
 package AnalysisOfResults;
 import java.io.IOException;
 import java.util.HashMap;
-
-import sun.java2d.loops.ProcessPath.EndSubPathHandler;
 import Algorithms.TestController;
-
-import com.sun.corba.se.impl.orb.ParserTable.TestContactInfoListFactory;
 
 public class AnalyzeResultsController {
 	// Used for comparing doubles.
