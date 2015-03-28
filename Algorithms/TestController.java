@@ -16,21 +16,21 @@ public class TestController {
 	public static int[] maxValues= {38,78,0,0, 226,140,170,188,200,165,  167,166,165,35,53,69,1,0,0,0,0};
 
 	// Set these for GA experiments
-	static int[] popSize = {200, 400, 700, 1000, /* end pop*/ 200, 200, /*end selection*/ 200, /*end crossover*/ 200, 200, 200, /*end crossover prob*/ 200, 200, 200};
-	static String[] selectionType = {"rs", "rs", "rs", "rs", /* end pop*/ "ts", "bs", /*end selection*/ "rs", /*end crossover*/ "rs", "rs", "rs", /*end crossover prob*/ "rs", "rs", "rs"};
-	static String[] crossoverType = {"1c", "1c", "1c", "1c", /* end pop*/ "1c", "1c", /*end selection*/ "uc", /*end crossover*/ "1c", "1c", "1c", /*end crossover prob*/ "1c", "1c", "1c"};
-	static Double[] crossoverProb = {0.7, 0.7, 0.7, 0.7, /* end pop*/ 0.7, 0.7, /*end selection*/ 0.7, /*end crossover*/ 0.1, 0.3, 1.0, /*end crossover prob*/ 0.7, 0.7, 0.7};
-	static Double[] mutationProb = {0.01, 0.01, 0.01, 0.01, /* end pop*/ 0.01, 0.01, /*end selection*/ 0.01, /*end crossover*/ 0.01, 0.01, 0.01, /*end crossover prob*/ 0.1, 0.3, 0.5};
-	static int maxIterations = Integer.MAX_VALUE;
+	public static int[] popSize = {200, 400, 700, 1000, /* end pop*/ 200, 200, /*end selection*/ 200, /*end crossover*/ 200, 200, 200, /*end crossover prob*/ 200, 200, 200};
+	public static String[] selectionType = {"rs", "rs", "rs", "rs", /* end pop*/ "ts", "bs", /*end selection*/ "rs", /*end crossover*/ "rs", "rs", "rs", /*end crossover prob*/ "rs", "rs", "rs"};
+	public static String[] crossoverType = {"1c", "1c", "1c", "1c", /* end pop*/ "1c", "1c", /*end selection*/ "uc", /*end crossover*/ "1c", "1c", "1c", /*end crossover prob*/ "1c", "1c", "1c"};
+	public static Double[] crossoverProb = {0.7, 0.7, 0.7, 0.7, /* end pop*/ 0.7, 0.7, /*end selection*/ 0.7, /*end crossover*/ 0.1, 0.3, 1.0, /*end crossover prob*/ 0.7, 0.7, 0.7};
+	public static Double[] mutationProb = {0.01, 0.01, 0.01, 0.01, /* end pop*/ 0.01, 0.01, /*end selection*/ 0.01, /*end crossover*/ 0.01, 0.01, 0.01, /*end crossover prob*/ 0.1, 0.3, 0.5};
+	public static int maxIterations = Integer.MAX_VALUE;
 	//
 
 	// Set these for PBIL experiments
-	static int[] PBIL_samples = {100, 300, 600, 1000, /* end pop*/ 100, 100, 100, 100, /*end lr*/ 100, 100, 100, /*end -lr*/ 100, 100, 100, /*end mutProb*/ 100, 100, 100, 100 /*end mutShift*/};
-	static double[] PBIL_learningRate = {0.1, 0.1, 0.1, 0.1, /* end pop*/ 0.01, 0.3, 0.5, 1, /*end lr*/ 0.1, 0.1, 0.1, /*end -lr*/ 0.1, 0.1, 0.1, /*end mutProb*/ 0.1, 0.1, 0.1, 0.1 /*end mutShift*/};
-	static double[] PBIL_negLearningRate = {0.075, 0.075, 0.075, 0.075, /* end pop*/ 0.075, 0.075, 0.075, 0.075, /*end lr*/ 0.02, 0.15, 0.3, /*end -lr*/ 0.075, 0.075, 0.075, /*end mutProb*/ 0.075, 0.075, 0.075, 0.075 /*end mutShift*/};
-	static double[] PBIL_mutProb = {0.02, 0.02, 0.02, 0.02, /* end pop*/ 0.02, 0.02, 0.02, 0.02, /*end lr*/ 0.02, 0.02, 0.02, /*end -lr*/ 0.1, 0.3, 0.5, /*end mutProb*/ 0.02, 0.02, 0.02, 0.02 /*end mutShift*/};
-	static double[] PBIL_mutShift = {0.05, 0.05, 0.05, 0.05, /* end pop*/ 0.05, 0.05, 0.05, 0.05, /*end lr*/ 0.05, 0.05, 0.05, /*end -lr*/ 0.05, 0.05, 0.05, /*end mutProb*/ 0.01, 0.1, 0.2, 0.5 /*end mutShift*/};
-	static int PBIL_maxIterations = Integer.MAX_VALUE;
+	public static int[] PBIL_samples = {100, 300, 600, 1000, /* end pop*/ 100, 100, 100, 100, /*end lr*/ 100, 100, 100, /*end -lr*/ 100, 100, 100, /*end mutProb*/ 100, 100, 100, 100 /*end mutShift*/};
+	public static double[] PBIL_learningRate = {0.1, 0.1, 0.1, 0.1, /* end pop*/ 0.01, 0.3, 0.5, 1, /*end lr*/ 0.1, 0.1, 0.1, /*end -lr*/ 0.1, 0.1, 0.1, /*end mutProb*/ 0.1, 0.1, 0.1, 0.1 /*end mutShift*/};
+	public static double[] PBIL_negLearningRate = {0.075, 0.075, 0.075, 0.075, /* end pop*/ 0.075, 0.075, 0.075, 0.075, /*end lr*/ 0.02, 0.15, 0.3, /*end -lr*/ 0.075, 0.075, 0.075, /*end mutProb*/ 0.075, 0.075, 0.075, 0.075 /*end mutShift*/};
+	public static double[] PBIL_mutProb = {0.02, 0.02, 0.02, 0.02, /* end pop*/ 0.02, 0.02, 0.02, 0.02, /*end lr*/ 0.02, 0.02, 0.02, /*end -lr*/ 0.1, 0.3, 0.5, /*end mutProb*/ 0.02, 0.02, 0.02, 0.02 /*end mutShift*/};
+	public static double[] PBIL_mutShift = {0.05, 0.05, 0.05, 0.05, /* end pop*/ 0.05, 0.05, 0.05, 0.05, /*end lr*/ 0.05, 0.05, 0.05, /*end -lr*/ 0.05, 0.05, 0.05, /*end mutProb*/ 0.01, 0.1, 0.2, 0.5 /*end mutShift*/};
+	public static int PBIL_maxIterations = Integer.MAX_VALUE;
 
 	//
 	public static void main(String[] args) throws IOException {

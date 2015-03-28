@@ -88,7 +88,7 @@ public class AnalyzeResults {
 	private HashMap<String, ArrayList<String>> filesGroupedByProblem_PBIL = new HashMap<String, ArrayList<String>>();
 
 	// Constructor.
-	public AnalyzeResults(String paramLn, String paramVal) throws IOException {
+	public AnalyzeResults(int paramLn, String paramVal) throws IOException {
 		// Sort files by problem name for each algorithm.
 		groupFilesByProblem();
 		// Initialize parsed results.
@@ -178,7 +178,7 @@ public class AnalyzeResults {
 	
 	// Run analysis and fill in values for the HashMaps.
 	private void analyzeResults(String prob, String algorithm, 
-			String parameterLine, String targetValue) throws IOException {
+			int paramLineNum, String targetValue) throws IOException {
 		ArrayList<String> files;
 		if (algorithm.equalsIgnoreCase("GA")) {
 			files = filesGroupedByProblem_GA.get(prob);
@@ -190,13 +190,12 @@ public class AnalyzeResults {
 		 * we only look at one experiment per problem (other parameters are fix.)
 		 * Now need to loop through the experiments to find the one we need.
 		 */
-		int parameterLineNumber = Integer.parseInt(parameterLine);
-		if (parameterLineNumber != NO_DATA) {
+		if (paramLineNum != NO_DATA) {
 			for (int i = 0; i < files.size(); i++) {
 				String file = files.get(i);
 				try {
 					BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-					for (int l = 0; l < parameterLineNumber; l++) {
+					for (int l = 0; l < paramLineNum; l++) {
 						bufferedReader.readLine();
 					}
 					// Found the experiment file we care about.
