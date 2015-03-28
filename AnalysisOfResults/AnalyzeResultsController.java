@@ -23,11 +23,11 @@ public class AnalyzeResultsController {
 		// GA
 //		AnalyzeResults analyzeResults_GA = new AnalyzeResults("GA", AnalyzeResults.NO_DATA, null);
 //		results_GA = analyzeResults_GA.getParsedResults_GA();
-//		new GenerateGraphData(results_GA, "GA");
+//		new GenerateGraphData(results_GA, "GA", false, -1, null);
 //		// PBIL
 //		AnalyzeResults analyzeResults_PBIL = new AnalyzeResults("PBIL", AnalyzeResults.NO_DATA, null);
 //		results_PBIL = analyzeResults_PBIL.getParsedResults_PBIL();
-//		new GenerateGraphData(results_PBIL, "PBIL");
+//		new GenerateGraphData(results_PBIL, "PBIL", false, -1, null);
 		
 		/* Run parameter analysis. */
 		// GA
@@ -36,26 +36,19 @@ public class AnalyzeResultsController {
 			for (String value: parameters_GA.get(lineNum)) {
 				AnalyzeResults analyzeResultsParameters_GA = new AnalyzeResults("GA", lineNum, value);
 				results_Parameters_GA = analyzeResultsParameters_GA.getParsedResults_GA();
-				new GenerateGraphData(results_Parameters_GA, "GA");
+				new GenerateGraphData(results_Parameters_GA, "GA", true, lineNum, value);
 			}
 		}
-		
-		// DEBUGGING
-		test(results_Parameters_GA);
-		
+			
 		// PBIL
 		initializeParameters_PBIL();
 		for (Integer lineNum : parameters_PBIL.keySet()) {
 			for (String value: parameters_PBIL.get(lineNum)) {
 				AnalyzeResults analyzeResultsParameters_PBIL = new AnalyzeResults("PBIL", lineNum, value);
 				results_Parameters_PBIL = analyzeResultsParameters_PBIL.getParsedResults_PBIL();
-				new GenerateGraphData(results_Parameters_PBIL, "PBIL");
+				new GenerateGraphData(results_Parameters_PBIL, "PBIL", true, lineNum, value);
 			}
 		}
-		
-		// DEBUGGING
-		test(results_Parameters_PBIL);
-		
 	}
 	
 	public static void initializeParameters_GA() {

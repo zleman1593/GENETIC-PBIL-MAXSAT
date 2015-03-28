@@ -14,6 +14,11 @@ public class GenerateGraphData {
 	String folderPath = "Graph_Data";
 	// Current graph file number.
 	int graphIndex = 1; 
+	// Whether we are graphing for parameters.
+	boolean isParameterGraph;
+	int parameterLineNum;
+	String parameterVal;
+	
 	/*
 	 * Each ArrayList is a list of values (from all problems) for x-axis or
 	 * y-axis of one graph. Indices correspond to the same file: for example,
@@ -33,18 +38,24 @@ public class GenerateGraphData {
 	ArrayList<String> bestPercentage_TimeOut = new ArrayList<String>();
 	ArrayList<String> avgPercentage = new ArrayList<String>();
 	ArrayList<String> avgPercentage_TimeOut = new ArrayList<String>();
-	
 
-	public GenerateGraphData(HashMap<String, HashMap<String, String>> results, String algorithm) throws IOException {
+	public GenerateGraphData(HashMap<String, HashMap<String, String>> results, 
+			String algorithm, boolean isParameterGraph, int parameterLineNum,
+			String parameterVal) throws IOException {
 		this.results = results;
+		this.isParameterGraph = isParameterGraph;
+		this.parameterLineNum = parameterLineNum;
+		this.parameterVal = parameterVal;
 
 		// x-axis is the number of literals.
 		initializeArrayList(algorithm, AnalyzeResults.NUM_LITERALS);
 		writeGraphData_sortedByLiterals(algorithm);
 
-		// x-axis is the number of clauses.		
-		initializeArrayList(algorithm, AnalyzeResults.NUM_CLAUSES);
-		writeGraphData_sortedByClauses(algorithm);
+		if (!isParameterGraph) {
+			// x-axis is the number of clauses.		
+			initializeArrayList(algorithm, AnalyzeResults.NUM_CLAUSES);
+			writeGraphData_sortedByClauses(algorithm);
+		}
 	}
 
 	private void initializeArrayList(String algorithm, String sortedKey) {
