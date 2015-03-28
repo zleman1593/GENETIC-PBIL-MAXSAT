@@ -64,18 +64,50 @@ public class AnalyzeResultsController {
 				parameters_GA.put(LineNumberGA.SELECTION_TYPE.getNumVal(), selectionType);
 			} else if (!crossoverType.equalsIgnoreCase(defaultCrossoverType)) {
 				parameters_GA.put(LineNumberGA.CROSSOVER_TYPE.getNumVal(), crossoverType);
-			} else if (Math.abs(crossoverProb - defaultCrossoverProb) > EPSILON) {
+			} else if (differentDouble(crossoverProb, defaultCrossoverProb)) {
 				parameters_GA.put(LineNumberGA.CROSSOVER_PROB.getNumVal(), String.valueOf(crossoverProb));
-			} else if (Math.abs(mutationProb - defaultMutationProb) > EPSILON) {
+			} else if (differentDouble(mutationProb, defaultMutationProb)) {
 				parameters_GA.put(LineNumberGA.MUTATION_PROB.getNumVal(), String.valueOf(mutationProb));
 			}
 		}
+	}
+	
+	public static void initializeParameters_PBIL() {
+		// Initialize HashMap.
+		parameters_PBIL = new HashMap<Integer, String>();
+		
+		// Fixed values.
+		int defaultSampleSize = TestController.PBIL_samples[0];
+		double defaultLearningRate = TestController.PBIL_learningRate[0];
+		double defaultNegLearningRate = TestController.PBIL_negLearningRate[0];
+		double defaultMutationProb = TestController.PBIL_mutProb[0]; 
+		double defaultMutationShift = TestController.PBIL_mutShift[0];
+		
+		// Find the values that varied.
+		for (int i = 0; i < TestController.PBIL_samples.length; i++) {
+			int sampleSize = TestController.PBIL_samples[i];
+			double learningRate = TestController.PBIL_learningRate[i];
+			double negLearningRate = TestController.PBIL_negLearningRate[i];
+			double mutationProb = TestController.PBIL_mutProb[i];
+			double mutationShift = TestController.PBIL_mutShift[i];
 			
-		
-		
-		
-		
-		
+			if (sampleSize != defaultSampleSize) {
+				parameters_GA.put(LineNumberPBIL.POP_SIZE.getNumVal(), String.valueOf(sampleSize));
+			} else if (differentDouble(learningRate, defaultLearningRate)) {
+				parameters_GA.put(LineNumberPBIL.LEARNING_RATE.getNumVal(), String.valueOf(learningRate));
+			} else if (differentDouble(negLearningRate, defaultNegLearningRate)) {
+				parameters_GA.put(LineNumberPBIL.NEG_LEARNING_RATE.getNumVal(), String.valueOf(negLearningRate));
+			} else if (differentDouble(mutationProb, defaultMutationProb)) {
+				parameters_GA.put(LineNumberPBIL.MUTATION_PROB.getNumVal(), String.valueOf(mutationProb));
+			} else if (differentDouble(mutationShift, defaultMutationShift)) {
+				parameters_GA.put(LineNumberPBIL.MUTATION_SHIFT.getNumVal(), String.valueOf(mutationShift));
+			}
+		}
+	}
+	
+	// Returns true if the two doubles are different, false otherwise.
+	private static boolean differentDouble(double a, double b) {
+		return Math.abs(a - b) > EPSILON;
 	}
 
 	// Print out the fields in the results objects.
