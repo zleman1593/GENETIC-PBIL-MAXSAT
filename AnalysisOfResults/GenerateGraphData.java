@@ -39,20 +39,12 @@ public class GenerateGraphData {
 	public GenerateGraphData(HashMap<String, HashMap<String, String>> results, String algorithm) throws IOException {
 		this.results_sorted = new TreeMap<String, HashMap<String, String>>(results);
 
-		// Sort problems by number of literals.
-		processResults(this.results_sorted, AnalyzeResults.NUM_LITERALS);
+		// x-axis is the number of literals.
 		initializeArrayList(algorithm, AnalyzeResults.NUM_LITERALS);
-		undoProcessResults(this.results_sorted);
-		
-		// Write to files involving number of literals.
 		writeGraphData_sortedByLiterals(algorithm);
-		
-		// Sort problems by number of clauses.
-		processResults(this.results_sorted, AnalyzeResults.NUM_CLAUSES);
+
+		// x-axis is the number of clauses.		
 		initializeArrayList(algorithm, AnalyzeResults.NUM_CLAUSES);
-		undoProcessResults(this.results_sorted);
-		
-		// Write to files involving number of clauses.
 		writeGraphData_sortedByClauses(algorithm);
 		
 		System.out.println("Finished writing all graph data for " + algorithm);
@@ -251,39 +243,4 @@ public class GenerateGraphData {
 	private String getFilePath(String name) {
 		return folderPath + "/" + name + ".txt";
 	}
-	
-	// This is a temporary hack to deal with the issue where using the comparator 
-	// deletes problems with the same number of literals/clauses.
-	// Append the number of literals to the keys in the TreeMap.
-	private void processResults(TreeMap<String, HashMap<String, String>> map, 
-			String literalsOrClauses) {
-		ArrayList<String> problems = new ArrayList<String>(); 
-		problems.addAll(map.keySet());
-		for (String problem : problems) {
-			String numLiteralsOrClauses = map.get(problem).get(literalsOrClauses);
-			String newKey = ""; 
-			// So that something like "60" comes before "140" in the keys by natural order.
-			if (((literalsOrClauses.equals(AnalyzeResults.NUM_LITERALS) && 
-					numLiteralsOrClauses.length() == 2)) || 
-					 ((literalsOrClauses.equals(AnalyzeResults.NUM_CLAUSES) && 
-								numLiteralsOrClauses.length() == 3))) {
-				newKey += "0"; 
-			} 
-			newKey += numLiteralsOrClauses + " " + problem;
-			HashMap<String, String> results = map.remove(problem);
-			map.put(newKey, results);
-		}
-	}
-
-	// Undo the effects above.
-	private void undoProcessResults(TreeMap<String, HashMap<String, String>> map) {
-		ArrayList<String> problems = new ArrayList<String>(); 
-		problems.addAll(map.keySet());
-		for (String appendedName : problems) {
-			String[] parts = appendedName.split(" ");
-			String actualName= parts[1];
-			HashMap<String, String> results = map.remove(appendedName);
-			map.put(actualName, results);
-		}
-	}	
 }
