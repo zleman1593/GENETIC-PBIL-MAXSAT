@@ -1,0 +1,4 @@
+GA
+number of literals
+
+best percentage for timeouts

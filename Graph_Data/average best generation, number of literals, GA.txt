@@ -1,0 +1,4 @@
+GA
+number of literals
+
+average best generation

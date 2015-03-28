@@ -21,13 +21,13 @@ public class AnalyzeResultsController {
 	public static void main(String[] args) throws IOException {
 		/* Run general analysis. */
 		// GA
-		AnalyzeResults analyzeResults_GA = new AnalyzeResults("GA", AnalyzeResults.NO_DATA, null);
-		results_GA = analyzeResults_GA.getParsedResults_GA();
-		new GenerateGraphData(results_GA, "GA");
-		// PBIL
-		AnalyzeResults analyzeResults_PBIL = new AnalyzeResults("PBIL", AnalyzeResults.NO_DATA, null);
-		results_PBIL = analyzeResults_PBIL.getParsedResults_PBIL();
-		new GenerateGraphData(results_PBIL, "PBIL");
+//		AnalyzeResults analyzeResults_GA = new AnalyzeResults("GA", AnalyzeResults.NO_DATA, null);
+//		results_GA = analyzeResults_GA.getParsedResults_GA();
+//		new GenerateGraphData(results_GA, "GA");
+//		// PBIL
+//		AnalyzeResults analyzeResults_PBIL = new AnalyzeResults("PBIL", AnalyzeResults.NO_DATA, null);
+//		results_PBIL = analyzeResults_PBIL.getParsedResults_PBIL();
+//		new GenerateGraphData(results_PBIL, "PBIL");
 		
 		/* Run parameter analysis. */
 		// GA
@@ -46,7 +46,7 @@ public class AnalyzeResultsController {
 		}
 		
 		// DEBUGGING
-		test("GA");
+		test(results_Parameters_GA);
 		
 		// PBIL
 		initializeParameters_PBIL();
@@ -82,6 +82,11 @@ public class AnalyzeResultsController {
 			if (popSize != defaultPopSize) {
 				addValueToMapGA(LineNumberPBIL.POP_SIZE.getNumVal(), String.valueOf(popSize), values);
 				parameters_GA.put(LineNumberGA.POP_SIZE.getNumVal(), values);
+				
+				// DEBUGGING
+				System.out.println("SIZE" + values.size());
+				
+				
 			} else if (!selectionType.equalsIgnoreCase(defaultSelectionType)) {
 				addValueToMapGA(LineNumberGA.SELECTION_TYPE.getNumVal(), selectionType, values);
 				parameters_GA.put(LineNumberGA.SELECTION_TYPE.getNumVal(), values);
@@ -158,14 +163,7 @@ public class AnalyzeResultsController {
 	}
 
 	// Print out the fields in the results objects.
-	public static void test(String algorithm) {
-		HashMap<String, HashMap<String, String>> results;
-		if (algorithm.equalsIgnoreCase("GA")) {
-			results = results_GA;
-		} else {
-			results = results_PBIL;
-		}
-
+	public static void test(HashMap<String, HashMap<String, String>> results) {
 		for (String problem : results.keySet()) {
 			HashMap<String, String> map = results.get(problem);
 			for (String key : map.keySet()) {

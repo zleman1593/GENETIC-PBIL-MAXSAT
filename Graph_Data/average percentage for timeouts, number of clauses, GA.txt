@@ -1,0 +1,4 @@
+GA
+number of clauses
+
+average percentage for timeouts

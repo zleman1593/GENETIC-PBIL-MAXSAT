@@ -1,0 +1,4 @@
+GA
+number of clauses
+
+average execution time
