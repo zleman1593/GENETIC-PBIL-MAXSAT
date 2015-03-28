@@ -191,7 +191,6 @@ public class AnalyzeResults {
 		 * Now need to loop through the experiments to find the one we need.
 		 */
 		int parameterLineNumber = Integer.parseInt(parameterLine);
-		int targetLineValue = Integer.parseInt(targetValue);
 		if (parameterLineNumber != NO_DATA) {
 			for (int i = 0; i < files.size(); i++) {
 				String file = files.get(i);
@@ -200,10 +199,8 @@ public class AnalyzeResults {
 					for (int l = 0; l < parameterLineNumber; l++) {
 						bufferedReader.readLine();
 					}
-					// Get value of this parameter.
-					String value = bufferedReader.readLine();
 					// Found the experiment file we care about.
-					if (Integer.parseInt(value) == targetLineValue) {
+					if (bufferedReader.readLine().equalsIgnoreCase(targetValue)) {
 						// Now the files ArrayList contains only the experiment we care about.
 						files.clear();
 						files.add(file);
