@@ -46,17 +46,21 @@ public class AnalyzeResultsController {
 		}
 		
 		// DEBUGGING
-		test(results_Parameters_GA);
+//		test(results_Parameters_GA);
 		
 		// PBIL
 		initializeParameters_PBIL();
 		for (Integer lineNum : parameters_PBIL.keySet()) {
-			for (String value: parameters_GA.get(lineNum)) {
+			for (String value: parameters_PBIL.get(lineNum)) {
 				AnalyzeResults analyzeResultsParameters_PBIL = new AnalyzeResults("PBIL", lineNum, value);
 				results_Parameters_PBIL = analyzeResultsParameters_PBIL.getParsedResults_PBIL();
 				new GenerateGraphData(results_Parameters_PBIL, "PBIL");
 			}
 		}
+		
+		// DEBUGGING
+		test(results_Parameters_PBIL);
+		
 	}
 	
 	public static void initializeParameters_GA() {
@@ -80,24 +84,34 @@ public class AnalyzeResultsController {
 			
 			ArrayList<String> values = new ArrayList<String>();
 			if (popSize != defaultPopSize) {
-				addValueToMapGA(LineNumberPBIL.POP_SIZE.getNumVal(), String.valueOf(popSize), values);
+				if (parameters_GA.containsKey(LineNumberGA.POP_SIZE.getNumVal())) {
+					values = parameters_GA.get(LineNumberGA.POP_SIZE.getNumVal());
+				}
+				values.add(String.valueOf(popSize));
 				parameters_GA.put(LineNumberGA.POP_SIZE.getNumVal(), values);
-				
-				// DEBUGGING
-				System.out.println("SIZE" + values.size());
-				
-				
 			} else if (!selectionType.equalsIgnoreCase(defaultSelectionType)) {
-				addValueToMapGA(LineNumberGA.SELECTION_TYPE.getNumVal(), selectionType, values);
+				if (parameters_GA.containsKey(LineNumberGA.SELECTION_TYPE.getNumVal())) {
+					values = parameters_GA.get(LineNumberGA.SELECTION_TYPE.getNumVal());
+				}
+				values.add(selectionType);
 				parameters_GA.put(LineNumberGA.SELECTION_TYPE.getNumVal(), values);
 			} else if (!crossoverType.equalsIgnoreCase(defaultCrossoverType)) {
-				addValueToMapGA(LineNumberGA.CROSSOVER_TYPE.getNumVal(), crossoverType, values);
+				if (parameters_GA.containsKey(LineNumberGA.CROSSOVER_TYPE.getNumVal())) {
+					values = parameters_GA.get(LineNumberGA.CROSSOVER_TYPE.getNumVal());
+				}
+				values.add(crossoverType);
 				parameters_GA.put(LineNumberGA.CROSSOVER_TYPE.getNumVal(), values);
 			} else if (differentDouble(crossoverProb, defaultCrossoverProb)) {
-				addValueToMapGA(LineNumberGA.CROSSOVER_PROB.getNumVal(), String.valueOf(crossoverProb), values);
+				if (parameters_GA.containsKey(LineNumberGA.CROSSOVER_PROB.getNumVal())) {
+					values = parameters_GA.get(LineNumberGA.CROSSOVER_PROB.getNumVal());
+				}
+				values.add(String.valueOf(crossoverProb));
 				parameters_GA.put(LineNumberGA.CROSSOVER_PROB.getNumVal(), values);
 			} else if (differentDouble(mutationProb, defaultMutationProb)) {
-				addValueToMapGA(LineNumberGA.MUTATION_PROB.getNumVal(), String.valueOf(mutationProb), values);
+				if (parameters_GA.containsKey(LineNumberGA.MUTATION_PROB.getNumVal())) {
+					values = parameters_GA.get(LineNumberGA.MUTATION_PROB.getNumVal());
+				}
+				values.add(String.valueOf(mutationProb));
 				parameters_GA.put(LineNumberGA.MUTATION_PROB.getNumVal(), values);
 			}
 		}
@@ -124,37 +138,37 @@ public class AnalyzeResultsController {
 			
 			ArrayList<String> values = new ArrayList<String>();
 			if (sampleSize != defaultSampleSize) {
-				addValueToMapPBIL(LineNumberPBIL.POP_SIZE.getNumVal(), String.valueOf(sampleSize), values);
+				if (parameters_PBIL.containsKey(LineNumberPBIL.POP_SIZE.getNumVal())) {
+					values = parameters_PBIL.get(LineNumberPBIL.POP_SIZE.getNumVal());
+				}
+				values.add(String.valueOf(sampleSize));
 				parameters_PBIL.put(LineNumberPBIL.POP_SIZE.getNumVal(), values);
 			} else if (differentDouble(learningRate, defaultLearningRate)) {
-				addValueToMapPBIL(LineNumberPBIL.LEARNING_RATE.getNumVal(), String.valueOf(learningRate), values);
+				if (parameters_PBIL.containsKey(LineNumberPBIL.LEARNING_RATE.getNumVal())) {
+					values = parameters_PBIL.get(LineNumberPBIL.LEARNING_RATE.getNumVal());
+				}
+				values.add(String.valueOf(learningRate));
 				parameters_PBIL.put(LineNumberPBIL.LEARNING_RATE.getNumVal(), values);
 			} else if (differentDouble(negLearningRate, defaultNegLearningRate)) {
-				addValueToMapPBIL(LineNumberPBIL.NEG_LEARNING_RATE.getNumVal(), String.valueOf(negLearningRate), values);
+				if (parameters_PBIL.containsKey(LineNumberPBIL.NEG_LEARNING_RATE.getNumVal())) {
+					values = parameters_PBIL.get(LineNumberPBIL.NEG_LEARNING_RATE.getNumVal());
+				}
+				values.add(String.valueOf(negLearningRate));
 				parameters_PBIL.put(LineNumberPBIL.NEG_LEARNING_RATE.getNumVal(), values);
 			} else if (differentDouble(mutationProb, defaultMutationProb)) {
-				addValueToMapPBIL(LineNumberPBIL.MUTATION_PROB.getNumVal(), String.valueOf(mutationProb), values);
+				if (parameters_PBIL.containsKey(LineNumberPBIL.MUTATION_PROB.getNumVal())) {
+					values = parameters_PBIL.get(LineNumberPBIL.MUTATION_PROB.getNumVal());
+				}
+				values.add(String.valueOf(mutationProb));
 				parameters_PBIL.put(LineNumberPBIL.MUTATION_PROB.getNumVal(), values);
 			} else if (differentDouble(mutationShift, defaultMutationShift)) {
-				addValueToMapPBIL(LineNumberPBIL.MUTATION_SHIFT.getNumVal(), String.valueOf(mutationShift), values);
+				if (parameters_PBIL.containsKey(LineNumberPBIL.MUTATION_SHIFT.getNumVal())) {
+					values = parameters_PBIL.get(LineNumberPBIL.MUTATION_SHIFT.getNumVal());
+				}
+				values.add(String.valueOf(mutationShift));				
 				parameters_PBIL.put(LineNumberPBIL.MUTATION_SHIFT.getNumVal(), values);
 			}
 		}
-	}
-	
-	
-	private static void addValueToMapPBIL(Integer key, String val, ArrayList<String> values) {
-		if (parameters_PBIL.containsKey(key)) {
-			values = parameters_PBIL.get(key);
-		}
-		values.add(String.valueOf(val));
-	}
-	
-	private static void addValueToMapGA(Integer key, String val, ArrayList<String> values) {
-		if (parameters_GA.containsKey(key)) {
-			values = parameters_GA.get(key);
-		}
-		values.add(String.valueOf(val));
 	}
 	
 	// Returns true if the two doubles are different, false otherwise.
