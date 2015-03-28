@@ -177,12 +177,32 @@ public class AnalyzeResults {
 	}
 	
 	// Run analysis and fill in values for the HashMaps.
-	private void analyzeResults(String prob, String algorithm) throws IOException {
+	private void analyzeResults(String prob, String algorithm, 
+			String parameterLine, String parameterValue) throws IOException {
 		ArrayList<String> files;
 		if (algorithm.equalsIgnoreCase("GA")) {
 			files = filesGroupedByProblem_GA.get(prob);
 		} else {
 			files = filesGroupedByProblem_PBIL.get(prob);
+		}
+		
+		/* If we want to examine how the parameters affect performance,
+		 * we only look at one experiment per problem (other parameters are fix.)
+		 * Now need to loop through the experiments to find the one we need.
+		 */
+		int parameterLineNumber = Integer.parseInt(parameterLine);
+		if (parameterLineNumber != NO_DATA) {
+			for (int i = 0; i < files.size(); i++) {
+				String filePath = files.get(i);
+				try {
+					BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
+					for ()
+					
+				} 
+				catch(FileNotFoundException e) {
+					printFileNotFound(filePath); 
+				}
+			}
 		}
 
 		// Factors we are considering.
