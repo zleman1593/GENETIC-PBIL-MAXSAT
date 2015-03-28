@@ -88,17 +88,14 @@ public class AnalyzeResults {
 	private HashMap<String, ArrayList<String>> filesGroupedByProblem_PBIL = new HashMap<String, ArrayList<String>>();
 
 	// Constructor.
-	public AnalyzeResults(int paramLn, String paramVal) throws IOException {
+	public AnalyzeResults(String algorithm, int paramLn, String paramVal) throws IOException {
 		// Sort files by problem name for each algorithm.
 		groupFilesByProblem();
 		// Initialize parsed results.
 		initializeHashMaps();
 		// Parse results.
 		for (String problem : filesGroupedByProblem_GA.keySet()) {
-			analyzeResults(problem, "GA", paramLn, paramVal);
-		}
-		for (String problem : filesGroupedByProblem_PBIL.keySet()) {
-			analyzeResults(problem, "PBIL", paramLn, paramVal);
+			analyzeResults(problem, algorithm, paramLn, paramVal);
 		}
 	}
 	

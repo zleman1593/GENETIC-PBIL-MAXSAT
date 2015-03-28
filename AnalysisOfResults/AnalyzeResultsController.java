@@ -18,23 +18,27 @@ public class AnalyzeResultsController {
 
 	public static void main(String[] args) throws IOException {
 		/* Run general analysis. */
-		AnalyzeResults analyzeResults = new AnalyzeResults(AnalyzeResults.NO_DATA, null);
-		// Get structured results.
-		results_GA = analyzeResults.getParsedResults_GA();
-		results_PBIL = analyzeResults.getParsedResults_PBIL();
+		AnalyzeResults analyzeResults_GA = new AnalyzeResults("GA", AnalyzeResults.NO_DATA, null);
+		results_GA = analyzeResults_GA.getParsedResults_GA();
+		AnalyzeResults analyzeResults_PBIL = new AnalyzeResults("PBIL", AnalyzeResults.NO_DATA, null);
+		results_PBIL = analyzeResults_PBIL.getParsedResults_PBIL();
 		// Write to all graph data files.
 		new GenerateGraphData(results_GA, results_PBIL);
 		
 		
 		/* Run parameter analysis. */
 		for (Integer lineNum : parameters_GA.keySet()) {
-			AnalyzeResults analyzeResultsParameters = new AnalyzeResults(lineNum, 
+			AnalyzeResults analyzeResultsParameters_GA = new AnalyzeResults("GA", lineNum, 
 					parameters_GA.get(lineNum));
-			// Get structured results.
-			results_Parameters_GA = analyzeResultsParameters.getParsedResults_GA();
-			results_Parameters_PBIL = analyzeResultsParameters.getParsedResults_PBIL();
-			// Write to all graph data files.
+			results_Parameters_GA = analyzeResultsParameters_GA.getParsedResults_GA();
+			
 		}
+		for (Integer lineNum : parameters_PBIL.keySet()) {
+			AnalyzeResults analyzeResultsParameters_PBIL = new AnalyzeResults("PBIL", lineNum, 
+					parameters_PBIL.get(lineNum));
+			results_Parameters_PBIL = analyzeResultsParameters_PBIL.getParsedResults_PBIL();
+		}
+		// Write to all graph data files.
 		new GenerateGraphData(results_Parameters_GA, results_Parameters_PBIL);
 	}
 	
