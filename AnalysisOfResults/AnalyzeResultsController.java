@@ -9,8 +9,8 @@ public class AnalyzeResultsController {
 	// Store the results.
 	private static HashMap<String, HashMap<String, String>> results_GA;
 	private static HashMap<String, HashMap<String, String>> results_PBIL;
-	private static HashMap<String, HashMap<String, String>> results_GA_Parameters;
-	private static HashMap<String, HashMap<String, String>> results_PBIL_Parameters;
+	private static HashMap<String, HashMap<String, String>> results_Parameters_GA;
+	private static HashMap<String, HashMap<String, String>> results_Parameters_PBIL;
 	// Store the parameters and their respective values.
 	private static HashMap<Integer, String> parameters_GA;
 	private static HashMap<Integer, String> parameters_PBIL;
@@ -27,12 +27,15 @@ public class AnalyzeResultsController {
 		
 		
 		/* Run parameter analysis. */
-		AnalyzeResults analyzeResultsParameters = new AnalyzeResults(AnalyzeResults.NO_DATA, null);
-		// Get structured results.
-		results_GA_Parameters = analyzeResultsParameters.getParsedResults_GA();
-		results_PBIL_Parameters = analyzeResultsParameters.getParsedResults_PBIL();
-		// Write to all graph data files.
-		new GenerateGraphData(results_GA_Parameters, results_PBIL_Parameters);
+		for (Integer lineNum : parameters_GA.keySet()) {
+			AnalyzeResults analyzeResultsParameters = new AnalyzeResults(lineNum, 
+					parameters_GA.get(lineNum));
+			// Get structured results.
+			results_Parameters_GA = analyzeResultsParameters.getParsedResults_GA();
+			results_Parameters_PBIL = analyzeResultsParameters.getParsedResults_PBIL();
+			// Write to all graph data files.
+		}
+		new GenerateGraphData(results_Parameters_GA, results_Parameters_PBIL);
 	}
 	
 	public static void initializeParameters_GA() {

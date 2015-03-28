@@ -192,6 +192,7 @@ public class AnalyzeResults {
 		 * Now need to loop through the experiments to find the one we need.
 		 */
 		if (paramLineNum != NO_DATA) {
+			boolean foundExperiment = false;
 			for (int i = 0; i < files.size(); i++) {
 				String file = files.get(i);
 				try {
@@ -202,6 +203,7 @@ public class AnalyzeResults {
 					// Found the experiment file we care about.
 					if (bufferedReader.readLine().equalsIgnoreCase(targetValue)) {
 						// Now the files ArrayList contains only the experiment we care about.
+						foundExperiment = true;
 						files.clear();
 						files.add(file);
 						break;
@@ -213,11 +215,12 @@ public class AnalyzeResults {
 				}
 			}
 			
-			if (files.size() > 1) {
+			if (!foundExperiment) {
 				System.out.println("Didn't run this experiemnt due to early termination");
 				System.out.println("Algorithm: " + algorithm);
 				System.out.println("Parameter Line Number: " + paramLineNum);
 				System.out.println("Target Value: " + targetValue);
+				return;
 			}
 		}
 
@@ -403,42 +406,6 @@ public class AnalyzeResults {
 		}
 	}
 	
-	
-	private ArrayList<Integer> indicesOfProblemsUsedByBothAlgorithms() {
-		ArrayList<Integer> usedIndices = new ArrayList<Integer>();
-		for (int i = 0; i < TestController.files.length; i++) {
-			String problem = TestController.files[i];
-			if (!problem.equals("140v/s2v140c1600-10.cnf") &&
-					!problem.equals("5SAT/HG-5SAT-V100-C1800-100.cnf") &&
-					!problem.equals("60v/s3v60c1000-1.cnf") &&
-					!problem.equals("5SAT/HG-5SAT-V50-C900-5.cnf") &&
-					!problem.equals("maxcut-140-630-0.8/maxcut-140-630-0.8-9.cnf")) {
-				usedIndices.add(i);
-			}
-		}
-		return usedIndices;
-	}
-	
-	private String[] deleteProblemsUnusedByGA() {
-		String[] problemsUsedByBothAlgorithms = new String[indicesOfProblemsUsed.size()];
-		int index = 0;
-		for (Integer i: indicesOfProblemsUsed) {
-			problemsUsedByBothAlgorithms[index] = TestController.files[i];
-			index++;
-		}
-		return problemsUsedByBothAlgorithms;
-	}
-	
-	private int[] deleteSolutionsUnusedByGA() {
-		int[] solutionsUsedByBothAlgorithms = new int[indicesOfProblemsUsed.size()];
-		int index = 0;
-		for (Integer i: indicesOfProblemsUsed) {
-			solutionsUsedByBothAlgorithms[index] = TestController.maxValues[i];
-			index++;
-		}
-		return solutionsUsedByBothAlgorithms;
-	}
-		
 	/* Find out which problems are unused, if any, because of some unfinished experiments.
 	 * 
 	 * NOTE: When all problems are used, it means they are used for both algorithms combined,
@@ -475,5 +442,40 @@ public class AnalyzeResults {
 		if (!hasUnused) {
 			System.out.println("All MAXSAT problems are used.");
 		}
+	}
+	
+	private ArrayList<Integer> indicesOfProblemsUsedByBothAlgorithms() {
+		ArrayList<Integer> usedIndices = new ArrayList<Integer>();
+		for (int i = 0; i < TestController.files.length; i++) {
+			String problem = TestController.files[i];
+			if (!problem.equals("140v/s2v140c1600-10.cnf") &&
+					!problem.equals("5SAT/HG-5SAT-V100-C1800-100.cnf") &&
+					!problem.equals("60v/s3v60c1000-1.cnf") &&
+					!problem.equals("5SAT/HG-5SAT-V50-C900-5.cnf") &&
+					!problem.equals("maxcut-140-630-0.8/maxcut-140-630-0.8-9.cnf")) {
+				usedIndices.add(i);
+			}
+		}
+		return usedIndices;
+	}
+	
+	private String[] deleteProblemsUnusedByGA() {
+		String[] problemsUsedByBothAlgorithms = new String[indicesOfProblemsUsed.size()];
+		int index = 0;
+		for (Integer i: indicesOfProblemsUsed) {
+			problemsUsedByBothAlgorithms[index] = TestController.files[i];
+			index++;
+		}
+		return problemsUsedByBothAlgorithms;
+	}
+	
+	private int[] deleteSolutionsUnusedByGA() {
+		int[] solutionsUsedByBothAlgorithms = new int[indicesOfProblemsUsed.size()];
+		int index = 0;
+		for (Integer i: indicesOfProblemsUsed) {
+			solutionsUsedByBothAlgorithms[index] = TestController.maxValues[i];
+			index++;
+		}
+		return solutionsUsedByBothAlgorithms;
 	}
 }
