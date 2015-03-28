@@ -88,17 +88,17 @@ public class AnalyzeResults {
 	private HashMap<String, ArrayList<String>> filesGroupedByProblem_PBIL = new HashMap<String, ArrayList<String>>();
 
 	// Constructor.
-	public AnalyzeResults() throws IOException {
+	public AnalyzeResults(String paramLn, String paramVal) throws IOException {
 		// Sort files by problem name for each algorithm.
 		groupFilesByProblem();
 		// Initialize parsed results.
 		initializeHashMaps();
 		// Parse results.
 		for (String problem : filesGroupedByProblem_GA.keySet()) {
-			analyzeResults(problem, "GA");
+			analyzeResults(problem, "GA", paramLn, paramVal);
 		}
 		for (String problem : filesGroupedByProblem_PBIL.keySet()) {
-			analyzeResults(problem, "PBIL");
+			analyzeResults(problem, "PBIL", paramLn, paramVal);
 		}
 	}
 	
@@ -178,7 +178,7 @@ public class AnalyzeResults {
 	
 	// Run analysis and fill in values for the HashMaps.
 	private void analyzeResults(String prob, String algorithm, 
-			String parameterLine, String parameterValue) throws IOException {
+			String parameterLine, String targetValue) throws IOException {
 		ArrayList<String> files;
 		if (algorithm.equalsIgnoreCase("GA")) {
 			files = filesGroupedByProblem_GA.get(prob);
@@ -191,16 +191,28 @@ public class AnalyzeResults {
 		 * Now need to loop through the experiments to find the one we need.
 		 */
 		int parameterLineNumber = Integer.parseInt(parameterLine);
+		int targetLineValue = Integer.parseInt(targetValue);
 		if (parameterLineNumber != NO_DATA) {
 			for (int i = 0; i < files.size(); i++) {
-				String filePath = files.get(i);
+				String file = files.get(i);
 				try {
-					BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
-					for ()
-					
+					BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+					for (int l = 0; l < parameterLineNumber; l++) {
+						bufferedReader.readLine();
+					}
+					// Get value of this parameter.
+					String value = bufferedReader.readLine();
+					// Found the experiment file we care about.
+					if (Integer.parseInt(value) == targetLineValue) {
+						// Now the files ArrayList contains only the experiment we care about.
+						files.clear();
+						files.add(file);
+						break;
+					}
+					bufferedReader.close();
 				} 
 				catch(FileNotFoundException e) {
-					printFileNotFound(filePath); 
+					printFileNotFound(file); 
 				}
 			}
 		}
@@ -225,9 +237,9 @@ public class AnalyzeResults {
 		
 		// Iterate through all files associated with this problem.
 		for (int i = 0; i < files.size(); i++) {
-			String filePath = files.get(i);
+			String file = files.get(i);
 			try {
-				BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
+				BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 				String line;
 				int lineNum = 1;
 				while ((line = bufferedReader.readLine()) != null) {
@@ -382,7 +394,7 @@ public class AnalyzeResults {
 				}
 			}
 			catch(FileNotFoundException e) {
-				printFileNotFound(filePath);
+				printFileNotFound(file);
 			}
 		}
 	}
