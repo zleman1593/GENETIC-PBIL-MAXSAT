@@ -92,15 +92,15 @@ public class AnalyzeResultsController {
 			double mutationShift = TestController.PBIL_mutShift[i];
 			
 			if (sampleSize != defaultSampleSize) {
-				parameters_GA.put(LineNumberPBIL.POP_SIZE.getNumVal(), String.valueOf(sampleSize));
+				parameters_PBIL.put(LineNumberPBIL.POP_SIZE.getNumVal(), String.valueOf(sampleSize));
 			} else if (differentDouble(learningRate, defaultLearningRate)) {
-				parameters_GA.put(LineNumberPBIL.LEARNING_RATE.getNumVal(), String.valueOf(learningRate));
+				parameters_PBIL.put(LineNumberPBIL.LEARNING_RATE.getNumVal(), String.valueOf(learningRate));
 			} else if (differentDouble(negLearningRate, defaultNegLearningRate)) {
-				parameters_GA.put(LineNumberPBIL.NEG_LEARNING_RATE.getNumVal(), String.valueOf(negLearningRate));
+				parameters_PBIL.put(LineNumberPBIL.NEG_LEARNING_RATE.getNumVal(), String.valueOf(negLearningRate));
 			} else if (differentDouble(mutationProb, defaultMutationProb)) {
-				parameters_GA.put(LineNumberPBIL.MUTATION_PROB.getNumVal(), String.valueOf(mutationProb));
+				parameters_PBIL.put(LineNumberPBIL.MUTATION_PROB.getNumVal(), String.valueOf(mutationProb));
 			} else if (differentDouble(mutationShift, defaultMutationShift)) {
-				parameters_GA.put(LineNumberPBIL.MUTATION_SHIFT.getNumVal(), String.valueOf(mutationShift));
+				parameters_PBIL.put(LineNumberPBIL.MUTATION_SHIFT.getNumVal(), String.valueOf(mutationShift));
 			}
 		}
 	}
