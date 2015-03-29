@@ -1,5 +1,5 @@
 package AnalysisOfResults;
-import java.io.IOException;
+import java.io.*;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +10,8 @@ public class AnalyzeResultsController {
 	// Algorithms.
 	public static final String GA = "GA";
 	public static final String PBIL = "PBIL";
+	// Folder name.
+	static final String folderPath = "Graph_Data";
 	// Used for comparing doubles.
 	private static final double EPSILON = 0.00001;
 	// Store the results.
@@ -21,8 +23,16 @@ public class AnalyzeResultsController {
 	private static HashMap<Integer, ArrayList<String>> parameters_GA;
 	private static HashMap<Integer, ArrayList<String>> parameters_PBIL;
 	
-
 	public static void main(String[] args) throws IOException {
+		// Delete all files in the directory.
+		File folder = new File(folderPath);
+		for (File file : folder.listFiles()) {
+			try {
+			    file.delete();
+			} catch (Exception e) {
+				System.out.println("Cannot delete file: " + file.getName());
+			}
+		}
 		
 		/* Run general analysis. */
 		// GA.
