@@ -1,13 +1,17 @@
 GA
 number of clauses
+900
 1258
 1200
 384
 1260
 750
+1500
 1200
 2058
+800
 1400
+1296
 1300
 1350
 900
@@ -15,11 +19,15 @@ number of clauses
 
 average number of timeouts
 10
+9
+8
+8
+9
+9
 10
+9
 10
-10
-10
-10
+8
 10
 10
 10

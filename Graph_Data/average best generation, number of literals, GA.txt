@@ -1,13 +1,17 @@
 GA
 number of literals
+50
 140
 140
 64
 140
 125
+140
 60
 343
+60
 140
+216
 140
 150
 100
@@ -15,11 +19,15 @@ number of literals
 
 average best generation
 -1
+5335
+4496
+1141
+42
+158
 -1
+892
 -1
--1
--1
--1
+61
 -1
 -1
 -1

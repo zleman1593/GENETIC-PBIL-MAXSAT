@@ -116,8 +116,8 @@ public class GenerateGraphData {
 	// Graph data to write to files, with problems sorted by number of literals.
 	private void writeGraphData_sortedByLiterals(String algorithm) throws IOException {
 		if (isParameterGraph) {
-			writeToFile(algorithm, parameterName, numLiterals, 
-					parameterVal, avgPercentage_TimeOut);
+			writeToFile(algorithm, parameterVal, numLiterals, 
+					parameterName, avgPercentage_TimeOut);
 		} else {
 			/* Percentage-related, for non-timed-out trials */
 			// Number of literals vs.best percentage solved. 

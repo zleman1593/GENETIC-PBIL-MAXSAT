@@ -1,5 +1,5 @@
 PBIL
-number of literals
+0.5
 50
 140
 140
@@ -17,7 +17,7 @@ number of literals
 100
 140
 
-average percentage for timeouts
+Mutation Probability
 0.9955555555555555
 0.9550870760769936
 0.9726415094339622

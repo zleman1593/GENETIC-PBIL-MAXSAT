@@ -20,18 +20,24 @@ public class AnalyzeResultsController {
 	
 
 	public static void main(String[] args) throws IOException {
+		
 		/* Run general analysis. */
 		// GA
-//		AnalyzeResults analyzeResults_GA = new AnalyzeResults("GA", AnalyzeResults.NO_DATA, null);
-//		results_GA = analyzeResults_GA.getParsedResults_GA();
-//		new GenerateGraphData(results_GA, "GA", false, -1, null);
-//		// PBIL
-//		AnalyzeResults analyzeResults_PBIL = new AnalyzeResults("PBIL", AnalyzeResults.NO_DATA, null);
-//		results_PBIL = analyzeResults_PBIL.getParsedResults_PBIL();
-//		new GenerateGraphData(results_PBIL, "PBIL", false, -1, null);
+		long startTime = System.currentTimeMillis();
+		AnalyzeResults analyzeResults_GA = new AnalyzeResults("GA", AnalyzeResults.NO_DATA, null);
+		results_GA = analyzeResults_GA.getParsedResults_GA();
+		new GenerateGraphData(results_GA, "GA", false, null, null);
+		// PBIL
+		AnalyzeResults analyzeResults_PBIL = new AnalyzeResults("PBIL", AnalyzeResults.NO_DATA, null);
+		results_PBIL = analyzeResults_PBIL.getParsedResults_PBIL();
+		new GenerateGraphData(results_PBIL, "PBIL", false, null, null);
+		long duration = System.currentTimeMillis() - startTime;
+		System.out.println("Finished writing all graph data for general analysis ");
+		System.out.println("Time: " + duration + " milliseconds");
 		
 		/* Run parameter analysis. */
 		// GA
+		long startTime_p = System.currentTimeMillis();
 		initializeParameters_GA();
 		for (Integer lineNum : parameters_GA.keySet()) {
 			for (String value: parameters_GA.get(lineNum)) {
@@ -52,6 +58,9 @@ public class AnalyzeResultsController {
 				new GenerateGraphData(results_Parameters_PBIL, "PBIL", true, param, value);
 			}
 		}
+		long duration_p = System.currentTimeMillis() - startTime_p;
+		System.out.println("Finished writing all graph data for parameter analysis.");
+		System.out.println("Time: " + duration_p + " milliseconds");
 	}
 	
 	public static void initializeParameters_GA() {
