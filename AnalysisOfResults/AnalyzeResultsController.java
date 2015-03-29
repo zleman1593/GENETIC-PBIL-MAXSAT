@@ -1,5 +1,6 @@
 package AnalysisOfResults;
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -36,7 +37,8 @@ public class AnalyzeResultsController {
 			for (String value: parameters_GA.get(lineNum)) {
 				AnalyzeResults analyzeResultsParameters_GA = new AnalyzeResults("GA", lineNum, value);
 				results_Parameters_GA = analyzeResultsParameters_GA.getParsedResults_GA();
-				new GenerateGraphData(results_Parameters_GA, "GA", true, lineNum, value);
+				String param = getParameterName("GA", lineNum);
+				new GenerateGraphData(results_Parameters_GA, "GA", true, param, value);
 			}
 		}
 			
@@ -46,7 +48,8 @@ public class AnalyzeResultsController {
 			for (String value: parameters_PBIL.get(lineNum)) {
 				AnalyzeResults analyzeResultsParameters_PBIL = new AnalyzeResults("PBIL", lineNum, value);
 				results_Parameters_PBIL = analyzeResultsParameters_PBIL.getParsedResults_PBIL();
-				new GenerateGraphData(results_Parameters_PBIL, "PBIL", true, lineNum, value);
+				String param = getParameterName("GA", lineNum);
+				new GenerateGraphData(results_Parameters_PBIL, "PBIL", true, param, value);
 			}
 		}
 	}
@@ -163,7 +166,41 @@ public class AnalyzeResultsController {
 	private static boolean differentDouble(double a, double b) {
 		return Math.abs(a - b) > EPSILON;
 	}
-
+	
+	// Returns the name of the parameter given the algorithm and its line number in results file.
+	public static String getParameterName(String algorithm, int line) 
+		throws InvalidParameterException {
+		if (algorithm.equalsIgnoreCase("GA")) {
+			if (line == LineNumberGA.POP_SIZE.getNumVal()) {
+				return "Population Size";
+			} else if (line == LineNumberGA.SELECTION_TYPE.getNumVal()) {
+				return "Selection Type";
+			} else if (line == LineNumberGA.CROSSOVER_TYPE.getNumVal()) {
+				return "Crossover Type";
+			} else if (line == LineNumberGA.CROSSOVER_PROB.getNumVal()) {
+				return "Crossover Probability";
+			} else if (line == LineNumberGA.MUTATION_PROB.getNumVal()) {
+				return "Mutation Probability";
+			} else {
+				throw new InvalidParameterException("Invalid line number for " + algorithm);
+			}
+		} else {
+			if (line == LineNumberPBIL.POP_SIZE.getNumVal()) {
+				return "Population Size";
+			} else if (line == LineNumberPBIL.LEARNING_RATE.getNumVal()) {
+				return "Learning Rate";
+			} else if (line == LineNumberPBIL.NEG_LEARNING_RATE.getNumVal()) {
+				return "Negative Learning Rate";
+			} else if (line == LineNumberPBIL.MUTATION_PROB.getNumVal()) {
+				return "Mutation Probability";
+			} else if (line == LineNumberPBIL.MUTATION_SHIFT.getNumVal()) {
+				return "Mutation Shift";
+			} else {
+				throw new InvalidParameterException("Invalid line number for " + algorithm);
+			}
+		}
+	}
+	
 	// Print out the fields in the results objects.
 	public static void test(HashMap<String, HashMap<String, String>> results) {
 		for (String problem : results.keySet()) {

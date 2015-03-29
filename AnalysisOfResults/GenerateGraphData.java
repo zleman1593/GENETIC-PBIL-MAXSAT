@@ -16,7 +16,7 @@ public class GenerateGraphData {
 	int graphIndex = 1; 
 	// Whether we are graphing for parameters.
 	boolean isParameterGraph;
-	int parameterLineNum;
+	String parameterName;
 	String parameterVal;
 	
 	/*
@@ -40,11 +40,11 @@ public class GenerateGraphData {
 	ArrayList<String> avgPercentage_TimeOut = new ArrayList<String>();
 
 	public GenerateGraphData(HashMap<String, HashMap<String, String>> results, 
-			String algorithm, boolean isParameterGraph, int parameterLineNum,
+			String algorithm, boolean isParameterGraph, String parameterName,
 			String parameterVal) throws IOException {
 		this.results = results;
 		this.isParameterGraph = isParameterGraph;
-		this.parameterLineNum = parameterLineNum;
+		this.parameterName = parameterName;
 		this.parameterVal = parameterVal;
 
 		// x-axis is the number of literals.
@@ -115,48 +115,53 @@ public class GenerateGraphData {
 	
 	// Graph data to write to files, with problems sorted by number of literals.
 	private void writeGraphData_sortedByLiterals(String algorithm) throws IOException {
-		/* Percentage-related, for non-timed-out trials */
-		// Number of literals vs.best percentage solved. 
-		writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
-				AnalyzeResults.BEST_PERCENTAGE, bestPercentage);
-		// Number of literals vs.average percentage solved.
-		writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
-				AnalyzeResults.AVG_PERCENTAGE, avgPercentage);
+		if (isParameterGraph) {
+			writeToFile(algorithm, parameterName, numLiterals, 
+					parameterVal, avgPercentage_TimeOut);
+		} else {
+			/* Percentage-related, for non-timed-out trials */
+			// Number of literals vs.best percentage solved. 
+			writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
+					AnalyzeResults.BEST_PERCENTAGE, bestPercentage);
+			// Number of literals vs.average percentage solved.
+			writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
+					AnalyzeResults.AVG_PERCENTAGE, avgPercentage);
+			
+			/* Percentage-related, for timed-out trials */
+			// Number of literals vs.best percentage solved. 
+			writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
+					AnalyzeResults.BEST_PERCENTAGE_TIMEOUT, bestPercentage_TimeOut);
+			// Number of literals vs.average percentage solved.
+			writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
+					AnalyzeResults.AVG_PERCENTAGE_TIMEOUT, avgPercentage_TimeOut);
+			
+			/* Best generation-related for non timed-out trials */
+			// Number of literals vs. best generation.
+			writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
+					AnalyzeResults.BEST_GENERATION, bestGeneration);
+			// Number of literals vs. average best generation.
+			writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
+					AnalyzeResults.AVG_BEST_GENERATION, avgBestGeneration);
 		
-		/* Percentage-related, for timed-out trials */
-		// Number of literals vs.best percentage solved. 
-		writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
-				AnalyzeResults.BEST_PERCENTAGE_TIMEOUT, bestPercentage_TimeOut);
-		// Number of literals vs.average percentage solved.
-		writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
-				AnalyzeResults.AVG_PERCENTAGE_TIMEOUT, avgPercentage_TimeOut);
-		
-		/* Best generation-related for non timed-out trials */
-		// Number of literals vs. best generation.
-		writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
-				AnalyzeResults.BEST_GENERATION, bestGeneration);
-		// Number of literals vs. average best generation.
-		writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
-				AnalyzeResults.AVG_BEST_GENERATION, avgBestGeneration);
-	
-		/* Best generation-related for timed-out trials */
-		// Number of literals vs. best generation.
-		writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
-				AnalyzeResults.BEST_GENERATION_TIMEOUT, bestGeneration_TimeOut);
-		// Number of literals vs. average best generation.
-		writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
-				AnalyzeResults.AVG_BEST_GENERATION_TIMEOUT, avgBestGeneration_TimeOut);
-		
-		/* Time-related */
-		// Number of literals vs. average number of time outs. 
-		writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
-				AnalyzeResults.AVG_NUM_TIMEOUTS, avgNumTimeOuts);
-		// Number of literals vs. best execution time.
-		writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
-				AnalyzeResults.BEST_EXECUTION_TIME, bestExecutionTime);
-		// Number of literals vs. average execution time.
-		writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
-				AnalyzeResults.AVG_EXECUTION_TIME, avgExecutionTime);
+			/* Best generation-related for timed-out trials */
+			// Number of literals vs. best generation.
+			writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
+					AnalyzeResults.BEST_GENERATION_TIMEOUT, bestGeneration_TimeOut);
+			// Number of literals vs. average best generation.
+			writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
+					AnalyzeResults.AVG_BEST_GENERATION_TIMEOUT, avgBestGeneration_TimeOut);
+			
+			/* Time-related */
+			// Number of literals vs. average number of time outs. 
+			writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
+					AnalyzeResults.AVG_NUM_TIMEOUTS, avgNumTimeOuts);
+			// Number of literals vs. best execution time.
+			writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
+					AnalyzeResults.BEST_EXECUTION_TIME, bestExecutionTime);
+			// Number of literals vs. average execution time.
+			writeToFile(algorithm, AnalyzeResults.NUM_LITERALS, numLiterals, 
+					AnalyzeResults.AVG_EXECUTION_TIME, avgExecutionTime);
+		}
 	}
 
 	// Graph data to write to files, with problems sorted by number of clauses.
