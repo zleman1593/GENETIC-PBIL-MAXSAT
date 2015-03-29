@@ -19,8 +19,7 @@ public class GenerateGraphData {
 	String parameterName;
 	String parameterVal;
 	
-	/*
-	 * Each ArrayList is a list of values (from all problems) for x-axis or
+	/* Each ArrayList is a list of values (from all problems) for x-axis or
 	 * y-axis of one graph. Indices correspond to the same file: for example,
 	 * avgPercentage at index 2 and numLiterals at index 2 are data
 	 * extracted from the same file.

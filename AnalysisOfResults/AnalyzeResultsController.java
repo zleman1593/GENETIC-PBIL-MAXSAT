@@ -7,7 +7,7 @@ import java.util.HashMap;
 import Algorithms.TestController;
 
 public class AnalyzeResultsController {
-	// Algorithms.
+	// Algorithm names.
 	public static final String GA = "GA";
 	public static final String PBIL = "PBIL";
 	// Folder name.

@@ -52,9 +52,12 @@ public class AnalyzeResults {
 	 * 					mutation probability, mutation shift.
 	 * */
 	static final String PARAMETER_SETTINGS = "parameter settings";
-	// When data is not recorded because the algorithm timed out.
-	static final int NO_DATA = -1; 
+	// When the algorithm reached its maximum iteration.
 	static final int MAX_ITERATION = Integer.MAX_VALUE;
+	// When data is not recorded because the algorithm timed out.
+	static final int NO_DATA = -1;
+	// We are looking for the experiment containing all default values.
+	static final int DEFAULT = 0;
 	
 	/* Files */
 	// Path of source folder that contains all the results.
@@ -195,16 +198,92 @@ public class AnalyzeResults {
 				try {
 					BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 					String line = "";
-					for (int l = 0; l < paramLineNum; l++) {
-						line = bufferedReader.readLine();
-					}
-					// Found the experiment file we care about
-					if (line.trim().equalsIgnoreCase(targetValue)) {
-						// Now the files ArrayList contains only the experiment we care about.
-						foundExperiment = true;
-						files.clear();
-						files.add(file);
-						break;
+					
+					/* Handling results for default experiment. 
+					 * We need to make sure we match values for all fields (not just one),
+					 * because each field represents a fixed value for all other experiments.
+					 * So we cannot use the paramLineNum - targetValue matching here. 
+					 */
+					if (paramLineNum == DEFAULT) {
+						if (algorithm.equalsIgnoreCase("GA")) {
+							// See if population size matches default value.
+							for (int l = 0; l < LineNumberGA.POP_SIZE.getNumVal(); l++) {
+								line = bufferedReader.readLine();
+							}
+							String defaultPopSize = String.valueOf(TestController.popSize[0]);
+							if (line.equalsIgnoreCase(defaultPopSize)) {
+								// See if selection type matches.
+								line = bufferedReader.readLine();
+								String defaultSelectionType = TestController.selectionType[0];
+								if (line.equalsIgnoreCase(defaultSelectionType)) {
+									// See if crossover type matches.
+									line = bufferedReader.readLine();
+									String defaultCrossoverType = TestController.crossoverType[0];
+									if (line.equalsIgnoreCase(defaultCrossoverType)) {
+										// See if crossover probability matches.
+										line = bufferedReader.readLine();
+										String defaultCrossoverProb = String.valueOf(TestController.crossoverProb[0]);
+										if (line.equalsIgnoreCase(defaultCrossoverProb)) {
+											// See if mutation probability matches.
+											line = bufferedReader.readLine();
+											String defaultMutationProb = String.valueOf(TestController.mutationProb[0]);
+											if (line.equalsIgnoreCase(defaultMutationProb)) {
+												// Finally we found the experiment with all default values.
+												foundExperiment = true;
+												files.clear();
+												files.add(file);
+												break;
+											}
+										}
+									}
+								}
+							}
+						} else {
+							// See if population size matches default value.
+							for (int l = 0; l < LineNumberPBIL.POP_SIZE.getNumVal(); l++) {
+								line = bufferedReader.readLine();
+							}
+							String defaultPopSize = String.valueOf(TestController.PBIL_samples[0]);
+							if (line.equalsIgnoreCase(defaultPopSize)) {
+								// See if learning rate matches.
+								line = bufferedReader.readLine();
+								String defaultLearningRate = String.valueOf(TestController.PBIL_learningRate[0]);
+								if (line.equalsIgnoreCase(defaultLearningRate)) {
+									// See if negative learning rate matches.
+									line = bufferedReader.readLine();
+									String defaultNegLearningRate = String.valueOf(TestController.PBIL_negLearningRate[0]);
+									if (line.equalsIgnoreCase(defaultNegLearningRate)) {
+										// See if mutation probability matches.
+										line = bufferedReader.readLine();
+										String defaultMutationProb = String.valueOf(TestController.PBIL_mutProb[0]);
+										if (line.equalsIgnoreCase(defaultMutationProb)) {
+											// See if mutation shift matches.
+											line = bufferedReader.readLine();
+											String defaultMutationShift = String.valueOf(TestController.PBIL_mutShift[0]);
+											if (line.equalsIgnoreCase(defaultMutationShift)) {
+												// Finally we found the experiment with all default values.
+												foundExperiment = true;
+												files.clear();
+												files.add(file);
+												break;
+											}
+										}
+									}
+								}
+							}
+						}
+					} else {
+						// Look for the experiment we care about.
+						for (int l = 0; l < paramLineNum; l++) {
+							line = bufferedReader.readLine();
+						}
+						if (line.trim().equalsIgnoreCase(targetValue)) {
+							// Now the files ArrayList contains only the experiment we care about.
+							foundExperiment = true;
+							files.clear();
+							files.add(file);
+							break;
+						}
 					}
 					bufferedReader.close();
 				} 
@@ -214,13 +293,13 @@ public class AnalyzeResults {
 			}
 			
 			if (!foundExperiment) {
-//				System.out.println("Didn't run this experiemnt due to early termination");
+//				System.out.println("Didn't run this experiment due to early termination");
 //				System.out.println("Algorithm: " + algorithm);
 //				System.out.println("Parameter Line Number: " + paramLineNum);
 //				System.out.println("Target Value: " + targetValue);
 				return;
 			}
-		}
+		} 
 
 		// Factors we are considering.
 		int numExperiments = files.size();
@@ -405,9 +484,8 @@ public class AnalyzeResults {
 	}
 	
 	/* Find out which problems are unused, if any, because of some unfinished experiments.
-	 * 
 	 * NOTE: When all problems are used, it means they are used for both algorithms combined,
-	 * 		 so each of the algorithms may not have used all the problems.
+	 * 		 so each of the algorithms may not have used all the problems. 
 	 */
 	public void printUnusedProblems() throws IOException {
 		HashSet<String> setOfUsedProblems = new HashSet<String>();
@@ -442,6 +520,7 @@ public class AnalyzeResults {
 		}
 	}
 	
+	// There are 5 problems used by PBIL but not GA. 
 	private ArrayList<Integer> indicesOfProblemsUsedByBothAlgorithms() {
 		ArrayList<Integer> usedIndices = new ArrayList<Integer>();
 		for (int i = 0; i < TestController.files.length; i++) {
@@ -457,6 +536,7 @@ public class AnalyzeResults {
 		return usedIndices;
 	}
 	
+	// We want to delete the problems used by PBIL but not GA.
 	private String[] deleteProblemsUnusedByGA() {
 		String[] problemsUsedByBothAlgorithms = new String[indicesOfProblemsUsed.size()];
 		int index = 0;
@@ -467,6 +547,7 @@ public class AnalyzeResults {
 		return problemsUsedByBothAlgorithms;
 	}
 	
+	// We also want to delete the solutions corresponding to the deleted problems.
 	private int[] deleteSolutionsUnusedByGA() {
 		int[] solutionsUsedByBothAlgorithms = new int[indicesOfProblemsUsed.size()];
 		int index = 0;
