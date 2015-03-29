@@ -7,6 +7,9 @@ import java.util.HashMap;
 import Algorithms.TestController;
 
 public class AnalyzeResultsController {
+	// Algorithms.
+	public static final String GA = "GA";
+	public static final String PBIL = "PBIL";
 	// Used for comparing doubles.
 	private static final double EPSILON = 0.00001;
 	// Store the results.
@@ -22,15 +25,16 @@ public class AnalyzeResultsController {
 	public static void main(String[] args) throws IOException {
 		
 		/* Run general analysis. */
-		// GA
+		// GA.
 		long startTime = System.currentTimeMillis();
-		AnalyzeResults analyzeResults_GA = new AnalyzeResults("GA", AnalyzeResults.NO_DATA, null);
+		AnalyzeResults analyzeResults_GA = new AnalyzeResults(GA, AnalyzeResults.NO_DATA, null);
 		results_GA = analyzeResults_GA.getParsedResults_GA();
-		new GenerateGraphData(results_GA, "GA", false, null, null);
-		// PBIL
-		AnalyzeResults analyzeResults_PBIL = new AnalyzeResults("PBIL", AnalyzeResults.NO_DATA, null);
+		new GenerateGraphData(results_GA, GA, false, null, null);
+		// PBIL.
+		AnalyzeResults analyzeResults_PBIL = new AnalyzeResults(PBIL, AnalyzeResults.NO_DATA, null);
 		results_PBIL = analyzeResults_PBIL.getParsedResults_PBIL();
-		new GenerateGraphData(results_PBIL, "PBIL", false, null, null);
+		new GenerateGraphData(results_PBIL, PBIL, false, null, null);
+		// Time calculation.
 		long duration = System.currentTimeMillis() - startTime;
 		System.out.println("Finished writing all graph data for general analysis ");
 		System.out.println("Time: " + duration + " milliseconds");
@@ -41,10 +45,10 @@ public class AnalyzeResultsController {
 		initializeParameters_GA();
 		for (Integer lineNum : parameters_GA.keySet()) {
 			for (String value: parameters_GA.get(lineNum)) {
-				AnalyzeResults analyzeResultsParameters_GA = new AnalyzeResults("GA", lineNum, value);
+				AnalyzeResults analyzeResultsParameters_GA = new AnalyzeResults(GA, lineNum, value);
 				results_Parameters_GA = analyzeResultsParameters_GA.getParsedResults_GA();
-				String param = getParameterName("GA", lineNum);
-				new GenerateGraphData(results_Parameters_GA, "GA", true, param, value);
+				String param = getParameterName(GA, lineNum);
+				new GenerateGraphData(results_Parameters_GA, GA, true, param, value);
 			}
 		}
 			
@@ -52,12 +56,13 @@ public class AnalyzeResultsController {
 		initializeParameters_PBIL();
 		for (Integer lineNum : parameters_PBIL.keySet()) {
 			for (String value: parameters_PBIL.get(lineNum)) {
-				AnalyzeResults analyzeResultsParameters_PBIL = new AnalyzeResults("PBIL", lineNum, value);
+				AnalyzeResults analyzeResultsParameters_PBIL = new AnalyzeResults(PBIL, lineNum, value);
 				results_Parameters_PBIL = analyzeResultsParameters_PBIL.getParsedResults_PBIL();
-				String param = getParameterName("GA", lineNum);
-				new GenerateGraphData(results_Parameters_PBIL, "PBIL", true, param, value);
+				String param = getParameterName(PBIL, lineNum);
+				new GenerateGraphData(results_Parameters_PBIL, PBIL, true, param, value);
 			}
 		}
+		// Time calculation.
 		long duration_p = System.currentTimeMillis() - startTime_p;
 		System.out.println("Finished writing all graph data for parameter analysis.");
 		System.out.println("Time: " + duration_p + " milliseconds");
@@ -207,7 +212,7 @@ public class AnalyzeResultsController {
 			} else {
 				throw new InvalidParameterException("Invalid line number for " + algorithm);
 			}
-		}
+		} 
 	}
 	
 	// Print out the fields in the results objects.
