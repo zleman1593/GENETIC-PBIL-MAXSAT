@@ -11,7 +11,7 @@ public class GenerateGraphData {
 	// Results where the problems are sorted by the number of literals, in increasing order.
 	private HashMap<String, HashMap<String, String>> results;
 	// Folder path.
-	String folderPath = "Graph_Data";
+	String folderPath = AnalyzeResultsController.folderPath;
 	// Current graph file number.
 	int graphIndex = 1; 
 	// Whether we are graphing for parameters.
