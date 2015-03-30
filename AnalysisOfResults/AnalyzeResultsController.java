@@ -10,6 +10,9 @@ public class AnalyzeResultsController {
 	// Algorithm names.
 	public static final String GA = "GA";
 	public static final String PBIL = "PBIL";
+	// Parameters.
+	public static final int NO_DATA = -1;
+	public static final int DEFAULT = 0;
 	// Folder name.
 	static final String folderPath = "Graph_Data";
 	// Used for comparing doubles.
@@ -37,22 +40,29 @@ public class AnalyzeResultsController {
 		/* Run general analysis. */
 		// GA.
 		long startTime = System.currentTimeMillis();
-		AnalyzeResults analyzeResults_GA = new AnalyzeResults(GA, AnalyzeResults.NO_DATA, null);
+		AnalyzeResults analyzeResults_GA = new AnalyzeResults(GA, NO_DATA, null);
 		results_GA = analyzeResults_GA.getParsedResults_GA();
 		new GenerateGraphData(results_GA, GA, false, null, null);
 		// PBIL.
-		AnalyzeResults analyzeResults_PBIL = new AnalyzeResults(PBIL, AnalyzeResults.NO_DATA, null);
+		AnalyzeResults analyzeResults_PBIL = new AnalyzeResults(PBIL, NO_DATA, null);
 		results_PBIL = analyzeResults_PBIL.getParsedResults_PBIL();
 		new GenerateGraphData(results_PBIL, PBIL, false, null, null);
-		// Time calculation.
+		// End time calculation.
 		long duration = System.currentTimeMillis() - startTime;
 		System.out.println("Finished writing all graph data for general analysis ");
 		System.out.println("Time: " + duration + " milliseconds");
+		/* End general analysis*/
 		
 		/* Run parameter analysis. */
-		// GA
 		long startTime_p = System.currentTimeMillis();
+		// GA
 		initializeParameters_GA();
+		// Get graph data for the experiment with all default parameters.
+		AnalyzeResults analyzeResultsDefaultParameters_GA = new AnalyzeResults(GA, AnalyzeResults.DEFAULT, null);
+		results_Parameters_GA = analyzeResultsDefaultParameters_GA.getParsedResults_GA();
+		new GenerateGraphData(results_Parameters_GA, GA, true, "Default parameter values", null);
+
+		// Get graph data for the rest of the experiments.
 		for (Integer lineNum : parameters_GA.keySet()) {
 			for (String value: parameters_GA.get(lineNum)) {
 				AnalyzeResults analyzeResultsParameters_GA = new AnalyzeResults(GA, lineNum, value);
@@ -64,6 +74,12 @@ public class AnalyzeResultsController {
 			
 		// PBIL
 		initializeParameters_PBIL();
+		// Get graph data for the experiment with all default parameters.
+		AnalyzeResults analyzeResultsDefaultParameters_PBIL = new AnalyzeResults(PBIL, AnalyzeResults.DEFAULT, null);
+		results_Parameters_PBIL = analyzeResultsDefaultParameters_PBIL.getParsedResults_PBIL();
+		new GenerateGraphData(results_Parameters_PBIL, PBIL, true, "Default parameter values", null);
+		
+		// Get graph data for the rest of the experiments.				
 		for (Integer lineNum : parameters_PBIL.keySet()) {
 			for (String value: parameters_PBIL.get(lineNum)) {
 				AnalyzeResults analyzeResultsParameters_PBIL = new AnalyzeResults(PBIL, lineNum, value);
@@ -72,10 +88,11 @@ public class AnalyzeResultsController {
 				new GenerateGraphData(results_Parameters_PBIL, PBIL, true, param, value);
 			}
 		}
-		// Time calculation.
+		// End time calculation.
 		long duration_p = System.currentTimeMillis() - startTime_p;
 		System.out.println("Finished writing all graph data for parameter analysis.");
 		System.out.println("Time: " + duration_p + " milliseconds");
+		/* End parameter analysis*/
 	}
 	
 	public static void initializeParameters_GA() {
