@@ -50,7 +50,7 @@ public class AnalyzeResultsController {
 		// End time calculation.
 		long duration = System.currentTimeMillis() - startTime;
 		System.out.println("Finished writing all graph data for general analysis ");
-		System.out.println("Time: " + duration + " milliseconds");
+		System.out.println("Time: " + duration / 1000.0 + " second(s)");
 		/* End general analysis*/
 		
 		/* Run parameter analysis. */
@@ -58,9 +58,9 @@ public class AnalyzeResultsController {
 		// GA
 		initializeParameters_GA();
 		// Get graph data for the experiment with all default parameters.
-		AnalyzeResults analyzeResultsDefaultParameters_GA = new AnalyzeResults(GA, AnalyzeResults.DEFAULT, null);
+		AnalyzeResults analyzeResultsDefaultParameters_GA = new AnalyzeResults(GA, AnalyzeResults.DEFAULT, "parameter values");
 		results_Parameters_GA = analyzeResultsDefaultParameters_GA.getParsedResults_GA();
-		new GenerateGraphData(results_Parameters_GA, GA, true, "Default parameter values", null);
+		new GenerateGraphData(results_Parameters_GA, GA, true, "Default", "parameter values");
 
 		// Get graph data for the rest of the experiments.
 		for (Integer lineNum : parameters_GA.keySet()) {
@@ -75,9 +75,9 @@ public class AnalyzeResultsController {
 		// PBIL
 		initializeParameters_PBIL();
 		// Get graph data for the experiment with all default parameters.
-		AnalyzeResults analyzeResultsDefaultParameters_PBIL = new AnalyzeResults(PBIL, AnalyzeResults.DEFAULT, null);
+		AnalyzeResults analyzeResultsDefaultParameters_PBIL = new AnalyzeResults(PBIL, AnalyzeResults.DEFAULT, "parameter values");
 		results_Parameters_PBIL = analyzeResultsDefaultParameters_PBIL.getParsedResults_PBIL();
-		new GenerateGraphData(results_Parameters_PBIL, PBIL, true, "Default parameter values", null);
+		new GenerateGraphData(results_Parameters_PBIL, PBIL, true, "Default", "parameter values");
 		
 		// Get graph data for the rest of the experiments.				
 		for (Integer lineNum : parameters_PBIL.keySet()) {
@@ -91,7 +91,7 @@ public class AnalyzeResultsController {
 		// End time calculation.
 		long duration_p = System.currentTimeMillis() - startTime_p;
 		System.out.println("Finished writing all graph data for parameter analysis.");
-		System.out.println("Time: " + duration_p + " milliseconds");
+		System.out.println("Time: " + duration_p / 1000.0 + " second(s)");
 		/* End parameter analysis*/
 	}
 	
