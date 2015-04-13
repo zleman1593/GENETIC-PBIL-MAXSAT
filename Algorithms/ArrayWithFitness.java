@@ -1,6 +1,6 @@
 package Algorithms;
 import java.util.ArrayList;
-
+//Class extends Arraylist to allow solution stored in ArrayList to have associated fitness which will be used to select solutions in the two algorithms
 public class ArrayWithFitness implements Comparable<ArrayWithFitness> {
 	public int fitness;
 	public ArrayList<Integer> individual;

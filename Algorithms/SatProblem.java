@@ -1,8 +1,7 @@
 package Algorithms;
 import java.io.*;
 import java.util.ArrayList;
-//TODO make sure it doesnt read extra lines at the bottom of the file
-
+/*Class reads in the MAXSAT input files into the appropriate data structures*/
 public class SatProblem {
 
 	private ArrayList<ArrayList<Integer>> satProblem = new ArrayList<ArrayList<Integer>>();	
