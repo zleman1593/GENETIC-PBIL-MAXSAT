@@ -2,7 +2,6 @@ package Algorithms;
 import java.util.ArrayList;
 
 public class Controller {
-	// Todo include ts sample size and winner size
 
 	public static void main(String[] args) {
 	

@@ -352,17 +352,6 @@ public class Genetic extends EvolAlgorithms {
 		return population;
 	}
 
-	/* Makes the solution more human readable */
-	private int[] binaryToNumber(ArrayList<Integer> solution) {
-		int[] display = new int[solution.size()];
-		for (int i = 0; i < solution.size(); i++) {
-			if (solution.get(i) < 1) {
-				display[i] = -1 * (i + 1);
-			} else {
-				display[i] = (i + 1);
-			}
-		}
-		return display;
-	}
+	
 
 }
