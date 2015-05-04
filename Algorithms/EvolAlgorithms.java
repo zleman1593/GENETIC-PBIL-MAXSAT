@@ -13,7 +13,7 @@ public class EvolAlgorithms {
 	protected long timeout = 180000;
 	
 	/* Fitness Function */
-	public int evaluateCandidate(ArrayList<Integer> values) {
+	protected int evaluateCandidate(ArrayList<Integer> values) {
 		int fitness = 0;
 		// Look at every clause
 		for (int i = 0; i < satProblem.size(); i++) {
@@ -30,4 +30,20 @@ public class EvolAlgorithms {
 		}
 		return fitness;
 	}
+	
+	
+	/* Makes the solution more human readable */
+	protected int[] binaryToNumber(ArrayList<Integer> solution) {
+		int[] display = new int[solution.size()];
+		for (int i = 0; i < solution.size(); i++) {
+			if (solution.get(i) < 1) {
+				display[i] = -1 * (i + 1);
+			} else {
+				display[i] = (i + 1);
+			}
+		}
+		return display;
+	}
+	
+	
 }

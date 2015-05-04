@@ -7,9 +7,9 @@ public class Controller {
 	
 
 		// Path to MXSAT input file
-		String infile = args[0];
+		String infile = "/Users/zackleman/Documents/Current Projects/GENETIC-PBIL-MAXSAT/Problems/140v/s2v140c1200-10.cnf";//args[0];
 		// Solution technique to use
-		String solutionTechnique = args[7];
+		String solutionTechnique = "sa";//args[7];
 
 		// Import and format MAXSAT problem.
 		SatProblem problem = new SatProblem();
@@ -32,7 +32,7 @@ public class Controller {
 
 			geneticAlgo.evolve(selectionType);
 
-		} else {
+		} else if (solutionTechnique.equalsIgnoreCase("p")){
 
 			// PBIL parameters
 			int PBIL_samples = Integer.parseInt(args[1]);
@@ -42,16 +42,22 @@ public class Controller {
 			double PBIL_mutShift = Double.parseDouble(args[5]);
 			int PBIL_maxIterations = Integer.parseInt(args[6]);
 
-			/*
-			 * int PBIL_samples = 100; double PBIL_learningRate = 0.1; double
-			 * PBIL_negLearningRate = .075; double PBIL_mutProb = 0.02; double
-			 * PBIL_mutShift = 0.05; int PBIL_maxIterations = 2000;
-			 */
-
 			// Run PBIL.
 			PBIL PBILAlgorithm = new PBIL(PBIL_samples, PBIL_learningRate, PBIL_negLearningRate, numberOfLiterals,
 					PBIL_mutProb, PBIL_mutShift, PBIL_maxIterations, satProblem);
 			PBILAlgorithm.evolve();
+		} else if (solutionTechnique.equalsIgnoreCase("sa")){
+			
+			double minTemp = 0.0001;
+			double maxTemp = 0.5;
+			
+			 SimulatedAnnealing anneal = new SimulatedAnnealing(numberOfLiterals,satProblem,2,minTemp,maxTemp);
+			 anneal.anneal();
+			
+			
+		
+		
+			
 		}
 
 	}
