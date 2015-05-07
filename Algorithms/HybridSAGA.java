@@ -3,61 +3,61 @@ package Algorithms;
 import java.util.*;
 
 public class HybridSAGA extends GeneticSuper {
-	private ArrayList<ArrayList<Integer>> twoMembers;
 	private int fitnessOfPop1;
-	// Constructor.
-	public HybridSAGA(int literalNumber, int maxIteration, String crossOverMethod, double crossOverProb,
-			double mutateProb, ArrayList<ArrayList<Integer>> satProblem) {
-		this.satProblem = satProblem;
-		this.population = new ArrayList<ArrayList<Integer>>(); //initPopulation(2, literalNumber);
-		this.maxIteration = maxIteration;
-		this.crossOverProb = crossOverProb;
-		this.mutateProb = mutateProb;
-		this.crossOverMethod = crossOverMethod;
-		this.timeout = Long.MAX_VALUE;
-		this.twoMembers = new ArrayList<ArrayList<Integer>>();
-	}
+	private int fitnessOfPop2;
+	private ArrayList<Integer> firstMember = null;
+	private ArrayList<Integer> secondMember = null;
+	private int literalNumber;
+	
+	//Make params
+	private  double minTemp = 0.0001;
+	private double maxTemp = 0.5;
+	private int populationSize = 60;
+	private int numberOfGAIterationsWithoutImprovement = 100;
 
+	
 	// Constructor for tests
 	public HybridSAGA( int literalNumber, int maxIteration, String crossOverMethod, double crossOverProb,
 			double mutateProb, ArrayList<ArrayList<Integer>> satProblem, int optimalUnSat) {
 		this.satProblem = satProblem;
-		this.population = new ArrayList<ArrayList<Integer>>(); //initPopulation(2, literalNumber);
+		this.population = new ArrayList<ArrayList<Integer>>(); 
 		this.maxIteration = maxIteration;
 		this.crossOverProb = crossOverProb;
 		this.mutateProb = mutateProb;
 		this.crossOverMethod = crossOverMethod;
 		this.optimalUnSat = optimalUnSat;
+		this.literalNumber = literalNumber;
+		this.sample =  populationSize / 2;
+		this.winners = 1;
 	}
-
 
 
 	public Results solve() {
 		long startTime = System.currentTimeMillis();
 		long executionTime = -1;
 
-		double minTemp = 0.0001;
-		double maxTemp = 0.5;
-
+		for (int i = 0; i < maxIteration && !foundSATSolution; i++) {
+			 currentGeneration = i;
 			//SA cycle
 			sa(minTemp,maxTemp);
-		
+
 			//GA cycle
 			ga();
-
 
 			// If time out or reached optimal number of clauses satisfied, return result.
 			int currentUnsat = satProblem.size() - maxFitnessSoFar;
 			if (System.currentTimeMillis() - startTime >= timeout) {
 				foundSATSolution = true;
-				//break;
+				break;
 			} else if (currentUnsat <= optimalUnSat) {
 				// If finished all iterations, calculate time.
 				executionTime = endTime - startTime;
 				foundSATSolution = true;
-				//break;
+				break;
 			}
-		
+			i++;
+		}
+
 
 		double percent = ((double) maxFitnessSoFar * 100 / (double) satProblem.size());
 
@@ -77,118 +77,119 @@ public class HybridSAGA extends GeneticSuper {
 
 	}
 
-	/*
-	 *  Crosses over two individuals using a single  random crossover point
-	 */
-	private void singlePointCrossover(int popSize) {
-			for (int i = 0; i < popSize/2; i++) {
-					// Pick cross over location
-					int crossOverLocation = randomGenerator.nextInt(population.get(i).size());
+	private void generateChildren(int popSize) {
+		Results resultOfSecondAnneal = new Results();
+		for (int i = 0; i < popSize/2; i++) {
+			// Pick cross over location
+			int crossOverLocation = randomGenerator.nextInt(literalNumber);
 
-					ArrayList<Integer> newSibling1 =  (ArrayList<Integer>) twoMembers.get(0).clone();
-					ArrayList<Integer> newSibling2 =  (ArrayList<Integer>) twoMembers.get(1).clone();
+			ArrayList<Integer> newSibling1 =  (ArrayList<Integer>) firstMember.clone();
+			ArrayList<Integer> newSibling2 =   initStartingCandidate();
 
-					// Copy first part of A into C
-					List<Integer> c = new ArrayList<Integer>(newSibling1.subList(0, crossOverLocation));
-					// Replace first part of A with First part of B
-					for (int j = 0; j < crossOverLocation; j++) {
-						int value = newSibling2.get(j);
-						newSibling1.set(j, value);
-					}
-					// Replace first part of B with C
-					for (int j = 0; j < c.size(); j++) {
-						int value = c.get(j);
-						newSibling2.set(j, value);
-					}
-				
-					population.add(newSibling1);
-					population.add(newSibling2);
+			// Copy first part of A into C
+			List<Integer> c = new ArrayList<Integer>(newSibling1.subList(0, crossOverLocation));
+			// Replace first part of A with First part of B
+			for (int j = 0; j < crossOverLocation; j++) {
+				int value = newSibling2.get(j);
+				newSibling1.set(j, value);
 			}
-	
+			// Replace first part of B with C
+			for (int j = 0; j < c.size(); j++) {
+				int value = c.get(j);
+				newSibling2.set(j, value);
+			}
+
+			population.add(newSibling1);
+			population.add(newSibling2);
+		}
+
 	}
 	
+//	private void generateChildren(int popSize) {
+//		for (int i = 0; i < popSize; i++) {
+//	
+//			ArrayList<Integer> newSibling1 =  (ArrayList<Integer>) firstMember.clone();
+//
+//			population.add(newSibling1);
+//	
+//		}
+//
+//	}
+//	
 	
+
+
+
 	void sa(double minTemp, double maxTemp){
+
 		int fitnessOfFirstMember = 0;
-		ArrayList<Integer> firstMember;
+
 		int fitnessOfSecondMember = 0;
-		ArrayList<Integer> secondMember;
 
-		for (int i = 0; i < maxIteration && !foundSATSolution; i++) {
-			currentGeneration = i + 1;
+		boolean increment = true;
+		int numberOfConsecutiveNoImprovements = 0;
 
+		while (numberOfConsecutiveNoImprovements <= 10){
 
-			boolean increment = true;
-			int numberOfConsecutiveNoImprovements = 0;
+			boolean backwards;
+			if( randomGenerator.nextDouble() <= 0.5) {backwards = true;} else { backwards = true;} 
+			SimulatedAnnealing anneal1 = new SimulatedAnnealing(literalNumber,satProblem,2,minTemp,maxTemp,firstMember,backwards);
+			Results resultOfFirstAnneal = anneal1.anneal();
+			int fitnessOfFirstResult = (resultOfFirstAnneal.numClauses - resultOfFirstAnneal.numUnsatisifiedClauses);
 
-			while (numberOfConsecutiveNoImprovements <= 10){
+			if (fitnessOfFirstResult > fitnessOfFirstMember) {
+				firstMember =  resultOfFirstAnneal.rawAssignment;
+				increment = false;
+				fitnessOfFirstMember = fitnessOfFirstResult;
 
-
-				SimulatedAnnealing anneal1 = new SimulatedAnnealing(population.get(0).size(),satProblem,2,minTemp,maxTemp);
-				Results resultOfFirstAnneal = anneal1.anneal();
-				int fitnessOfFirstResult = (resultOfFirstAnneal.numClauses - resultOfFirstAnneal.numUnsatisifiedClauses);
-
-				if (fitnessOfFirstResult > fitnessOfFirstMember) {
-					firstMember =  resultOfFirstAnneal.rawAssignment;
-					increment = false;
-
-				} else if (fitnessOfFirstResult > fitnessOfSecondMember) {
-
-					secondMember =  resultOfFirstAnneal.rawAssignment;
-					increment = false;
-				}
-
-				SimulatedAnnealing anneal2 = new SimulatedAnnealing(population.get(0).size(),satProblem,2,minTemp,maxTemp);
-				Results resultOfSecondAnneal = anneal2.anneal();
-				int fitnessOfSecondResult = (resultOfSecondAnneal.numClauses - resultOfSecondAnneal.numUnsatisifiedClauses);
-
-				if (fitnessOfSecondResult > fitnessOfFirstMember) {
-					firstMember =  resultOfSecondAnneal.rawAssignment;
-					increment = false;
-					fitnessOfFirstMember = fitnessOfFirstResult;
-
-				} else if (fitnessOfSecondResult> fitnessOfSecondMember) {
-
-					secondMember =  resultOfSecondAnneal.rawAssignment;
-					increment = false;
-					fitnessOfSecondMember = fitnessOfSecondResult;
-				}
-
-
-				if (increment) {numberOfConsecutiveNoImprovements++; increment = true;}
-
-			}
-
-			twoMembers.add(firstMember);
-			twoMembers.add(secondMember);
+			} 
 			
+			
+
+		
+
+			if (increment) {numberOfConsecutiveNoImprovements++;}
+			increment = true;
 		}
+
+
+		updateMaxFitness(fitnessOfFirstMember, firstMember);
+		updateMaxFitness(fitnessOfSecondMember, secondMember);
 		fitnessOfPop1 = Math.max(fitnessOfFirstMember,fitnessOfSecondMember);
 	}
 
-	
-	
+
+
 	void ga(){
+		
 		int counter = 0;
-		int fitnessOfPop2;
-		while(counter <= 10){
+		population = new ArrayList< ArrayList<Integer>>();
+		generateChildren(populationSize);
+		while(counter <= numberOfGAIterationsWithoutImprovement){
 
 			if (foundSATSolution) {
 				System.out.println("Fully Satisfied All Clauses");
 				break;
 			}
-
-			singlePointCrossover(60);
 			mutate(mutateProb);
+			if (population.size() < populationSize){
+				population.add((ArrayList<Integer>) population.get(0).clone());
+			}//Debug
+			singlePointCrossover(crossOverProb);
 
-			
+
+			tournamentSelect();
+
+			//Make this more efficient
 			ArrayList<ArrayWithFitness> allIndividualsWithFitness = getFitnessForAllIndividuals();
-			fitnessOfPop2 = allIndividualsWithFitness.get(0).fitness;
-			if (fitnessOfPop2 < fitnessOfPop1){
-				//reset couter
+			fitnessOfPop2 = allIndividualsWithFitness.get(allIndividualsWithFitness.size() - 1).fitness;
+			if (fitnessOfPop2 > fitnessOfPop1){
+				//update seeds for SA
+				secondMember =  allIndividualsWithFitness.get(allIndividualsWithFitness.size() - 1).individual;
+				firstMember = allIndividualsWithFitness.get(allIndividualsWithFitness.size() - 1).individual;
+				//reset counter
 				counter = 0;
-
-				//population1 =  2;
+				fitnessOfPop1 = fitnessOfPop2;
 			} else{
 				//increment the iteration number
 				counter++;
@@ -198,5 +199,18 @@ public class HybridSAGA extends GeneticSuper {
 		}
 	}
 
+
+	
+	private ArrayList<Integer> initStartingCandidate(){
+
+		ArrayList<Integer> individual = new ArrayList<Integer>();
+
+		for (int j = 0; j < literalNumber; j++) {
+			Random rand = new Random();
+			Integer value = rand.nextInt(2);
+			individual.add(value);
+		}
+		return individual;
+	}
 
 }

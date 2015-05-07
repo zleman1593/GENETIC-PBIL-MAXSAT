@@ -1,8 +1,8 @@
 package Algorithms;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
-public class PBIL extends EvolAlgorithms {
+public class SAPBIL extends EvolAlgorithms {
+
 	// User inputs.
 	private int samples;
 	private double learningRate;
@@ -12,10 +12,8 @@ public class PBIL extends EvolAlgorithms {
 	private double mutShift;
 	// Vectors.
 	private double[] probVector;
-	private int[] evaluations;
 	private int[] bestVector;
 	private int[] worstVector;
-	private ArrayList<int[]> sampleVectors = new ArrayList<int[]>();
 	// Iterations and fitness.
 	private int maxFitness = 0;
 	private int minFitness;
@@ -24,28 +22,13 @@ public class PBIL extends EvolAlgorithms {
 	private int optimalUnsat;
 	// The time the algorithm took to find the best solution.
 	private long endTime;
-
-	// Constructor.
-	public PBIL(int samples, double learningRate, double negLearningRate, int length, double mutProb, double mutShift,
-			int maxIterations, ArrayList<ArrayList<Integer>> satProblem) {
-		this.samples = samples;
-		this.learningRate = learningRate;
-		this.negLearningRate = negLearningRate;
-		this.length = length;
-		this.mutProb = mutProb;
-		this.mutShift = mutShift;
-		this.maxIterations = maxIterations;
-		this.satProblem = satProblem;
-		this.timeout = Long.MAX_VALUE;
-		this.optimalUnsat = 1;//Integer.MAX_VALUE;
-		
-		minFitness = satProblem.size();
-		evaluations = new int[samples];
-		initProbVector();
-	}
 	
+	//Make parameter
+	private int howOftenToIntroduceSA = 100;
+	
+
 	// Constructor with optimal unsat value and timeout
-	public PBIL(int samples, double learningRate, double negLearningRate, int length, double mutProb, double mutShift,
+	public SAPBIL(int samples, double learningRate, double negLearningRate, int length, double mutProb, double mutShift,
 			int maxIterations, ArrayList<ArrayList<Integer>> satProblem, int optimalUnsat) {
 		this.samples = samples;
 		this.learningRate = learningRate;
@@ -56,11 +39,10 @@ public class PBIL extends EvolAlgorithms {
 		this.maxIterations = maxIterations;
 		this.satProblem = satProblem;
 		this.optimalUnsat = optimalUnsat;
-
 		minFitness = satProblem.size();
-		evaluations = new int[samples];
 		initProbVector();
 	}
+	
 
 	// Initialize probability vector.
 	public void initProbVector() {
@@ -71,20 +53,36 @@ public class PBIL extends EvolAlgorithms {
 	}
 
 	public Results evolve() {
-		sampleVectors.clear();
+
 		long startTime = System.currentTimeMillis();
 		int iterations = 0;
 		while (iterations < maxIterations) {
 			currentGeneration = iterations;
 			// Generate all individuals and evaluate them.
 			for (int i = 0; i < samples; i++) {
-				int[] individual = generateSampleVector(probVector);
-				sampleVectors.add(individual);
+				int[] individual;
+
+				if ((iterations % howOftenToIntroduceSA == 0) && i ==  (samples - 1)){
+
+					boolean backwards;
+					if( randomGenerator.nextDouble() <= 0.5) {backwards = true;} else { backwards = true;} 
+
+					SimulatedAnnealing anneal = new SimulatedAnnealing(probVector.length,satProblem,2,0.0001,0.5,toObject(bestVector),backwards);
+					Results resultOfSecondAnneal = anneal.anneal();
+					Object[] holder = resultOfSecondAnneal.rawAssignment.toArray();
+					individual = tointarray(holder);
+				} else{
+
+					individual = generateSampleVector(probVector);
+
+				}
 				// Evaluate each candidate and store results in array.
-				evaluations[i] = evaluateCandidate(toObject(individual));
+
 				// Found solution to all clauses.
-				int fitness = evaluations[i];
-				
+				int fitness = evaluateCandidate(toObject(individual));
+
+
+
 				// If reached optimal number of clauses satisfied or time out, return result
 				long totalTimeElapsed = System.currentTimeMillis() - startTime;
 				int currentUnsat = satProblem.size() - maxFitness;
@@ -105,21 +103,21 @@ public class PBIL extends EvolAlgorithms {
 
 			iterations++;
 		}
-		
+
 		return getResult(startTime);
 	}
-	
+
 	private Results getResult(long startTime) {
-		System.out.println("PBIL Algorithm Output:");
+		System.out.println("SAPBIL Algorithm Output:");
 		System.out.println("Number Of Variables: " + probVector.length);
 		System.out.println("Number Of Clauses: " + satProblem.size());
 		System.out.println("Satisfied Clauses: " + maxFitness + " out of " + satProblem.size() + " ("
 				+ (satProblem.size() - maxFitness) + " unsatisfied clauses).");
 		System.out.println("Best Variable Assignment: " + Arrays.toString(binaryToNumber(bestVector)));
-		
+
 		double percent = ((double) maxFitness * 100 / (double) satProblem.size());
 		long executionTime = endTime - startTime; // -1 if timed out
-		
+
 		System.out.println("Percent satisfied: " + percent + "%");
 		System.out.println("Best Generation:" + bestGeneration);		
 		System.out.println("Total execution time: " + executionTime + " milliseconds");
@@ -188,10 +186,10 @@ public class PBIL extends EvolAlgorithms {
 		for (int i = 0; i < intArray.length; i++) {
 			resultList.add(Integer.valueOf(intArray[i]));
 		}
-		
+
 		Runtime r = Runtime.getRuntime();
 		r.gc();
-		
+
 		return resultList;
 	}
 
@@ -207,4 +205,16 @@ public class PBIL extends EvolAlgorithms {
 		}
 		return display;
 	}
+
+	public static int[] tointarray(Object[] holder){
+		int[] temp = new int[holder.length];
+		for(int i = 0; i < holder.length; i++){
+
+			temp[i] = (int) holder[i];
+
+		}
+		return temp;
+
+	}
+
 }

@@ -115,7 +115,7 @@ public class GeneticSuper extends EvolAlgorithms {
 	protected void rankBoltzSelect(String option) {
 		ArrayList<ArrayList<Integer>> winnerPool = new ArrayList<ArrayList<Integer>>();
 		ArrayList<ArrayWithFitness> allIndividualsWithFitness = getFitnessForAllIndividuals();
-
+ 
 		// Generate one random double per member of the population
 		double[] probability = new double[population.size()];
 		for (int i = 0; i < population.size(); i++) {
@@ -176,7 +176,11 @@ public class GeneticSuper extends EvolAlgorithms {
 
 	/* Get probability of selecting individual based on its fitness */
 	protected double probFromBoltz(int index, ArrayList<ArrayWithFitness> popWithFitness) {
-		return Math.exp(popWithFitness.get(index).fitness / boltzmannSum);
+		double num = popWithFitness.get(index).fitness;
+		if (Double.isInfinite(num)){
+			num = Double.MAX_VALUE;
+		}
+		return Math.exp( num / boltzmannSum);
 	}
 
 	/*
@@ -186,7 +190,14 @@ public class GeneticSuper extends EvolAlgorithms {
 	protected void calcBoltzmannSum(ArrayList<ArrayWithFitness> popWithFitness) {
 		double sum = 0;
 		for (int i = 0; i < popWithFitness.size(); i++) {
-			sum = +Math.exp((popWithFitness.get(i).fitness));
+			
+			if (Double.isInfinite(sum)){
+				sum = + Double.MAX_VALUE;
+				System.out.println("infinity");
+				break;
+			} else{
+				sum = + Math.exp((popWithFitness.get(i).fitness));
+			}
 		}
 		boltzmannSum = sum;
 	}
@@ -256,7 +267,7 @@ public class GeneticSuper extends EvolAlgorithms {
 
 
 	// Update the max fitness encountered so far
-	private void updateMaxFitness(int fitness, ArrayList<Integer> values) {
+	protected void updateMaxFitness(int fitness, ArrayList<Integer> values) {
 		if (fitness > maxFitnessSoFar) {
 			bestGeneration = currentGeneration;
 			maxFitnessSoFar = fitness;

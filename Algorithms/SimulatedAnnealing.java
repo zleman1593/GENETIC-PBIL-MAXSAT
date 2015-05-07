@@ -20,6 +20,7 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 	private double minTemp;
 	private double decayRate;
 	private int optimalUnSat = Integer.MAX_VALUE;
+	private boolean op = false;
 
 	// Constructor
 	public SimulatedAnnealing(int literalNumber, ArrayList<ArrayList<Integer>> satProblem, int optimalUnSat,double minTemp, double maxTemp) {
@@ -28,18 +29,42 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 		this.optimalUnSat = optimalUnSat;
 		this.minTemp = minTemp;
 		this.maxTemp = maxTemp;
-		this.decayRate = 1.0 / currentCandidate.size();
+		this.decayRate = 1.0 / (double) currentCandidate.size();
 	}
+	
+	// Constructor
+		public SimulatedAnnealing(int literalNumber, ArrayList<ArrayList<Integer>> satProblem, int optimalUnSat,double minTemp, double maxTemp, ArrayList<Integer> seed,boolean op) {
+			this.satProblem = satProblem;
+			if (seed == null){
+			this.currentCandidate = initStartingCandidate(literalNumber);
+			}else{
+				this.currentCandidate = seed;
+			}
+			this.optimalUnSat = optimalUnSat;
+			this.minTemp = minTemp;
+			this.maxTemp = maxTemp;
+			this.decayRate = 1.0 / (double) currentCandidate.size();
+			this.op = op;
+		}
 
 
 	public Results anneal() {
 		long startTime = System.currentTimeMillis();
 		long executionTime = -1;
 		double  temperature = maxTemp; 
-		while ( !foundSATSolution && temperature >= minTemp /*&& iteration < 100*/) {
+		
+		while ( !foundSATSolution && temperature >= minTemp && iteration < 9000) {//TODO
 			iteration++;
+			
 			temperature = maxTemp * Math.exp(-1 * (iteration * decayRate));
+			
+			
+			if(!op){
 			mutate(temperature);
+			}else{
+
+			mutateOp(temperature);
+			}
 
 
 			// If time out or reached optimal number of clauses satisfied, return result.
@@ -106,6 +131,7 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 	}
 
 	private void mutate(double temperature) {
+		
 		boolean flippedToOne = true;
 		boolean accept = true;
 
@@ -121,10 +147,43 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 			//Check fitness
 			int fitness = evaluateCandidate(currentCandidate);
 			double increase =  fitness - maxFitnessSoFar;
-			double mutateProb =   1.0 / ( 1 + Math.exp(-1 * (increase / temperature)));
-			accept = randomGenerator.nextDouble() < mutateProb;
+			double acceptMutationProb =   1.0 / ( 1 + Math.exp(-1 * (increase / temperature)));
+			accept = randomGenerator.nextDouble() < acceptMutationProb;
 			updateMaxFitness(fitness);
 
+
+			if ( !accept && flippedToOne) {
+				//revert change
+				currentCandidate.set(j, 0);
+			} else if  ( !accept && !flippedToOne){
+				//revert change
+				currentCandidate.set(j, 1);
+			}
+
+		}
+
+	}
+	
+private void mutateOp(double temperature) {
+		
+		boolean flippedToOne = true;
+		boolean accept = true;
+
+		for (int j = currentCandidate.size() - 1; j >= 0; j--) {
+			if (currentCandidate.get(j) == 1) {
+				currentCandidate.set(j, 0);
+				flippedToOne = false;
+			} else if (currentCandidate.get(j) == 0) {
+				currentCandidate.set(j, 1);
+				flippedToOne = true;
+			}
+
+			//Check fitness
+			int fitness = evaluateCandidate(currentCandidate);
+			double increase =  fitness - maxFitnessSoFar;
+			double acceptMutationProb =   1.0 / ( 1 + Math.exp(-1 * (increase / temperature)));
+			accept = randomGenerator.nextDouble() < acceptMutationProb;
+			updateMaxFitness(fitness);
 
 
 			if ( !accept && flippedToOne) {

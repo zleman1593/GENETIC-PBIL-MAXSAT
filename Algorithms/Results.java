@@ -40,5 +40,10 @@ public class Results {
 		this.rawAssignment = assignment;
 		this.bestgeneration = bestgeneration;
 	}
+
+
+	public Results() {
+		// TODO Auto-generated constructor stub
+	}
 		
 }
