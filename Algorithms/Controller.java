@@ -53,27 +53,25 @@ public class Controller {
 			double maxTemp = 0.5;
 
 
-
-
 			int popSize = 100;
-			String selectionType ="bs";
+			String selectionType ="ts";
 			String crossoverType ="1c";
 			double crossoverProb = 0.7;
 			Double mutationProb = 0.01;
-			int maxIterations = 9000;
+			int maxIterations = Integer.MAX_VALUE;
 			
-			// Run Genetic Algorithms.
-			//		Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIterations, crossoverType, crossoverProb,mutationProb, satProblem,10);	
-			//		geneticAlgo.evolve(selectionType);
-			//		
+			 //Run Genetic Algorithms.
+					Genetic geneticAlgo = new Genetic(popSize, numberOfLiterals, maxIterations, crossoverType, crossoverProb,mutationProb, satProblem,140);	
+					geneticAlgo.evolve(selectionType);
+					
 				
 			
 			
-					HybridSAGA hybrid = new HybridSAGA(numberOfLiterals, 5, "1c", 0.7, 0.3,satProblem, 2);
-					hybrid.solve();
+//			HybridSAGA hybrid = new HybridSAGA(numberOfLiterals, maxIterations, "1c", 0.7, 0.3,satProblem,minTemp,maxTemp, 140);
+//			hybrid.solve();
 
 
-		
+
 			
 			// SAPBIL parameters
 			int PBIL_samples = 30;
@@ -81,26 +79,27 @@ public class Controller {
 			double PBIL_negLearningRate = 0.075;
 			double PBIL_mutProb = 0.02;
 			double PBIL_mutShift = 0.05;
-			int PBIL_maxIterations = 1000;
-
-//			SAPBIL SAPBILAlgorithm = new SAPBIL(PBIL_samples, PBIL_learningRate, PBIL_negLearningRate, numberOfLiterals,
-//						PBIL_mutProb, PBIL_mutShift, PBIL_maxIterations, satProblem,166);
+			int PBIL_maxIterations = Integer.MAX_VALUE;
+			int howOftenToIntroduceSA = 100;
+//
+			SAPBIL SAPBILAlgorithm = new SAPBIL(PBIL_samples, PBIL_learningRate, PBIL_negLearningRate, numberOfLiterals,
+						PBIL_mutProb, PBIL_mutShift, PBIL_maxIterations, satProblem,166,howOftenToIntroduceSA,minTemp,maxTemp);
 //				
-//				SAPBILAlgorithm.evolve();
+				SAPBILAlgorithm.evolve();
 			
-//			PBIL PBILAlgorithm = new PBIL(PBIL_samples, PBIL_learningRate, PBIL_negLearningRate, numberOfLiterals,
-//				PBIL_mutProb, PBIL_mutShift, PBIL_maxIterations, satProblem,166);
-//			
-//			PBILAlgorithm.evolve();
+			PBIL PBILAlgorithm = new PBIL(PBIL_samples, PBIL_learningRate, PBIL_negLearningRate, numberOfLiterals,
+				PBIL_mutProb, PBIL_mutShift, PBIL_maxIterations, satProblem,140);
+			
+			PBILAlgorithm.evolve();
 
-			
+//			
 //			double alpha = 1;
-//			Hybrid2 hybrid2 = new Hybrid2(popSize, numberOfLiterals,10000, crossoverType, crossoverProb,satProblem, 1, maxTemp, minTemp,alpha);
+//			Hybrid2 hybrid2 = new Hybrid2(popSize, numberOfLiterals,10000, crossoverType, crossoverProb,satProblem, 140, maxTemp, minTemp,alpha);
 //			hybrid2.evolve(selectionType);
 			
 
-//						 SimulatedAnnealing anneal = new SimulatedAnnealing(numberOfLiterals,satProblem,2,minTemp,maxTemp);
-//						 anneal.anneal();
+						 SimulatedAnnealing anneal = new SimulatedAnnealing(numberOfLiterals,satProblem,2,minTemp,maxTemp);
+						 anneal.anneal();
 
 
 

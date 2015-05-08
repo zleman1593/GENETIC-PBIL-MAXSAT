@@ -22,14 +22,16 @@ public class SAPBIL extends EvolAlgorithms {
 	private int optimalUnsat;
 	// The time the algorithm took to find the best solution.
 	private long endTime;
+	private double maxTemp;
+	private double minTemp;
 	
 	//Make parameter
 	private int howOftenToIntroduceSA = 100;
 	
 
-	// Constructor with optimal unsat value and timeout
+	// Constructorfor preview
 	public SAPBIL(int samples, double learningRate, double negLearningRate, int length, double mutProb, double mutShift,
-			int maxIterations, ArrayList<ArrayList<Integer>> satProblem, int optimalUnsat) {
+			int maxIterations, ArrayList<ArrayList<Integer>> satProblem, int optimalUnsat,int howOftenToIntroduceSA,double minTemp, double maxTemp) {
 		this.samples = samples;
 		this.learningRate = learningRate;
 		this.negLearningRate = negLearningRate;
@@ -41,7 +43,30 @@ public class SAPBIL extends EvolAlgorithms {
 		this.optimalUnsat = optimalUnsat;
 		minFitness = satProblem.size();
 		initProbVector();
+		this.howOftenToIntroduceSA = howOftenToIntroduceSA;
+		this.minTemp = minTemp;
+		this.maxTemp = maxTemp;
 	}
+	
+	// Constructor with optimal unsat value and timeout
+	public SAPBIL(int samples, double learningRate, double negLearningRate, int length, double mutProb, double mutShift,
+			int maxIterations, ArrayList<ArrayList<Integer>> satProblem, int optimalUnsat,int howOftenToIntroduceSA) {
+		this.samples = samples;
+		this.learningRate = learningRate;
+		this.negLearningRate = negLearningRate;
+		this.length = length;
+		this.mutProb = mutProb;
+		this.mutShift = mutShift;
+		this.maxIterations = maxIterations;
+		this.satProblem = satProblem;
+		this.optimalUnsat = optimalUnsat;
+		minFitness = satProblem.size();
+		initProbVector();
+		this.howOftenToIntroduceSA = howOftenToIntroduceSA;
+		this.minTemp = 0.0001;
+		this.maxTemp = 0.5;
+	}
+	
 	
 
 	// Initialize probability vector.
@@ -67,7 +92,7 @@ public class SAPBIL extends EvolAlgorithms {
 					boolean backwards;
 					if( randomGenerator.nextDouble() <= 0.5) {backwards = true;} else { backwards = true;} 
 
-					SimulatedAnnealing anneal = new SimulatedAnnealing(probVector.length,satProblem,2,0.0001,0.5,toObject(bestVector),backwards);
+					SimulatedAnnealing anneal = new SimulatedAnnealing(probVector.length,satProblem,optimalUnsat,minTemp,maxTemp,toObject(bestVector),backwards);
 					Results resultOfSecondAnneal = anneal.anneal();
 					Object[] holder = resultOfSecondAnneal.rawAssignment.toArray();
 					individual = tointarray(holder);

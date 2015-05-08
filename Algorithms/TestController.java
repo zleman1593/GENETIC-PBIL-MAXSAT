@@ -7,7 +7,8 @@ import java.io.IOException;
 
 public class TestController {
 
-	static String root = "/Users/mxing/Desktop/GENETIC-PBIL-MAXSAT/Results/";
+//	static String root = "/Users/z/Desktop/GENETIC-PBIL-MAXSAT/Results/";
+	static String root = "/Users/zackleman/Documents/Current Projects/GENETIC-PBIL-MAXSAT/Problems/";
 	public static String[] files = {"SPINGLASS/t4pm3-6666.spn.cnf","SPINGLASS/t5pm3-7777.spn.cnf","SPINGLASS/t7pm3-9999.spn.cnf","SPINGLASS/t6pm3-8888.spn.cnf", "140v/s2v140c1600-10.cnf",
 		"140v/s2v140c1200-10.cnf", "140v/s2v140c1300-10.cnf","140v/s2v140c1400-10.cnf", "140v/s2v140c1500-10.cnf","maxcut-140-630-0.8/maxcut-140-630-0.8-9.cnf", 
 		"maxcut-140-630-0.8/maxcut-140-630-0.8-8.cnf","maxcut-140-630-0.7/maxcut-140-630-0.7-9.cnf", "maxcut-140-630-0.7/maxcut-140-630-0.7-8.cnf","60v/s3v60c800-1.cnf",
@@ -16,21 +17,45 @@ public class TestController {
 	public static int[] maxValues= {38,78,0,0, 226,140,170,188,200,165,  167,166,165,35,53,69,1,0,0,0,0};
 
 	// Set these for GA experiments
-	public static int[] popSize = {200, 400, 700, 1000, /* end pop*/ 200, 200, /*end selection*/ 200, /*end crossover*/ 200, 200, 200, /*end crossover prob*/ 200, 200, 200};
-	public static String[] selectionType = {"rs", "rs", "rs", "rs", /* end pop*/ "ts", "bs", /*end selection*/ "rs", /*end crossover*/ "rs", "rs", "rs", /*end crossover prob*/ "rs", "rs", "rs"};
-	public static String[] crossoverType = {"1c", "1c", "1c", "1c", /* end pop*/ "1c", "1c", /*end selection*/ "uc", /*end crossover*/ "1c", "1c", "1c", /*end crossover prob*/ "1c", "1c", "1c"};
-	public static Double[] crossoverProb = {0.7, 0.7, 0.7, 0.7, /* end pop*/ 0.7, 0.7, /*end selection*/ 0.7, /*end crossover*/ 0.1, 0.3, 1.0, /*end crossover prob*/ 0.7, 0.7, 0.7};
-	public static Double[] mutationProb = {0.01, 0.01, 0.01, 0.01, /* end pop*/ 0.01, 0.01, /*end selection*/ 0.01, /*end crossover*/ 0.01, 0.01, 0.01, /*end crossover prob*/ 0.1, 0.3, 0.5};
+	public static int[] popSize = {50, 75, 100, 200, /* end pop*/ 100, 100, 100, /*end crossover prob*/ 100, 100, 100};
+	public static String[] selectionType = {"ts", "ts", "ts", "ts", /* end pop*/ "ts", "ts", "ts", /*end crossover prob*/ "ts", "ts", "ts"};
+	public static String[] crossoverType = {"1c", "1c", "1c", "1c", /* end pop*/ "1c", "1c", "1c", /*end crossover prob*/ "1c", "1c", "1c"};
+	public static Double[] crossoverProb = {0.7, 0.7, 0.7, 0.7, /* end pop*/  0.1, 0.3, 1.0, /*end crossover prob*/ 0.7, 0.7, 0.7};
+	public static Double[] mutationProb = {0.01, 0.01, 0.01, 0.01, /* end pop*/  0.01, 0.01, 0.01, /*end crossover prob*/ 0.1, 0.3, 0.5};
 	public static int maxIterations = Integer.MAX_VALUE;
 	//
 
 	// Set these for PBIL experiments
-	public static int[] PBIL_samples = {100, 300, 600, 1000, /* end pop*/ 100, 100, 100, 100, /*end lr*/ 100, 100, 100, /*end -lr*/ 100, 100, 100, /*end mutProb*/ 100, 100, 100, 100 /*end mutShift*/};
-	public static double[] PBIL_learningRate = {0.1, 0.1, 0.1, 0.1, /* end pop*/ 0.01, 0.3, 0.5, 1, /*end lr*/ 0.1, 0.1, 0.1, /*end -lr*/ 0.1, 0.1, 0.1, /*end mutProb*/ 0.1, 0.1, 0.1, 0.1 /*end mutShift*/};
-	public static double[] PBIL_negLearningRate = {0.075, 0.075, 0.075, 0.075, /* end pop*/ 0.075, 0.075, 0.075, 0.075, /*end lr*/ 0.02, 0.15, 0.3, /*end -lr*/ 0.075, 0.075, 0.075, /*end mutProb*/ 0.075, 0.075, 0.075, 0.075 /*end mutShift*/};
-	public static double[] PBIL_mutProb = {0.02, 0.02, 0.02, 0.02, /* end pop*/ 0.02, 0.02, 0.02, 0.02, /*end lr*/ 0.02, 0.02, 0.02, /*end -lr*/ 0.1, 0.3, 0.5, /*end mutProb*/ 0.02, 0.02, 0.02, 0.02 /*end mutShift*/};
-	public static double[] PBIL_mutShift = {0.05, 0.05, 0.05, 0.05, /* end pop*/ 0.05, 0.05, 0.05, 0.05, /*end lr*/ 0.05, 0.05, 0.05, /*end -lr*/ 0.05, 0.05, 0.05, /*end mutProb*/ 0.01, 0.1, 0.2, 0.5 /*end mutShift*/};
+	public static int[] PBIL_samples = {50, 75, 100, 150, /* end pop*/ 75, 75, 75, /*end lr*/ 75, 75, 75, /*end mutProb*/};
+	public static double[] PBIL_learningRate = {0.1, 0.1, 0.1, 0.1, /* end pop*/ 0.01, 0.1, 0.3, /*end lr*/ 0.1, 0.1, 0.1, /*end mutProb*/};
+	public static double[] PBIL_negLearningRate = {0.02, 0.02, 0.02, 0.02, /* end pop*/ 0.02, 0.02, 0.02, /*end lr*/  0.02, 0.02, 0.02, /*end mutProb*/};
+	public static double[] PBIL_mutProb = {0.02, 0.02, 0.02, 0.02, /* end pop*/ 0.02, 0.02, 0.02, /*end lr*/ 0.1, 0.3, 0.5, /*end mutProb*/};
+	public static double[] PBIL_mutShift = {0.05, 0.05, 0.05, 0.05, /* end pop*/ 0.05, 0.05, 0.05, /*end lr*/ 0.05, 0.05, 0.05, /*end mutProb*/};
 	public static int PBIL_maxIterations = Integer.MAX_VALUE;
+
+	// Set these for SA experiments
+	public static double[] SA_minTemp = {0.0001, 0.001, 0.01,  /* end*/ 0.0001, 0.0001, 0.0001};
+	public static double[] SA_maxTemp = {0.5, 0.5, 0.5, 0.5, /* end */ 1, 0.5, 0.25};
+
+
+
+	// Set these for SAGA experiments
+	public static int[] SAGA_popSize = {50, 75, 100, 200, /* end pop*/ 100, 100, 100, /*end crossover prob*/ 100, 100, 100};
+	public static Double[] SAGA_crossoverProb = {0.7, 0.7, 0.7, 0.7, /* end pop*/  0.1, 0.3, 1.0, /*end crossover prob*/ 0.7, 0.7, 0.7};
+	public static Double[] SAGA_mutationProb = {0.01, 0.01, 0.01, 0.01, /* end pop*/  0.01, 0.01, 0.01, /*end crossover prob*/ 0.1, 0.3, 0.5};
+
+
+	// Set these for SAPBIL experiments
+	public static int[] SAPBIL_samples = {50, 75, 100, 150, /* end pop*/ 75, 75, 75, /*end lr*/ 75, 75, 75, /*end mutProb*/ 75, 75, 75};
+	public static double[] SAPBIL_learningRate = {0.1, 0.1, 0.1, 0.1, /* end pop*/ 0.01, 0.1, 0.3, /*end lr*/ 0.1, 0.1, 0.1, /*end mutProb*/0.1, 0.1, 0.1 };
+	public static double[] SAPBIL_negLearningRate = {0.02, 0.02, 0.02, 0.02, /* end pop*/ 0.02, 0.02, 0.02, /*end lr*/  0.02, 0.02, 0.02 /*end mutProb*/};
+	public static double[] SAPBIL_mutProb = {0.02, 0.02, 0.02, 0.02, /* end pop*/ 0.02, 0.02, 0.02, /*end lr*/ 0.1, 0.3, 0.5, /*end mutProb*/0.02, 0.02, 0.02};
+	public static double[] SAPBIL_mutShift = {0.05, 0.05, 0.05, 0.05, /* end pop*/ 0.05, 0.05, 0.05, /*end lr*/ 0.05, 0.05, 0.05, /*end mutProb*/ 0.05, 0.05, 0.05};
+	public static int[] SAPBIL_howOftenToIntroduceSA = {100,100,100,100,/**/ 100, 100, 100,/**/ 100, 100, 100,/**/50,200,500};
+	public static int SAPBIL_maxIterations = Integer.MAX_VALUE;
+
+
+
 
 	//
 	public static void main(String[] args) throws IOException {
@@ -103,7 +128,7 @@ public class TestController {
 
 	public static void tests(int numOfTrials, String algorithm,
 			String problemLocation, int index, int maxValue, int i)
-			throws IOException {
+					throws IOException {
 		// TESTS variables
 		ArrayList<Results> results = new ArrayList<Results>();
 		// Import and format MAXSAT problem.
@@ -121,7 +146,7 @@ public class TestController {
 			}
 			reportStats(results, numOfTrials, algorithm, index, maxValue, i);
 
-		} else {
+		} else if (algorithm.equalsIgnoreCase("p")){
 			for (int t = 0; t < numOfTrials; t++) {
 
 				PBIL PBILAlgorithm = new PBIL(PBIL_samples[i],
@@ -132,6 +157,34 @@ public class TestController {
 
 			}
 			reportStats(results, numOfTrials, algorithm, index, maxValue, i);
+		} else if (algorithm.equalsIgnoreCase("sa")){
+			for (int t = 0; t < numOfTrials; t++) {
+				SimulatedAnnealing saAlgo = new SimulatedAnnealing(numberOfLiterals, satProblem, maxValue,SA_minTemp[i],SA_maxTemp[i]);
+				results.add(saAlgo.anneal());
+			}
+			reportStats(results, numOfTrials, algorithm, index, maxValue, i);
+
+		} else if (algorithm.equalsIgnoreCase("saga")){
+			for (int t = 0; t < numOfTrials; t++) {
+				HybridSAGA saga = new HybridSAGA(numberOfLiterals,
+						maxIterations, crossoverProb[i],
+						mutationProb[i], satProblem, maxValue);
+				results.add(saga.solve());
+			}
+			reportStats(results, numOfTrials, algorithm, index, maxValue, i);
+
+		} else if (algorithm.equalsIgnoreCase("sapbil")){
+			for (int t = 0; t < numOfTrials; t++) {
+
+				SAPBIL sapbil = new SAPBIL(SAPBIL_samples[i],
+						SAPBIL_learningRate[i], SAPBIL_negLearningRate[i],
+						numberOfLiterals, SAPBIL_mutProb[i], SAPBIL_mutShift[i],
+						SAPBIL_maxIterations, satProblem, maxValue,SAPBIL_howOftenToIntroduceSA[i]);
+				results.add(sapbil.evolve());
+
+			}
+			reportStats(results, numOfTrials, algorithm, index, maxValue, i);
+
 		}
 	}
 
@@ -392,6 +445,9 @@ public class TestController {
 			for (int trialIndex = 0; trialIndex < popSize.length; trialIndex++) {
 				tests(10, "p", root + files[p], p, maxValues[p], trialIndex);
 				tests(10, "g", root + files[p], p, maxValues[p], trialIndex);
+				tests(10, "sa", root + files[p], p, maxValues[p], trialIndex);
+				tests(10, "saga", root + files[p], p, maxValues[p], trialIndex);
+				tests(10, "sapbil", root + files[p], p, maxValues[p], trialIndex);
 			}
 		}
 	}

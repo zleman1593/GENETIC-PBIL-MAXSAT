@@ -10,27 +10,44 @@ public class HybridSAGA extends GeneticSuper {
 	private int literalNumber;
 	
 	//Make params
-	private  double minTemp = 0.0001;
-	private double maxTemp = 0.5;
+	private  double minTemp;
+	private double maxTemp;
 	private int populationSize = 60;
 	private int numberOfGAIterationsWithoutImprovement = 100;
 
 	
+	// Constructor for preview
+	public HybridSAGA( int literalNumber, int maxIteration, double crossOverProb,
+			double mutateProb, ArrayList<ArrayList<Integer>> satProblem, double minTemp, double maxTemp, int optimalUnSat) {
+		this.satProblem = satProblem;
+		this.population = new ArrayList<ArrayList<Integer>>(); 
+		this.maxIteration = maxIteration;
+		this.crossOverProb = crossOverProb;
+		this.mutateProb = mutateProb;
+	
+		this.optimalUnSat = optimalUnSat;
+		this.literalNumber = literalNumber;
+		this.sample =  populationSize / 2;
+		this.winners = 1;
+		this.minTemp = minTemp;
+		this.maxTemp = maxTemp;
+	}
+
 	// Constructor for tests
-	public HybridSAGA( int literalNumber, int maxIteration, String crossOverMethod, double crossOverProb,
+	public HybridSAGA( int literalNumber, int maxIteration, double crossOverProb,
 			double mutateProb, ArrayList<ArrayList<Integer>> satProblem, int optimalUnSat) {
 		this.satProblem = satProblem;
 		this.population = new ArrayList<ArrayList<Integer>>(); 
 		this.maxIteration = maxIteration;
 		this.crossOverProb = crossOverProb;
 		this.mutateProb = mutateProb;
-		this.crossOverMethod = crossOverMethod;
 		this.optimalUnSat = optimalUnSat;
 		this.literalNumber = literalNumber;
 		this.sample =  populationSize / 2;
 		this.winners = 1;
+		this.minTemp = 0.0001;
+		this.maxTemp = 0.5;
 	}
-
 
 	public Results solve() {
 		long startTime = System.currentTimeMillis();
@@ -105,6 +122,8 @@ public class HybridSAGA extends GeneticSuper {
 
 	}
 	
+	
+	
 //	private void generateChildren(int popSize) {
 //		for (int i = 0; i < popSize; i++) {
 //	
@@ -124,12 +143,16 @@ public class HybridSAGA extends GeneticSuper {
 
 		int fitnessOfFirstMember = 0;
 
-		int fitnessOfSecondMember = 0;
-
 		boolean increment = true;
 		int numberOfConsecutiveNoImprovements = 0;
 
-		while (numberOfConsecutiveNoImprovements <= 10){
+		while (numberOfConsecutiveNoImprovements <= 10 ){
+			
+			int currentUnsat = satProblem.size() - maxFitnessSoFar;
+			if (currentUnsat <= optimalUnSat) {
+				foundSATSolution = true;
+				break;
+			}
 
 			boolean backwards;
 			if( randomGenerator.nextDouble() <= 0.5) {backwards = true;} else { backwards = true;} 
@@ -144,18 +167,15 @@ public class HybridSAGA extends GeneticSuper {
 
 			} 
 			
-			
-
-		
-
 			if (increment) {numberOfConsecutiveNoImprovements++;}
 			increment = true;
+			updateMaxFitness(fitnessOfFirstMember, firstMember);
 		}
 
 
-		updateMaxFitness(fitnessOfFirstMember, firstMember);
-		updateMaxFitness(fitnessOfSecondMember, secondMember);
-		fitnessOfPop1 = Math.max(fitnessOfFirstMember,fitnessOfSecondMember);
+	
+		fitnessOfPop1 = fitnessOfFirstMember;
+		
 	}
 
 

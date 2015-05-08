@@ -46,6 +46,9 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 			this.decayRate = 1.0 / (double) currentCandidate.size();
 			this.op = op;
 		}
+		
+		
+
 
 
 	public Results anneal() {
@@ -53,7 +56,10 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 		long executionTime = -1;
 		double  temperature = maxTemp; 
 		
-		while ( !foundSATSolution && temperature >= minTemp && iteration < 9000) {//TODO
+		while ( !foundSATSolution && temperature >= minTemp && iteration < 9000) {
+				if (iteration == 8999){
+					System.out.println("Error: Iteration limit is limiting factor");
+				}
 			iteration++;
 			
 			temperature = maxTemp * Math.exp(-1 * (iteration * decayRate));
