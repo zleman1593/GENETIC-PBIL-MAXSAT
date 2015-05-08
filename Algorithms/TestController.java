@@ -40,9 +40,10 @@ public class TestController {
 
 
 	// Set these for SAGA experiments
-	public static int[] SAGA_popSize = {50, 75, 100, 200, /* end pop*/ 100, 100, 100, /*end crossover prob*/ 100, 100, 100};
-	public static Double[] SAGA_crossoverProb = {0.7, 0.7, 0.7, 0.7, /* end pop*/  0.1, 0.3, 1.0, /*end crossover prob*/ 0.7, 0.7, 0.7};
-	public static Double[] SAGA_mutationProb = {0.01, 0.01, 0.01, 0.01, /* end pop*/  0.01, 0.01, 0.01, /*end crossover prob*/ 0.1, 0.3, 0.5};
+	public static int[] SAGA_popSize = {50, 75, 100, 200, /* end pop*/ 100, 100, 100, /*end crossover prob*/ 100, 100, 100,/**/100,100};
+	public static Double[] SAGA_crossoverProb = {0.7, 0.7, 0.7, 0.7, /* end pop*/  0.1, 0.3, 1.0, /*end crossover prob*/ 0.7, 0.7, 0.7,/**/ 0.7, 0.7};
+	public static Double[] SAGA_mutationProb = {0.01, 0.01, 0.01, 0.01, /* end pop*/  0.01, 0.01, 0.01, /*end crossover prob*/ 0.1, 0.3, 0.5,/**/0.01,0.01};
+	public static int[] SAGA_numberOfGAIterationsWithoutImprovement= {100,100, 100, 100, /* end pop*/  100, 100,100, /*end crossover prob*/ 100, 100, 100,/**/50,500};
 
 
 	// Set these for SAPBIL experiments
@@ -167,8 +168,8 @@ public class TestController {
 		} else if (algorithm.equalsIgnoreCase("saga")){
 			for (int t = 0; t < numOfTrials; t++) {
 				HybridSAGA saga = new HybridSAGA(numberOfLiterals,
-						maxIterations, crossoverProb[i],
-						mutationProb[i], satProblem, maxValue);
+						maxIterations, SAGA_crossoverProb[i],
+						SAGA_mutationProb[i], satProblem, maxValue,SAGA_popSize[i],SAGA_numberOfGAIterationsWithoutImprovement[i]);
 				results.add(saga.solve());
 			}
 			reportStats(results, numOfTrials, algorithm, index, maxValue, i);
@@ -296,46 +297,7 @@ public class TestController {
 			averagePercentSatisfiedClausesT = -1;
 		}
 
-		// System.out.println("Average Output for " + numberofTrials +
-		// " trials:");
-		// outputWriter.write("Average Output for " + numberofTrials +
-		// " trials:");
-		// outputWriter.newLine();
-		// System.out.println("Number Of Variables: " +
-		// results.get(0).numVariables);
-		// outputWriter.write("Number Of Variables: " +
-		// results.get(0).numVariables);
-		// outputWriter.newLine();
-		// System.out.println("Number Of Clauses: " +
-		// results.get(0).numClauses);
-		// outputWriter.write("Number Of Clauses: " +
-		// results.get(0).numClauses);
-		// outputWriter.newLine();
-		// System.out.println("Average Percent satisfied: " +
-		// averagePercentSatisfiedClauses + "%");
-		// outputWriter.write("Average Percent satisfied: " +
-		// averagePercentSatisfiedClauses + "%");
-		// outputWriter.newLine();
-		// System.out.println("Average Best Generation:" +
-		// averageBestGeneration);
-		// outputWriter.write("Average Best Generation:" +
-		// averageBestGeneration);
-		// outputWriter.newLine();
-		// System.out.println("Average # Unsatisfied  Clauses:" +
-		// averageUnsatisfiedClauses);
-		// outputWriter.write("Average # Unsatisfied  Clauses:" +
-		// averageUnsatisfiedClauses);
-		// outputWriter.newLine();
-		// System.out.println("Fewest # Unsatisfied  Clauses:" +
-		// fewestUnsatisfiedClauses);
-		// outputWriter.write("Fewest # Unsatisfied  Clauses:" +
-		// fewestUnsatisfiedClauses);
-		// outputWriter.newLine();
-		// System.out.println("Average execution time: " + averageTime +
-		// " milliseconds");
-		// outputWriter.write("Average execution time: " + averageTime +
-		// " milliseconds");
-		//
+	
 		System.out.println("SAT PROBLEM");
 		outputWriter.write("SAT PROBLEM");
 		outputWriter.newLine();
@@ -419,22 +381,58 @@ public class TestController {
 			outputWriter.write("" + PBIL_maxIterations);
 			outputWriter.newLine();
 
-		} else {
+		} else if (algorithm.equalsIgnoreCase("sa")){
 			outputWriter.write("Settings PBIL");
 			outputWriter.newLine();
-			outputWriter.write("" + PBIL_samples[index]);
+			outputWriter.write("" + SA_minTemp);
 			outputWriter.newLine();
-			outputWriter.write("" + PBIL_learningRate[index]);
-			outputWriter.newLine();
-			outputWriter.write("" + PBIL_negLearningRate[index]);
-			outputWriter.newLine();
-			outputWriter.write("" + PBIL_mutProb[index]);
-			outputWriter.newLine();
-			outputWriter.write("" + PBIL_mutShift[index]);
+			outputWriter.write("" + SA_maxTemp);
 			outputWriter.newLine();
 			outputWriter.write("" + PBIL_maxIterations);
 			outputWriter.newLine();
+			
+		} else if (algorithm.equalsIgnoreCase("sa")){
+			outputWriter.write("Settings SA");
+			
+			
+			
+		} else if (algorithm.equalsIgnoreCase("saga")){
+			outputWriter.write("Settings SAGA");
+			outputWriter.newLine();
+			outputWriter.write("" + SAGA_popSize[index]);
+			outputWriter.newLine();
+			outputWriter.write("" + SAGA_crossoverProb[index]);
+			outputWriter.newLine();
+			outputWriter.write("" + SAGA_mutationProb[index]);
+			outputWriter.newLine();
+			outputWriter.write("" + PBIL_maxIterations);
+			outputWriter.newLine();
+			outputWriter.write("" + SAGA_numberOfGAIterationsWithoutImprovement[index]);
+			outputWriter.newLine();
+			
+			
+	
+		} else if (algorithm.equalsIgnoreCase("sapbil")){
+			outputWriter.write("Settings SAPBIL");
+			outputWriter.newLine();
+			outputWriter.write("" + SAPBIL_samples[index]);
+			outputWriter.newLine();
+			outputWriter.write("" + SAPBIL_learningRate[index]);
+			outputWriter.newLine();
+			outputWriter.write("" + SAPBIL_negLearningRate[index]);
+			outputWriter.newLine();
+			outputWriter.write("" + SAPBIL_mutProb[index]);
+			outputWriter.newLine();
+			outputWriter.write("" + SAPBIL_mutShift[index]);
+			outputWriter.newLine();
+			outputWriter.write("" + SAPBIL_maxIterations);
+			outputWriter.newLine();
+			outputWriter.write("" + SAPBIL_howOftenToIntroduceSA[index]);
+			outputWriter.newLine();
 		}
+		
+		
+		
 
 		outputWriter.flush();
 		outputWriter.close();

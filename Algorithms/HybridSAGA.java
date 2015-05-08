@@ -9,16 +9,15 @@ public class HybridSAGA extends GeneticSuper {
 	private ArrayList<Integer> secondMember = null;
 	private int literalNumber;
 	
-	//Make params
 	private  double minTemp;
 	private double maxTemp;
-	private int populationSize = 60;
+	private int populationSize;//defaulted 60
 	private int numberOfGAIterationsWithoutImprovement = 100;
 
 	
 	// Constructor for preview
 	public HybridSAGA( int literalNumber, int maxIteration, double crossOverProb,
-			double mutateProb, ArrayList<ArrayList<Integer>> satProblem, double minTemp, double maxTemp, int optimalUnSat) {
+			double mutateProb, ArrayList<ArrayList<Integer>> satProblem, double minTemp, double maxTemp, int optimalUnSat,int populationSize, int numberOfGAIterationsWithoutImprovement) {
 		this.satProblem = satProblem;
 		this.population = new ArrayList<ArrayList<Integer>>(); 
 		this.maxIteration = maxIteration;
@@ -31,11 +30,12 @@ public class HybridSAGA extends GeneticSuper {
 		this.winners = 1;
 		this.minTemp = minTemp;
 		this.maxTemp = maxTemp;
+		this.populationSize = populationSize;
 	}
 
 	// Constructor for tests
 	public HybridSAGA( int literalNumber, int maxIteration, double crossOverProb,
-			double mutateProb, ArrayList<ArrayList<Integer>> satProblem, int optimalUnSat) {
+			double mutateProb, ArrayList<ArrayList<Integer>> satProblem, int optimalUnSat, int populationSize,int numberOfGAIterationsWithoutImprovement) {
 		this.satProblem = satProblem;
 		this.population = new ArrayList<ArrayList<Integer>>(); 
 		this.maxIteration = maxIteration;
@@ -47,6 +47,8 @@ public class HybridSAGA extends GeneticSuper {
 		this.winners = 1;
 		this.minTemp = 0.0001;
 		this.maxTemp = 0.5;
+		this.populationSize = populationSize;
+		this.numberOfGAIterationsWithoutImprovement = numberOfGAIterationsWithoutImprovement;
 	}
 
 	public Results solve() {
