@@ -6,7 +6,6 @@ public class HybridSAGA extends GeneticSuper {
 	private int fitnessOfPop1;
 	private int fitnessOfPop2;
 	private ArrayList<Integer> firstMember = null;
-	private ArrayList<Integer> secondMember = null;
 	private int literalNumber;
 	
 	private  double minTemp;
@@ -194,12 +193,7 @@ public class HybridSAGA extends GeneticSuper {
 				break;
 			}
 			mutate(mutateProb);
-			if (population.size() < populationSize){
-				population.add((ArrayList<Integer>) population.get(0).clone());
-			}//Debug
 			singlePointCrossover(crossOverProb);
-
-
 			tournamentSelect();
 
 			//Make this more efficient
@@ -207,7 +201,6 @@ public class HybridSAGA extends GeneticSuper {
 			fitnessOfPop2 = allIndividualsWithFitness.get(allIndividualsWithFitness.size() - 1).fitness;
 			if (fitnessOfPop2 > fitnessOfPop1){
 				//update seeds for SA
-				secondMember =  allIndividualsWithFitness.get(allIndividualsWithFitness.size() - 1).individual;
 				firstMember = allIndividualsWithFitness.get(allIndividualsWithFitness.size() - 1).individual;
 				//reset counter
 				counter = 0;
