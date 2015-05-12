@@ -1,0 +1,30 @@
+File: 5SAT/HG-5SAT-V50-C900-5.cnf
+
+
+
+SAT PROBLEM
+10
+50
+900
+Stats for trials that did not timeout
+150
+0
+0
+0
+60609
+454
+Stats for timeouts
+112
+0
+1
+1
+8
+0.9988888888888889
+Settings SAPBIL
+76
+0.01
+0.02
+0.02
+0.05
+2147483647
+100

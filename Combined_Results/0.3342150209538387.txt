@@ -1,0 +1,28 @@
+File: maxcut-140-630-0.7/maxcut-140-630-0.7-8.cnf
+
+
+
+SAT PROBLEM
+10
+140
+1260
+Stats for trials that did not timeout
+0
+0
+165
+165
+155097
+155097
+Stats for timeouts
+1
+0
+170
+165
+9
+0.9954337899543378
+Settings SAGA
+100
+0.3
+0.01
+2147483647
+100

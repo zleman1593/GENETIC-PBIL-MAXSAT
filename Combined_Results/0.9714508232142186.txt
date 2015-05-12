@@ -1,0 +1,28 @@
+File: 60v/s3v60c1000-1.cnf
+
+
+
+SAT PROBLEM
+10
+60
+1000
+Stats for trials that did not timeout
+0
+0
+53
+53
+6494
+359
+Stats for timeouts
+0
+0
+57
+55
+3
+0.9957761351636748
+Settings SAGA
+100
+0.7
+0.01
+2147483647
+500

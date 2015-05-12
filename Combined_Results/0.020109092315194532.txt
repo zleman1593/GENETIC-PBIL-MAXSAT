@@ -1,0 +1,30 @@
+File: 60v/s3v60c1000-1.cnf
+
+
+
+SAT PROBLEM
+10
+60
+1000
+Stats for trials that did not timeout
+90
+0
+53
+53
+33513
+374
+Stats for timeouts
+140
+0
+59
+56
+5
+0.9936642027455121
+Settings SAPBIL
+76
+0.1
+0.02
+0.02
+0.05
+2147483647
+50

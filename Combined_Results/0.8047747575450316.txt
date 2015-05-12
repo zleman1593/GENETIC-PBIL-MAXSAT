@@ -1,0 +1,22 @@
+File: 140v/s2v140c1400-10.cnf
+
+
+
+SAT PROBLEM
+10
+140
+1400
+Stats for trials that did not timeout
+-1
+2147483647
+-1
+2147483647
+-1
+2147483647
+Stats for timeouts
+235
+126
+202
+191
+10
+0.9884488448844885

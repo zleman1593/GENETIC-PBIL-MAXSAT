@@ -1,0 +1,30 @@
+File: 4SAT/HG-4SAT-V150-C1350-100.cnf
+
+
+
+SAT PROBLEM
+10
+150
+1350
+Stats for trials that did not timeout
+-1
+2147483647
+-1
+2147483647
+-1
+2147483647
+Stats for timeouts
+70
+0
+7
+5
+10
+0.9948148148148148
+Settings SAPBIL
+76
+0.1
+0.02
+0.02
+0.05
+2147483647
+100

@@ -1,0 +1,28 @@
+File: 5SAT/HG-5SAT-V50-C900-1.cnf
+
+
+
+SAT PROBLEM
+10
+50
+900
+Stats for trials that did not timeout
+11
+6
+0
+0
+132622
+128786
+Stats for timeouts
+0
+0
+1
+1
+8
+0.9988888888888889
+Settings SAGA
+100
+0.7
+0.01
+2147483647
+100

@@ -1,0 +1,29 @@
+File: SPINGLASS/t6pm3-8888.spn.cnf
+
+
+
+SAT PROBLEM
+10
+216
+1296
+Stats for trials that did not timeout
+-1
+2147483647
+-1
+2147483647
+-1
+2147483647
+Stats for timeouts
+266
+186
+176
+168
+10
+0.8641975308641975
+Settings PBIL
+76
+0.1
+0.02
+0.02
+0.05
+2147483647

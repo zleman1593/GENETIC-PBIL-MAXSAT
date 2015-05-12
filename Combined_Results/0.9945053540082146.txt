@@ -1,0 +1,30 @@
+File: SPINGLASS/t5pm3-7777.spn.cnf
+
+
+
+SAT PROBLEM
+10
+125
+750
+Stats for trials that did not timeout
+12
+0
+78
+78
+10174
+741
+Stats for timeouts
+0
+0
+81
+80
+2
+0.9955357142857143
+Settings SAPBIL
+150
+0.1
+0.02
+0.02
+0.05
+2147483647
+100

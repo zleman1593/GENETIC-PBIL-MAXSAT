@@ -1,0 +1,30 @@
+File: maxcut-140-630-0.7/maxcut-140-630-0.7-9.cnf
+
+
+
+SAT PROBLEM
+10
+140
+1260
+Stats for trials that did not timeout
+266
+0
+166
+166
+115395
+519
+Stats for timeouts
+71
+0
+174
+172
+7
+0.9926873857404022
+Settings SAPBIL
+76
+0.1
+0.02
+0.02
+0.05
+2147483647
+100
