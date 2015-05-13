@@ -1,0 +1,8 @@
+EAS
+parameter values
+eil76
+d2103
+
+Default
+1.208596834540699
+1.6886209528025733

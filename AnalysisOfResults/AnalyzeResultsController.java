@@ -12,7 +12,7 @@ public class AnalyzeResultsController {
 	public static final String PBIL = "PBIL";
 	// Parameters.
 	public static final int NO_DATA = -1;
-	public static final int DEFAULT = 0;
+	public static final int DEFAULT = -2;
 	// Folder name.
 	static final String folderPath = "Graph_Data";
 	// Used for comparing doubles.
@@ -49,7 +49,7 @@ public class AnalyzeResultsController {
 		new GenerateGraphData(results_PBIL, PBIL, false, null, null);
 		// End time calculation.
 		long duration = System.currentTimeMillis() - startTime;
-		System.out.println("Finished writing all graph data for general analysis ");
+		System.out.println("Finished writing all graph data for general analysis.");
 		System.out.println("Time: " + duration / 1000.0 + " second(s)");
 		/* End general analysis*/
 		

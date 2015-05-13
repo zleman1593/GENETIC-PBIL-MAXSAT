@@ -1,0 +1,8 @@
+ACS
+parameter values
+eil76
+d2103
+
+Default
+1.015616801959251
+1.2070273702969807

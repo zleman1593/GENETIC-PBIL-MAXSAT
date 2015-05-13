@@ -55,9 +55,9 @@ public class AnalyzeResults {
 	// When the algorithm reached its maximum iteration.
 	static final int MAX_ITERATION = Integer.MAX_VALUE;
 	// When data is not recorded because the algorithm timed out.
-	static final int NO_DATA = -1;
+	static final int NO_DATA = AnalyzeResultsController.NO_DATA;
 	// We are looking for the experiment containing all default values.
-	static final int DEFAULT = 0;
+	static final int DEFAULT = AnalyzeResultsController.DEFAULT;
 	
 	/* Files */
 	// Path of source folder that contains all the results.
