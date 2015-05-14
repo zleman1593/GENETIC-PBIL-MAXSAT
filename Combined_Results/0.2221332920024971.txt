@@ -1,7 +1,4 @@
 File: 60v/s3v60c800-1.cnf
-
-
-
 SAT PROBLEM
 10
 60

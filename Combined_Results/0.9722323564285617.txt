@@ -1,6 +1,4 @@
 File: SPINGLASS/t4pm3-6666.spn.cnf
-
-
 SAT PROBLEM
 10
 64

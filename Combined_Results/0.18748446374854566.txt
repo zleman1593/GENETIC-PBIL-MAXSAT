@@ -1,7 +1,4 @@
 File: SPINGLASS/t6pm3-8888.spn.cnf
-
-
-
 SAT PROBLEM
 10
 216

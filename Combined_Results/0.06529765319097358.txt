@@ -1,6 +1,4 @@
 File: 140v/s2v140c1200-10.cnf
-
-
 SAT PROBLEM
 10
 140

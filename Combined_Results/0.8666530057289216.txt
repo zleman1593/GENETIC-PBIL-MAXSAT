@@ -1,7 +1,4 @@
 File: SPINGLASS/t7pm3-9999.spn.cnf
-
-
-
 SAT PROBLEM
 10
 343

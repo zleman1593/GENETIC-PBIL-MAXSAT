@@ -1,6 +1,4 @@
 File: maxcut-140-630-0.8/maxcut-140-630-0.8-9.cnf
-
-
 SAT PROBLEM
 10
 140
