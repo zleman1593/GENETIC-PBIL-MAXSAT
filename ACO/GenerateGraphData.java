@@ -55,6 +55,8 @@ public class GenerateGraphData {
 				percent = avgLength / 80450;
 			} else if (problem.equalsIgnoreCase("eil76")) {
 				percent = avgLength / 538;
+			} else {
+				percent = avgLength / 137694;
 			}
 			
 			avgPathLengthPercentage.add(String.valueOf(percent));
