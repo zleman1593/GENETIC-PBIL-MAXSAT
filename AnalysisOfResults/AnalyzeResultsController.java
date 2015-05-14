@@ -107,7 +107,7 @@ public class AnalyzeResultsController {
 	
 	public static void generateParamGraph(String algorithm, HashMap<String, HashMap<String, String>> results_Parameters, 
 			HashMap<Integer, ArrayList<String>> parameters) throws IOException {
-		AnalyzeResults analyzeResultsDefaultParameters = new AnalyzeResults(algorithm, AnalyzeResults.DEFAULT, "parameter values");
+		AnalyzeResults analyzeResultsDefaultParameters = new AnalyzeResults(algorithm, DEFAULT, "parameter values");
 		results_Parameters = analyzeResultsDefaultParameters.getParsedResults(algorithm);
 		new GenerateGraphData(results_Parameters, algorithm, true, "Default", "parameter values");
 
@@ -229,6 +229,99 @@ public class AnalyzeResultsController {
 			}
 		}
 	}
+	
+	public static void initializeParameters_SAPBIL() {
+		// Initialize HashMap.
+		parameters_SAPBIL = new HashMap<Integer, ArrayList<String>>();
+		
+		// Fixed values.
+		int defaultSampleSize = TestController.SAPBIL_samples[0];
+		double defaultLearningRate = TestController.SAPBIL_learningRate[0];
+		double defaultNegLearningRate = TestController.SAPBIL_negLearningRate[0];
+		double defaultMutationProb = TestController.SAPBIL_mutProb[0]; 
+		double defaultMutationShift = TestController.SAPBIL_mutShift[0];
+		int defaultSAFrequency = TestController.SAPBIL_howOftenToIntroduceSA[0];
+		
+		// Find the values that varied.
+		for (int i = 0; i < TestController.SAPBIL_samples.length; i++) {
+			int sampleSize = TestController.SAPBIL_samples[i];
+			double learningRate = TestController.SAPBIL_learningRate[i];
+			double negLearningRate = TestController.SAPBIL_negLearningRate[i];
+			double mutationProb = TestController.SAPBIL_mutProb[i];
+			double mutationShift = TestController.SAPBIL_mutShift[i];
+			double SAFrequency = TestController.SAPBIL_howOftenToIntroduceSA[i];
+			
+			ArrayList<String> values = new ArrayList<String>();
+			if (sampleSize != defaultSampleSize) {
+				if (parameters_SAPBIL.containsKey(LineNumberSAPBIL.SAMPLES.getNumVal())) {
+					values = parameters_SAPBIL.get(LineNumberSAPBIL.SAMPLES.getNumVal());
+				}
+				values.add(String.valueOf(sampleSize));
+				parameters_SAPBIL.put(LineNumberSAPBIL.SAMPLES.getNumVal(), values);
+			} else if (differentDouble(learningRate, defaultLearningRate)) {
+				if (parameters_SAPBIL.containsKey(LineNumberSAPBIL.LEARNING_RATE.getNumVal())) {
+					values = parameters_SAPBIL.get(LineNumberSAPBIL.LEARNING_RATE.getNumVal());
+				}
+				values.add(String.valueOf(learningRate));
+				parameters_SAPBIL.put(LineNumberSAPBIL.LEARNING_RATE.getNumVal(), values);
+			} else if (differentDouble(negLearningRate, defaultNegLearningRate)) {
+				if (parameters_SAPBIL.containsKey(LineNumberSAPBIL.NEG_LEARNING_RATE.getNumVal())) {
+					values = parameters_SAPBIL.get(LineNumberSAPBIL.NEG_LEARNING_RATE.getNumVal());
+				}
+				values.add(String.valueOf(negLearningRate));
+				parameters_SAPBIL.put(LineNumberSAPBIL.NEG_LEARNING_RATE.getNumVal(), values);
+			} else if (differentDouble(mutationProb, defaultMutationProb)) {
+				if (parameters_SAPBIL.containsKey(LineNumberSAPBIL.MUTATION_PROB.getNumVal())) {
+					values = parameters_SAPBIL.get(LineNumberSAPBIL.MUTATION_PROB.getNumVal());
+				}
+				values.add(String.valueOf(mutationProb));
+				parameters_SAPBIL.put(LineNumberSAPBIL.MUTATION_PROB.getNumVal(), values);
+			} else if (differentDouble(mutationShift, defaultMutationShift)) {
+				if (parameters_SAPBIL.containsKey(LineNumberSAPBIL.MUTATION_SHIFT.getNumVal())) {
+					values = parameters_SAPBIL.get(LineNumberSAPBIL.MUTATION_SHIFT.getNumVal());
+				}
+				values.add(String.valueOf(mutationShift));				
+				parameters_SAPBIL.put(LineNumberSAPBIL.MUTATION_SHIFT.getNumVal(), values);
+			} else if (SAFrequency == defaultSAFrequency){
+				if (parameters_SAPBIL.containsKey(LineNumberSAPBIL.SA_FREQUENCY.getNumVal())) {
+					values = parameters_SAPBIL.get(LineNumberSAPBIL.SA_FREQUENCY.getNumVal());
+				}
+				values.add(String.valueOf(SAFrequency));				
+				parameters_SAPBIL.put(LineNumberSAPBIL.SA_FREQUENCY.getNumVal(), values);
+			}
+		}
+	}
+	
+	public static void initializeParameters_SA() {
+		// Initialize HashMap.
+		parameters_GA = new HashMap<Integer, ArrayList<String>>();
+		
+		// Fixed values.
+		double defaultMinTemp = TestController.SA_minTemp[0];
+		double defaultMaxTemp = TestController.SA_maxTemp[0];
+		
+		// Find the values that varied.
+		for (int i = 0; i < TestController.SA_minTemp.length; i++) {
+			double minTemp = TestController.SA_minTemp[i];
+			double maxTemp = TestController.SA_maxTemp[i];
+			
+			ArrayList<String> values = new ArrayList<String>();
+			if (minTemp!= defaultMinTemp) {
+				if (parameters_SA.containsKey(LineNumberSA.MIN_TEMP.getNumVal())) {
+					values = parameters_SA.get(LineNumberSA.MIN_TEMP.getNumVal());
+				}
+				values.add(String.valueOf(minTemp));
+				parameters_SA.put(LineNumberSA.MIN_TEMP.getNumVal(), values);
+			} else if (maxTemp != defaultMaxTemp) {
+				if (parameters_SA.containsKey(LineNumberSA.MAX_TEMP.getNumVal())) {
+					values = parameters_SA.get(LineNumberSA.MAX_TEMP.getNumVal());
+				}
+				values.add(String.valueOf(maxTemp));
+				parameters_SA.put(LineNumberSA.MAX_TEMP.getNumVal(), values);
+			}
+		}
+	}
+	
 	
 	// Returns true if the two doubles are different, false otherwise.
 	private static boolean differentDouble(double a, double b) {

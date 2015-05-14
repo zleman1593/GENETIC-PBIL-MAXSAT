@@ -54,7 +54,7 @@ public class AnalyzeResults {
 	static final String PARAMETER_SETTINGS = "parameter settings";
 	// When the algorithm reached its maximum iteration.
 	static final int MAX_ITERATION = Integer.MAX_VALUE;
-	
+	static final int NO_DATA = AnalyzeResultsController.NO_DATA;
 	/* Files */
 	// Path of source folder that contains all the results.
 	String folderPath = "Combined_Results"; 				
@@ -63,9 +63,9 @@ public class AnalyzeResults {
 	// Indices at the original TestController.problems array, of problems used by both algorithms. 
 	ArrayList<Integer> indicesOfProblemsUsed = indicesOfProblemsUsedByBothAlgorithms();
 	// A list of the names of MAXSAT problems used by both algorithms.
-	String[] MAXSATProblems = deleteProblemsUnusedByGA(); 		
+	String[] MAXSATProblems = TestController.files; 		
 	// Unsatisfied clauses from currently known best algorithm.
-	int[] MAXSATSolutions = deleteSolutionsUnusedByGA();
+	int[] MAXSATSolutions = TestController.maxValues;
 	
 	/* HashMap<String, HashMap> to store information on each problem for quick lookup.
 	 * KEY - String: Name of MAXSAT problem.
@@ -277,10 +277,10 @@ public class AnalyzeResults {
 			}
 			
 			if (!foundExperiment) {
-//				System.out.println("Didn't run this experiment due to early termination");
-//				System.out.println("Algorithm: " + algorithm);
-//				System.out.println("Parameter Line Number: " + paramLineNum);
-//				System.out.println("Target Value: " + targetValue);
+				System.out.println("Didn't run this experiment due to early termination");
+				System.out.println("Algorithm: " + algorithm);
+				System.out.println("Parameter Line Number: " + paramLineNum);
+				System.out.println("Target Value: " + targetValue);
 				return;
 			}
 		} 
@@ -360,12 +360,12 @@ public class AnalyzeResults {
 						}
 					}  else if (lineNum == LineNumber.AVG_EXECUTION_TIME.getNumVal()) {
 						long current = Long.parseLong(line);
-						if ((int)current != NO_DATA) {
+						if ((int)current != AnalyzeResultsController.NO_DATA) {
 							totalExecutionTime += Long.parseLong(line);
 						}
 					} else if (lineNum == LineNumber.BEST_EXECUTION_TIME.getNumVal()) {
 						long current = Long.parseLong(line);
-						if ((int)current != NO_DATA && current < bestExecutionTime) {
+						if ((int)current != AnalyzeResultsController.NO_DATA && current < bestExecutionTime) {
 							bestExecutionTime = current; 
 						}
 					} else if (lineNum == LineNumber.NUM_TIMEOUTS.getNumVal()) {
@@ -392,7 +392,6 @@ public class AnalyzeResults {
 							parameterSettings += line += ",";
 						}
 					}
-					
 					lineNum++;
 				}
 				bufferedReader.close();
