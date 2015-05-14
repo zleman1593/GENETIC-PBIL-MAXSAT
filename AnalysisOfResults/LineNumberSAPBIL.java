@@ -1,12 +1,12 @@
 package AnalysisOfResults;
 // Line number in results files specific to PBIL setting
 public enum LineNumberSAPBIL {
-	POP_SIZE(24),
-	LEARNING_RATE(25),
-	NEG_LEARNING_RATE(26),
-	MUTATION_PROB(27),
-	MUTATION_SHIFT(28),
-	SA_FREQUENCY(29);
+	SAMPLES(21),
+	LEARNING_RATE(22),
+	NEG_LEARNING_RATE(23),
+	MUTATION_PROB(24),
+	MUTATION_SHIFT(25),
+	SA_FREQUENCY(27);
 	
 	private int numVal;
 
@@ -18,3 +18,5 @@ public enum LineNumberSAPBIL {
         return numVal;
     }
 }
+
+

@@ -2,11 +2,10 @@ package AnalysisOfResults;
 
 // Line number in results files specific to GA setting
 public enum LineNumberSAGA {
-	POP_SIZE(24),
-	SELECTION_TYPE(25),
-	CROSSOVER_TYPE(26),
-	CROSSOVER_PROB(27),
-	MUTATION_PROB(28);
+	POP_SIZE(21),
+	CROSSOVER_PROB(22),
+	MUTATION_PROB(23),
+	WITHOUT_IMPROVEMENT(25);
 	
 	private int numVal;
 
@@ -18,3 +17,5 @@ public enum LineNumberSAGA {
         return numVal;
     }
 }
+
+
