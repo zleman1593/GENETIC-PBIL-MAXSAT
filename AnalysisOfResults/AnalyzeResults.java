@@ -54,10 +54,6 @@ public class AnalyzeResults {
 	static final String PARAMETER_SETTINGS = "parameter settings";
 	// When the algorithm reached its maximum iteration.
 	static final int MAX_ITERATION = Integer.MAX_VALUE;
-	// When data is not recorded because the algorithm timed out.
-	static final int NO_DATA = -1;
-	// We are looking for the experiment containing all default values.
-	static final int DEFAULT = 0;
 	
 	/* Files */
 	// Path of source folder that contains all the results.
@@ -82,13 +78,15 @@ public class AnalyzeResults {
 	 * */
 	private HashMap<String, HashMap<String, String>> parsedResults_GA = new HashMap<String, HashMap<String, String>>();
 	private HashMap<String, HashMap<String, String>> parsedResults_PBIL = new HashMap<String, HashMap<String, String>>(); 
+	private HashMap<String, HashMap<String, String>> parsedResults_SA = new HashMap<String, HashMap<String, String>>(); 
+	private HashMap<String, HashMap<String, String>> parsedResults_SAGA = new HashMap<String, HashMap<String, String>>(); 
+	private HashMap<String, HashMap<String, String>> parsedResults_SAPBIL = new HashMap<String, HashMap<String, String>>(); 
 	
 	/* HashMap that groups the different files by problem name to allow faster operation for the above HashMaps.
 	 * KEY - String: Name of MAXSAT problem.
 	 * VALUE - ArrayList<String>: An ArrayList of file paths for this problem.
 	 * */
-	private HashMap<String, ArrayList<String>> filesGroupedByProblem_GA = new HashMap<String, ArrayList<String>>();
-	private HashMap<String, ArrayList<String>> filesGroupedByProblem_PBIL = new HashMap<String, ArrayList<String>>();
+	private HashMap<String, ArrayList<String>> filesGroupedByProblem = new HashMap<String, ArrayList<String>>();
 
 	// Constructor.
 	public AnalyzeResults(String algorithm, int paramLn, String paramVal) throws IOException {
@@ -97,28 +95,32 @@ public class AnalyzeResults {
 		// Initialize parsed results.
 		initializeHashMaps();
 		// Parse results.
-		for (String problem : filesGroupedByProblem_GA.keySet()) {
+		for (String problem : filesGroupedByProblem.keySet()) {
 			analyzeResults(problem, algorithm, paramLn, paramVal);
 		}
 	}
 	
-	// Getter method: Return parsed results for GA in a HashMap.
-	public HashMap<String, HashMap<String, String>>  getParsedResults_GA() {
-		return parsedResults_GA;
-	}
-	
-	// Getter method: Return parsed results for PBIL in a HashMap.
-	public HashMap<String, HashMap<String, String>>  getParsedResults_PBIL() {
-		return parsedResults_PBIL;
+	// Getter method: Return parsed results for the specified algorithm in a HashMap.
+	public HashMap<String, HashMap<String, String>>  getParsedResults(String algorithm) {
+		if (algorithm.equalsIgnoreCase(AnalyzeResultsController.GA)) {
+			return parsedResults_GA;
+		} else if (algorithm.equalsIgnoreCase(AnalyzeResultsController.PBIL)) {
+			return parsedResults_PBIL;
+		} else if (algorithm.equalsIgnoreCase(AnalyzeResultsController.SA)) {
+			return parsedResults_SA;
+		} else if (algorithm.equalsIgnoreCase(AnalyzeResultsController.SAGA)) {
+			return parsedResults_SAGA;
+		} else if (algorithm.equalsIgnoreCase(AnalyzeResultsController.SAPBIL)) {
+			return parsedResults_SAPBIL;
+		} else {
+			return null;
+		}
 	}
 	
 	// Initialize with problem names.
 	private void initializeHashMaps() {
-		for (String problem : filesGroupedByProblem_GA.keySet()) {
+		for (String problem : filesGroupedByProblem.keySet()) {
 			parsedResults_GA.put(problem, new HashMap<String, String>());
-		}
-		for (String problem : filesGroupedByProblem_PBIL.keySet()) {
-			parsedResults_PBIL.put(problem, new HashMap<String, String>());
 		}
 	}
 
@@ -143,33 +145,20 @@ public class AnalyzeResults {
 	private void groupFilesByProblem() throws IOException {
 		for (File file : resultsFiles) {
 			String filePath = getFilePath(file);
-			boolean isGA = true;
 			try {
 				// Read problem name.
 				BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
 				String problemName = getProblemName(bufferedReader.readLine());
-				// Let buffered reader proceed until we reach the desired line.
-				for (int i = 2; i < LineNumber.ALGORITHM_SETTING.getNumVal(); i++) {
-					bufferedReader.readLine();
-				}
-				String algorithm = bufferedReader.readLine();
-				isGA = algorithm.endsWith("GA") ? true : false;
 				bufferedReader.close();
-				
-				HashMap<String, ArrayList<String>> listOfProblems = isGA ?  
-						filesGroupedByProblem_GA : filesGroupedByProblem_PBIL; 
 				ArrayList<String> listOfFiles;
-				if (listOfProblems.containsKey(problemName)) {
-					listOfFiles = listOfProblems.get(problemName);
+				if (filesGroupedByProblem.containsKey(problemName)) {
+					listOfFiles = filesGroupedByProblem.get(problemName);
 				} else {
 					listOfFiles = new ArrayList<String>();
 				}
 				// Push to map.
 				listOfFiles.add(filePath);
-				// Only push if this problem is used by both GA and PBIL.
-				if (Arrays.asList(MAXSATProblems).contains(problemName)) {
-					listOfProblems.put(problemName, listOfFiles);
-				}
+				filesGroupedByProblem.put(problemName, listOfFiles);
 			} catch (FileNotFoundException e) {
 				printFileNotFound(filePath);
 			}
@@ -179,19 +168,14 @@ public class AnalyzeResults {
 	// Run analysis and fill in values for the HashMaps.
 	private void analyzeResults(String prob, String algorithm, 
 			int paramLineNum, String targetValue) throws IOException {
-		ArrayList<String> files;
-		if (algorithm.equalsIgnoreCase("GA")) {
-			files = filesGroupedByProblem_GA.get(prob);
-		} else {
-			files = filesGroupedByProblem_PBIL.get(prob);
-		}
+		ArrayList<String> files = filesGroupedByProblem.get(prob);
 		
 		/* Handling parameter queries:
 		 * If we want to examine how the parameters affect performance,
 		 * we only look at one experiment per problem (other parameters are fix.)
 		 * Now need to loop through the experiments to find the one we need.
 		 */
-		if (paramLineNum != NO_DATA) {
+		if (paramLineNum != AnalyzeResultsController.NO_DATA) {
 			boolean foundExperiment = false;
 			for (int i = 0; i < files.size(); i++) {
 				String file = files.get(i);
@@ -204,8 +188,8 @@ public class AnalyzeResults {
 					 * because each field represents a fixed value for all other experiments.
 					 * So we cannot use the paramLineNum - targetValue matching here. 
 					 */
-					if (paramLineNum == DEFAULT) {
-						if (algorithm.equalsIgnoreCase("GA")) {
+					if (paramLineNum == AnalyzeResultsController.DEFAULT) {
+						if (algorithm.equalsIgnoreCase(AnalyzeResultsController.GA)) {
 							// See if population size matches default value.
 							for (int l = 0; l < LineNumberGA.POP_SIZE.getNumVal(); l++) {
 								line = bufferedReader.readLine();

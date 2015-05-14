@@ -10,9 +10,12 @@ public class AnalyzeResultsController {
 	// Algorithm names.
 	public static final String GA = "GA";
 	public static final String PBIL = "PBIL";
+	public static final String SA = "SA";	
+	public static final String SAGA = "SAGA";	
+	public static final String SAPBIL = "SAPBIL";	
 	// Parameters.
 	public static final int NO_DATA = -1;
-	public static final int DEFAULT = 0;
+	public static final int DEFAULT = -2;
 	// Folder name.
 	static final String folderPath = "Graph_Data";
 	// Used for comparing doubles.
@@ -20,11 +23,20 @@ public class AnalyzeResultsController {
 	// Store the results.
 	private static HashMap<String, HashMap<String, String>> results_GA;
 	private static HashMap<String, HashMap<String, String>> results_PBIL;
+	private static HashMap<String, HashMap<String, String>> results_SA;
+	private static HashMap<String, HashMap<String, String>> results_SAGA;
+	private static HashMap<String, HashMap<String, String>> results_SAPBIL;
 	private static HashMap<String, HashMap<String, String>> results_Parameters_GA;
 	private static HashMap<String, HashMap<String, String>> results_Parameters_PBIL;
+	private static HashMap<String, HashMap<String, String>> results_Parameters_SA;
+	private static HashMap<String, HashMap<String, String>> results_Parameters_SAGA;
+	private static HashMap<String, HashMap<String, String>> results_Parameters_SAPBIL;
 	// Store the parameters and their respective values.
 	private static HashMap<Integer, ArrayList<String>> parameters_GA;
 	private static HashMap<Integer, ArrayList<String>> parameters_PBIL;
+	private static HashMap<Integer, ArrayList<String>> parameters_SA;
+	private static HashMap<Integer, ArrayList<String>> parameters_SAGA;
+	private static HashMap<Integer, ArrayList<String>> parameters_SAPBIL;
 	
 	public static void main(String[] args) throws IOException {
 		// Delete all files in the directory.
@@ -41,58 +53,73 @@ public class AnalyzeResultsController {
 		// GA.
 		long startTime = System.currentTimeMillis();
 		AnalyzeResults analyzeResults_GA = new AnalyzeResults(GA, NO_DATA, null);
-		results_GA = analyzeResults_GA.getParsedResults_GA();
+		results_GA = analyzeResults_GA.getParsedResults(GA);
 		new GenerateGraphData(results_GA, GA, false, null, null);
 		// PBIL.
 		AnalyzeResults analyzeResults_PBIL = new AnalyzeResults(PBIL, NO_DATA, null);
-		results_PBIL = analyzeResults_PBIL.getParsedResults_PBIL();
+		results_PBIL = analyzeResults_PBIL.getParsedResults(PBIL);
 		new GenerateGraphData(results_PBIL, PBIL, false, null, null);
+		// SA.
+		AnalyzeResults analyzeResults_SA = new AnalyzeResults(SA, NO_DATA, null);
+		results_PBIL = analyzeResults_SA.getParsedResults(SA);
+		new GenerateGraphData(results_SA, SA, false, null, null);
+		// SA.
+		AnalyzeResults analyzeResults_SAGA = new AnalyzeResults(SAGA, NO_DATA, null);
+		results_PBIL = analyzeResults_SAGA.getParsedResults(SAGA);
+		new GenerateGraphData(results_SAGA, SAGA, false, null, null);
+		// SA.
+		AnalyzeResults analyzeResults_SAPBIL = new AnalyzeResults(SAPBIL, NO_DATA, null);
+		results_PBIL = analyzeResults_SAPBIL.getParsedResults(SAPBIL);
+		new GenerateGraphData(results_SAPBIL, SAPBIL, false, null, null);
+		
 		// End time calculation.
 		long duration = System.currentTimeMillis() - startTime;
 		System.out.println("Finished writing all graph data for general analysis ");
 		System.out.println("Time: " + duration / 1000.0 + " second(s)");
 		/* End general analysis*/
 		
+		
 		/* Run parameter analysis. */
 		long startTime_p = System.currentTimeMillis();
-		// GA
-		initializeParameters_GA();
-		// Get graph data for the experiment with all default parameters.
-		AnalyzeResults analyzeResultsDefaultParameters_GA = new AnalyzeResults(GA, AnalyzeResults.DEFAULT, "parameter values");
-		results_Parameters_GA = analyzeResultsDefaultParameters_GA.getParsedResults_GA();
-		new GenerateGraphData(results_Parameters_GA, GA, true, "Default", "parameter values");
-
-		// Get graph data for the rest of the experiments.
-		for (Integer lineNum : parameters_GA.keySet()) {
-			for (String value: parameters_GA.get(lineNum)) {
-				AnalyzeResults analyzeResultsParameters_GA = new AnalyzeResults(GA, lineNum, value);
-				results_Parameters_GA = analyzeResultsParameters_GA.getParsedResults_GA();
-				String param = getParameterName(GA, lineNum);
-				new GenerateGraphData(results_Parameters_GA, GA, true, param, value);
-			}
-		}
-			
-		// PBIL
-		initializeParameters_PBIL();
-		// Get graph data for the experiment with all default parameters.
-		AnalyzeResults analyzeResultsDefaultParameters_PBIL = new AnalyzeResults(PBIL, AnalyzeResults.DEFAULT, "parameter values");
-		results_Parameters_PBIL = analyzeResultsDefaultParameters_PBIL.getParsedResults_PBIL();
-		new GenerateGraphData(results_Parameters_PBIL, PBIL, true, "Default", "parameter values");
 		
-		// Get graph data for the rest of the experiments.				
-		for (Integer lineNum : parameters_PBIL.keySet()) {
-			for (String value: parameters_PBIL.get(lineNum)) {
-				AnalyzeResults analyzeResultsParameters_PBIL = new AnalyzeResults(PBIL, lineNum, value);
-				results_Parameters_PBIL = analyzeResultsParameters_PBIL.getParsedResults_PBIL();
-				String param = getParameterName(PBIL, lineNum);
-				new GenerateGraphData(results_Parameters_PBIL, PBIL, true, param, value);
-			}
-		}
+		// GA.
+		initializeParameters_GA();
+		generateParamGraph(GA, results_Parameters_GA, parameters_GA);
+		// PBIL.
+		initializeParameters_PBIL();
+		generateParamGraph(PBIL, results_Parameters_PBIL, parameters_PBIL);
+		// SA.
+		initializeParameters_SA();
+		generateParamGraph(SA, results_Parameters_SA, parameters_SA);
+		// SAGA.
+		initializeParameters_SAGA();
+		generateParamGraph(SAGA, results_Parameters_SAGA, parameters_SAGA);
+		// SAPBIL.
+		initializeParameters_SAPBIL();
+		generateParamGraph(SAPBIL, results_Parameters_SAPBIL, parameters_SAPBIL);
+		
 		// End time calculation.
 		long duration_p = System.currentTimeMillis() - startTime_p;
 		System.out.println("Finished writing all graph data for parameter analysis.");
 		System.out.println("Time: " + duration_p / 1000.0 + " second(s)");
 		/* End parameter analysis*/
+	}
+	
+	public static void generateParamGraph(String algorithm, HashMap<String, HashMap<String, String>> results_Parameters, 
+			HashMap<Integer, ArrayList<String>> parameters) throws IOException {
+		AnalyzeResults analyzeResultsDefaultParameters = new AnalyzeResults(algorithm, AnalyzeResults.DEFAULT, "parameter values");
+		results_Parameters = analyzeResultsDefaultParameters.getParsedResults(algorithm);
+		new GenerateGraphData(results_Parameters, algorithm, true, "Default", "parameter values");
+
+		// Get graph data for the rest of the experiments.
+		for (Integer lineNum : parameters.keySet()) {
+			for (String value: parameters.get(lineNum)) {
+				AnalyzeResults analyzeResultsParameters = new AnalyzeResults(algorithm, lineNum, value);
+				results_Parameters = analyzeResultsParameters.getParsedResults(algorithm);
+				String param = getParameterName(algorithm, lineNum);
+				new GenerateGraphData(results_Parameters, algorithm, true, param, value);
+			}
+		}
 	}
 	
 	public static void initializeParameters_GA() {
