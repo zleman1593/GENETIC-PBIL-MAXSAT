@@ -5,8 +5,7 @@ public enum LineNumberSAPBIL {
 	LEARNING_RATE(22),
 	NEG_LEARNING_RATE(23),
 	MUTATION_PROB(24),
-	MUTATION_SHIFT(25),
-	SA_FREQUENCY(27);
+	MUTATION_SHIFT(25);
 	
 	private int numVal;
 

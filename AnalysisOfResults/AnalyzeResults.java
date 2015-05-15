@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+//import java.util.HashSet;
 import java. util.HashMap;
 
 import Algorithms.TestController;
@@ -51,21 +51,21 @@ public class AnalyzeResults {
 	 * PBIL order: population size, learning rate, negative learning rate, 
 	 * 					mutation probability, mutation shift.
 	 * */
-	static final String PARAMETER_SETTINGS = "parameter settings";
 	// When the algorithm reached its maximum iteration.
 	static final int MAX_ITERATION = Integer.MAX_VALUE;
 	static final int NO_DATA = AnalyzeResultsController.NO_DATA;
+	
 	/* Files */
 	// Path of source folder that contains all the results.
 	String folderPath = "Combined_Results"; 				
 	// A list of all the result files.
 	File[] resultsFiles = new File(folderPath).listFiles(); 
-	// Indices at the original TestController.problems array, of problems used by both algorithms. 
-	ArrayList<Integer> indicesOfProblemsUsed = indicesOfProblemsUsedByBothAlgorithms();
 	// A list of the names of MAXSAT problems used by both algorithms.
 	String[] MAXSATProblems = TestController.files; 		
 	// Unsatisfied clauses from currently known best algorithm.
 	int[] MAXSATSolutions = TestController.maxValues;
+	// Indices at the original TestController.problems array, of problems used by both algorithms. 
+//	ArrayList<Integer> indicesOfProblemsUsed = indicesOfProblemsUsedByBothAlgorithms();
 	
 	/* HashMap<String, HashMap> to store information on each problem for quick lookup.
 	 * KEY - String: Name of MAXSAT problem.
@@ -121,6 +121,10 @@ public class AnalyzeResults {
 	private void initializeHashMaps() {
 		for (String problem : filesGroupedByProblem.keySet()) {
 			parsedResults_GA.put(problem, new HashMap<String, String>());
+			parsedResults_PBIL.put(problem, new HashMap<String, String>());
+			parsedResults_SA.put(problem, new HashMap<String, String>());
+			parsedResults_SAGA.put(problem, new HashMap<String, String>());
+			parsedResults_SAPBIL.put(problem, new HashMap<String, String>());
 		}
 	}
 
@@ -144,23 +148,26 @@ public class AnalyzeResults {
 	// Group all the result file paths by problem name for fast look up.
 	private void groupFilesByProblem() throws IOException {
 		for (File file : resultsFiles) {
-			String filePath = getFilePath(file);
-			try {
-				// Read problem name.
-				BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
-				String problemName = getProblemName(bufferedReader.readLine());
-				bufferedReader.close();
-				ArrayList<String> listOfFiles;
-				if (filesGroupedByProblem.containsKey(problemName)) {
-					listOfFiles = filesGroupedByProblem.get(problemName);
-				} else {
-					listOfFiles = new ArrayList<String>();
+			String filePath = "";
+			if (!(file.getName().contains(".DS_Store") || file.getName().contains("delete.sh"))) {
+				filePath = getFilePath(file);
+				try {
+					// Read problem name.
+					BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
+					String problemName = getProblemName(bufferedReader.readLine());
+					bufferedReader.close();
+					ArrayList<String> listOfFiles;
+					if (filesGroupedByProblem.containsKey(problemName)) {
+						listOfFiles = filesGroupedByProblem.get(problemName);
+					} else {
+						listOfFiles = new ArrayList<String>();
+					}
+					// Push to map.
+					listOfFiles.add(filePath);
+					filesGroupedByProblem.put(problemName, listOfFiles);
+				} catch (FileNotFoundException e) {
+					printFileNotFound(filePath);
 				}
-				// Push to map.
-				listOfFiles.add(filePath);
-				filesGroupedByProblem.put(problemName, listOfFiles);
-			} catch (FileNotFoundException e) {
-				printFileNotFound(filePath);
 			}
 		}
 	}
@@ -182,92 +189,16 @@ public class AnalyzeResults {
 				try {
 					BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 					String line = "";
-					
-					/* Handling results for default experiment. 
-					 * We need to make sure we match values for all fields (not just one),
-					 * because each field represents a fixed value for all other experiments.
-					 * So we cannot use the paramLineNum - targetValue matching here. 
-					 */
-					if (paramLineNum == AnalyzeResultsController.DEFAULT) {
-						if (algorithm.equalsIgnoreCase(AnalyzeResultsController.GA)) {
-							// See if population size matches default value.
-							for (int l = 0; l < LineNumberGA.POP_SIZE.getNumVal(); l++) {
-								line = bufferedReader.readLine();
-							}
-							String defaultPopSize = String.valueOf(TestController.popSize[0]);
-							if (line.equalsIgnoreCase(defaultPopSize)) {
-								// See if selection type matches.
-								line = bufferedReader.readLine();
-								String defaultSelectionType = TestController.selectionType[0];
-								if (line.equalsIgnoreCase(defaultSelectionType)) {
-									// See if crossover type matches.
-									line = bufferedReader.readLine();
-									String defaultCrossoverType = TestController.crossoverType[0];
-									if (line.equalsIgnoreCase(defaultCrossoverType)) {
-										// See if crossover probability matches.
-										line = bufferedReader.readLine();
-										String defaultCrossoverProb = String.valueOf(TestController.crossoverProb[0]);
-										if (line.equalsIgnoreCase(defaultCrossoverProb)) {
-											// See if mutation probability matches.
-											line = bufferedReader.readLine();
-											String defaultMutationProb = String.valueOf(TestController.mutationProb[0]);
-											if (line.equalsIgnoreCase(defaultMutationProb)) {
-												// Finally we found the experiment with all default values.
-												foundExperiment = true;
-												files.clear();
-												files.add(file);
-												break;
-											}
-										}
-									}
-								}
-							}
-						} else {
-							// See if population size matches default value.
-							for (int l = 0; l < LineNumberPBIL.POP_SIZE.getNumVal(); l++) {
-								line = bufferedReader.readLine();
-							}
-							String defaultPopSize = String.valueOf(TestController.PBIL_samples[0]);
-							if (line.equalsIgnoreCase(defaultPopSize)) {
-								// See if learning rate matches.
-								line = bufferedReader.readLine();
-								String defaultLearningRate = String.valueOf(TestController.PBIL_learningRate[0]);
-								if (line.equalsIgnoreCase(defaultLearningRate)) {
-									// See if negative learning rate matches.
-									line = bufferedReader.readLine();
-									String defaultNegLearningRate = String.valueOf(TestController.PBIL_negLearningRate[0]);
-									if (line.equalsIgnoreCase(defaultNegLearningRate)) {
-										// See if mutation probability matches.
-										line = bufferedReader.readLine();
-										String defaultMutationProb = String.valueOf(TestController.PBIL_mutProb[0]);
-										if (line.equalsIgnoreCase(defaultMutationProb)) {
-											// See if mutation shift matches.
-											line = bufferedReader.readLine();
-											String defaultMutationShift = String.valueOf(TestController.PBIL_mutShift[0]);
-											if (line.equalsIgnoreCase(defaultMutationShift)) {
-												// Finally we found the experiment with all default values.
-												foundExperiment = true;
-												files.clear();
-												files.add(file);
-												break;
-											}
-										}
-									}
-								}
-							}
-						}
-					} else {
-						// Look for the experiment we care about.
-						for (int l = 0; l < paramLineNum; l++) {
-							line = bufferedReader.readLine();
-						}
-						if (line.trim().equalsIgnoreCase(targetValue)) {
-							// Now the files ArrayList contains only the experiment we care about.
-							foundExperiment = true;
-							files.clear();
-							files.add(file);
-							break;
-						}
+					// Look for the experiment we care about.
+					for (int l = 0; l < paramLineNum; l++) {
+						line = bufferedReader.readLine();
+					}
+					if (line != null && line.trim().equalsIgnoreCase(targetValue)) {
+						// Now the files ArrayList contains only the experiment we care about.
+						foundExperiment = true;
+						files.clear();
+						files.add(file);
+						break;
 					}
 					bufferedReader.close();
 				} 
@@ -277,17 +208,17 @@ public class AnalyzeResults {
 			}
 			
 			if (!foundExperiment) {
-				System.out.println("Didn't run this experiment due to early termination");
-				System.out.println("Algorithm: " + algorithm);
-				System.out.println("Parameter Line Number: " + paramLineNum);
-				System.out.println("Target Value: " + targetValue);
+//				System.out.println("Couldn't find experiment:");
+//				System.out.println("Algorithm: " + algorithm);
+//				System.out.println("Parameter Line Number: " + paramLineNum);
+//				System.out.println("Target Value: " + targetValue);
 				return;
 			}
 		} 
 
 		// Factors we are considering.
-		int numExperiments = files.size();
 		int numExperimentsWithAllTrialsTimeOut = 0;
+		int numExperiments = 0;
 		int totalNumTimeOutTrials = 0;
 		int numLiterals = 0;
 		int numClauses = 0;
@@ -301,7 +232,7 @@ public class AnalyzeResults {
 		int fewestUnsatClauses_TimeOut = Integer.MAX_VALUE;
 		int totalUnsatClauses = 0;
 		int totalUnsatClauses_TimeOut = 0;
-		String parameterSettings = "";
+		double percentage = 0;
 		
 		// Iterate through all files associated with this problem.
 		for (int i = 0; i < files.size(); i++) {
@@ -310,154 +241,168 @@ public class AnalyzeResults {
 				BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 				String line;
 				int lineNum = 1;
+				boolean isAlgorithm = true;
+
 				while ((line = bufferedReader.readLine()) != null) {
-					if (lineNum == LineNumber.NUM_LITERALS.getNumVal()) {
-						numLiterals = Integer.parseInt(line);
-						
-					} else if (lineNum == LineNumber.NUM_CLAUSES.getNumVal()) {
-						numClauses = Integer.parseInt(line);
-					} else if (lineNum == LineNumber.AVG_BEST_GENERATION.getNumVal()) {
-						int data = Integer.parseInt(line);
-						if (data != NO_DATA) {
-							totalBestGeneration += data;
-						} else {
-							numExperimentsWithAllTrialsTimeOut++;
-						}
-					} else if (lineNum == LineNumber.AVG_BEST_GENERATION_TIMEOUT.getNumVal()) {
-						int data = Integer.parseInt(line);
-						if (data != NO_DATA) {
-							totalBestGeneration_TimeOut += data;
-						}
-					} else if (lineNum == LineNumber.BEST_GENERATION.getNumVal()) {
-						int current = Integer.parseInt(line);
-						if (current != MAX_ITERATION && current < bestGeneration) {
-							bestGeneration = current;
-						}
-					} else if (lineNum == LineNumber.BEST_GENERATION_TIMEOUT.getNumVal()) {
-						int current = Integer.parseInt(line);
-						if (current != MAX_ITERATION && current < bestGeneration_TimeOut) {
-							bestGeneration_TimeOut = current;
-						} 
-					} else if (lineNum == LineNumber.AVG_UNSAT_CLAUSES.getNumVal()) {
-						int current = Integer.parseInt(line);
-						if (current != NO_DATA) {
-							totalUnsatClauses += current;
-						}
-					} else if (lineNum == LineNumber.AVG_UNSAT_CLAUSES_TIMEOUT.getNumVal()) {
-						int current = Integer.parseInt(line);
-						if (current != NO_DATA) {
-							totalUnsatClauses_TimeOut += current;
-						}
-					} else if (lineNum == LineNumber.FEWEST_UNSAT_CLAUSES.getNumVal()) {
-						int current = Integer.parseInt(line);
-						if (current != MAX_ITERATION && current < fewestUnsatClauses) {
-							fewestUnsatClauses = current;
-						} 
-					} else if (lineNum == LineNumber.FEWEST_UNSAT_CLAUSES_TIMEOUT.getNumVal()) {
-						int current = Integer.parseInt(line);
-						if (current != MAX_ITERATION && current < fewestUnsatClauses_TimeOut) {
-							fewestUnsatClauses_TimeOut = current;
-						}
-					}  else if (lineNum == LineNumber.AVG_EXECUTION_TIME.getNumVal()) {
-						long current = Long.parseLong(line);
-						if ((int)current != AnalyzeResultsController.NO_DATA) {
-							totalExecutionTime += Long.parseLong(line);
-						}
-					} else if (lineNum == LineNumber.BEST_EXECUTION_TIME.getNumVal()) {
-						long current = Long.parseLong(line);
-						if ((int)current != AnalyzeResultsController.NO_DATA && current < bestExecutionTime) {
-							bestExecutionTime = current; 
-						}
-					} else if (lineNum == LineNumber.NUM_TIMEOUTS.getNumVal()) {
-						int num = Integer.parseInt(line);
-						totalNumTimeOutTrials += num;
-					}
-					
-					if (algorithm.equalsIgnoreCase("GA")) {
-						// GA parameter settings.
-						if (lineNum == LineNumberGA.POP_SIZE.getNumVal() ||
-								lineNum == LineNumberGA.SELECTION_TYPE.getNumVal() ||
-								lineNum == LineNumberGA.CROSSOVER_TYPE.getNumVal() ||
-								lineNum == LineNumberGA.CROSSOVER_PROB.getNumVal() ||
-								lineNum == LineNumberGA.MUTATION_PROB.getNumVal()) {
-							parameterSettings += line += ",";
-						}
-					} else {
-						// PBIL parameter settings.
-						if (lineNum == LineNumberPBIL.POP_SIZE.getNumVal() ||
-								lineNum == LineNumberPBIL.LEARNING_RATE.getNumVal() ||
-								lineNum == LineNumberPBIL.NEG_LEARNING_RATE.getNumVal() ||
-								lineNum == LineNumberPBIL.MUTATION_PROB.getNumVal() ||
-								lineNum == LineNumberPBIL.MUTATION_SHIFT.getNumVal()) {
-							parameterSettings += line += ",";
-						}
+					// Check if this is the algorithm we want to scan.
+					if (lineNum == LineNumber.ALGORITHM_SETTING.getNumVal() &&
+							!line.equalsIgnoreCase("Settings " + algorithm)) {
+						isAlgorithm = false;
 					}
 					lineNum++;
 				}
 				bufferedReader.close();
 				
-				// Get values and other info.
-				int avgNumTimeOuts = totalNumTimeOutTrials / numExperiments;
-				int numExperimentsWithNonTimeOutTrials = numExperiments - numExperimentsWithAllTrialsTimeOut;
-				long avgExecutionTime = totalExecutionTime / (long) numExperiments;
-				int solutionIndex = Arrays.asList(MAXSATProblems).indexOf(prob);
-				int bestKnownNumUnsatClauses = MAXSATSolutions[solutionIndex];
-				int bestKnownSatClauses = numClauses - bestKnownNumUnsatClauses;
-				// Initialize and avoid division by zero.
-				int avgBestGeneration = NO_DATA;
-				int avgBestGeneration_TimeOut = NO_DATA; 
-				double avgPercentage = NO_DATA;
-				double avgPercentage_TimeOut = NO_DATA;
-				double bestPercentage = NO_DATA;
-				double bestPercentage_TimeOut = NO_DATA;
-				// Calculate.
-				if (numExperimentsWithNonTimeOutTrials > 0) {
-					avgBestGeneration = totalBestGeneration / numExperimentsWithNonTimeOutTrials;
-				}
-				if (totalNumTimeOutTrials > 0) {
-					avgBestGeneration_TimeOut = totalBestGeneration_TimeOut / numExperiments;
-				}
-				if (numExperimentsWithNonTimeOutTrials > 0) {
-					if (fewestUnsatClauses == MAX_ITERATION) {
-						fewestUnsatClauses = NO_DATA;
-						bestPercentage = NO_DATA;
-					} else {
-						double averageSatClauses = numClauses - totalUnsatClauses / numExperiments;
-						avgPercentage = averageSatClauses / (double)bestKnownSatClauses;
-						bestPercentage = (double)(numClauses - fewestUnsatClauses)/ (double)bestKnownSatClauses;
+				if (isAlgorithm) {
+					numExperiments++;
+					bufferedReader = new BufferedReader(new FileReader(file));
+					lineNum = 1;
+					
+					while ((line = bufferedReader.readLine()) != null) {
+						if (lineNum == LineNumber.NUM_LITERALS.getNumVal()) {
+							numLiterals = Integer.parseInt(line);
+						} else if (lineNum == LineNumber.NUM_CLAUSES.getNumVal()) {
+							numClauses = Integer.parseInt(line);
+						} else if (lineNum == LineNumber.AVG_BEST_GENERATION.getNumVal()) {
+							int data = Integer.parseInt(line);
+							if (data != NO_DATA) {
+								totalBestGeneration += data;
+							} else {
+								numExperimentsWithAllTrialsTimeOut++;
+							}
+						} else if (lineNum == LineNumber.AVG_BEST_GENERATION_TIMEOUT.getNumVal()) {
+							int data = Integer.parseInt(line);
+							if (data != NO_DATA) {
+								totalBestGeneration_TimeOut += data;
+							}
+						} else if (lineNum == LineNumber.BEST_GENERATION.getNumVal()) {
+							int current = Integer.parseInt(line);
+							if (current != MAX_ITERATION && current < bestGeneration) {
+								bestGeneration = current;
+							}
+						} else if (lineNum == LineNumber.BEST_GENERATION_TIMEOUT.getNumVal()) {
+							int current = Integer.parseInt(line);
+							if (current != MAX_ITERATION && current < bestGeneration_TimeOut) {
+								bestGeneration_TimeOut = current;
+							} 
+						} else if (lineNum == LineNumber.AVG_UNSAT_CLAUSES.getNumVal()) {
+							int current = Integer.parseInt(line);
+							if (current != NO_DATA) {
+								totalUnsatClauses += current;
+							}
+						} else if (lineNum == LineNumber.AVG_UNSAT_CLAUSES_TIMEOUT.getNumVal()) {
+							int current = Integer.parseInt(line);
+							if (current != NO_DATA) {
+								totalUnsatClauses_TimeOut += current;
+							}
+						} else if (lineNum == LineNumber.FEWEST_UNSAT_CLAUSES.getNumVal()) {
+							int current = Integer.parseInt(line);
+							if (current != MAX_ITERATION && current < fewestUnsatClauses) {
+								fewestUnsatClauses = current;
+							} 
+						} else if (lineNum == LineNumber.FEWEST_UNSAT_CLAUSES_TIMEOUT.getNumVal()) {
+							int current = Integer.parseInt(line);
+							if (current != MAX_ITERATION && current < fewestUnsatClauses_TimeOut) {
+								fewestUnsatClauses_TimeOut = current;
+							}
+						}  else if (lineNum == LineNumber.AVG_EXECUTION_TIME.getNumVal()) {
+							long current = Long.parseLong(line);
+							if ((int)current != AnalyzeResultsController.NO_DATA) {
+								totalExecutionTime += Long.parseLong(line);
+							}
+						} else if (lineNum == LineNumber.BEST_EXECUTION_TIME.getNumVal()) {
+							long current = Long.parseLong(line);
+							if ((int)current != AnalyzeResultsController.NO_DATA && current < bestExecutionTime) {
+								bestExecutionTime = current; 
+							}
+						} else if (lineNum == LineNumber.NUM_TIMEOUTS.getNumVal()) {
+							int num = Integer.parseInt(line);
+							totalNumTimeOutTrials += num;
+						} else if (lineNum == LineNumber.AVG_PERCENT_SAT.getNumVal()) {
+							percentage = Double.parseDouble(line);
+						}
+						
+						lineNum++;
 					}
-				}
-				if (totalNumTimeOutTrials > 0) {
-					double averageSatClauses_TimeOut = numClauses - totalUnsatClauses_TimeOut / numExperiments;
-					avgPercentage_TimeOut = averageSatClauses_TimeOut / (double)bestKnownSatClauses;
-					bestPercentage_TimeOut = (double)(numClauses - fewestUnsatClauses_TimeOut)/ (double)bestKnownSatClauses;
-				}
-				
-				// Push values to HashMap.
-				HashMap<String, String> results = parsedResults_GA.get(prob);
-				results = new HashMap<String, String>();
-				
-				results.put(NUM_LITERALS, String.valueOf(numLiterals));
-				results.put(NUM_CLAUSES, String.valueOf(numClauses));
-				results.put(NUM_EXPERIMENTS, String.valueOf(numExperiments));
-				results.put(AVG_NUM_TIMEOUTS, String.valueOf(avgNumTimeOuts));
-				results.put(BEST_EXECUTION_TIME, String.valueOf(bestExecutionTime));
-				results.put(AVG_EXECUTION_TIME, String.valueOf(avgExecutionTime));
-				results.put(BEST_GENERATION, String.valueOf(bestGeneration));
-				results.put(BEST_GENERATION_TIMEOUT, String.valueOf(bestGeneration_TimeOut));
-				results.put(AVG_BEST_GENERATION, String.valueOf(avgBestGeneration));
-				results.put(AVG_BEST_GENERATION_TIMEOUT, String.valueOf(avgBestGeneration_TimeOut));
-				results.put(BEST_PERCENTAGE, String.valueOf(bestPercentage));
-				results.put(BEST_PERCENTAGE_TIMEOUT, String.valueOf(bestPercentage_TimeOut));
-				results.put(AVG_PERCENTAGE, String.valueOf(avgPercentage));
-				results.put(AVG_PERCENTAGE_TIMEOUT, String.valueOf(avgPercentage_TimeOut));
-				results.put(PARAMETER_SETTINGS, parameterSettings);
-				
-				// Push HashMaps to parsed results as a value.
-				if (algorithm.equalsIgnoreCase("GA")) {
-					parsedResults_GA.put(prob, results);
-				} else {
-					parsedResults_PBIL.put(prob, results);
+					bufferedReader.close();
+					
+					// Get values and other info.
+					int avgNumTimeOuts = totalNumTimeOutTrials / numExperiments;
+					int numExperimentsWithNonTimeOutTrials = numExperiments - numExperimentsWithAllTrialsTimeOut;
+					long avgExecutionTime = totalExecutionTime / (long) numExperiments;
+					int solutionIndex = Arrays.asList(MAXSATProblems).indexOf(prob);
+					int bestKnownNumUnsatClauses = MAXSATSolutions[solutionIndex];
+					int bestKnownSatClauses = numClauses - bestKnownNumUnsatClauses;
+					// Initialize and avoid division by zero.
+					int avgBestGeneration = NO_DATA;
+					int avgBestGeneration_TimeOut = NO_DATA; 
+					double avgPercentage = NO_DATA;
+					double avgPercentage_TimeOut = NO_DATA;
+					double bestPercentage = NO_DATA;
+					double bestPercentage_TimeOut = NO_DATA;
+					// Calculate.
+					if (numExperimentsWithNonTimeOutTrials > 0) {
+						avgBestGeneration = totalBestGeneration / numExperimentsWithNonTimeOutTrials;
+					}
+					if (totalNumTimeOutTrials > 0) {
+						avgBestGeneration_TimeOut = totalBestGeneration_TimeOut / numExperiments;
+					}
+					if (numExperimentsWithNonTimeOutTrials > 0) {
+						if (fewestUnsatClauses == MAX_ITERATION) {
+							fewestUnsatClauses = NO_DATA;
+							bestPercentage = NO_DATA;
+						} else {
+							double averageSatClauses = numClauses - totalUnsatClauses / numExperiments;
+							avgPercentage = averageSatClauses / (double)bestKnownSatClauses;
+							bestPercentage = (double)(numClauses - fewestUnsatClauses)/ (double)bestKnownSatClauses;
+						}
+					}
+//					if (totalNumTimeOutTrials > 0) {
+						double averageSatClauses_TimeOut = numClauses - totalUnsatClauses_TimeOut / numExperiments;
+						
+//						double averageUnsatClauses_TimeOut = unsatClauses / numTimeouts;
+//						averagePercentSatisfiedClausesT = (double) (totalNumClauses - averageUnsatisfiedClausesT)
+//								/ (double) (totalNumClauses - maxValue);
+						
+//						avgPercentage_TimeOut = percentage;
+//						if (avgPercentage_TimeOut == -1.0) {
+//							avgPercentage_TimeOut = (numClauses - totalUnsatClauses) / numClauses;	
+//						}
+						
+						avgPercentage_TimeOut = averageSatClauses_TimeOut / (double)bestKnownSatClauses;
+
+						bestPercentage_TimeOut = (double)(numClauses - fewestUnsatClauses_TimeOut)/ (double)bestKnownSatClauses;
+//					}
+					
+					// Push values to HashMap.
+					HashMap<String, String> results = new HashMap<String, String>();
+					results.put(NUM_LITERALS, String.valueOf(numLiterals));
+					results.put(NUM_CLAUSES, String.valueOf(numClauses));
+					results.put(NUM_EXPERIMENTS, String.valueOf(numExperiments));
+					results.put(AVG_NUM_TIMEOUTS, String.valueOf(avgNumTimeOuts));
+					results.put(BEST_EXECUTION_TIME, String.valueOf(bestExecutionTime));
+					results.put(AVG_EXECUTION_TIME, String.valueOf(avgExecutionTime));
+					results.put(BEST_GENERATION, String.valueOf(bestGeneration));
+					results.put(BEST_GENERATION_TIMEOUT, String.valueOf(bestGeneration_TimeOut));
+					results.put(AVG_BEST_GENERATION, String.valueOf(avgBestGeneration));
+					results.put(AVG_BEST_GENERATION_TIMEOUT, String.valueOf(avgBestGeneration_TimeOut));
+					results.put(BEST_PERCENTAGE, String.valueOf(bestPercentage));
+					results.put(BEST_PERCENTAGE_TIMEOUT, String.valueOf(bestPercentage_TimeOut));
+					results.put(AVG_PERCENTAGE, String.valueOf(avgPercentage));
+					results.put(AVG_PERCENTAGE_TIMEOUT, String.valueOf(avgPercentage_TimeOut));
+					
+					// Push HashMaps to parsed results as a value.
+					if (algorithm.equalsIgnoreCase(AnalyzeResultsController.GA)) {
+						parsedResults_GA.put(prob, results);
+					} else if (algorithm.equalsIgnoreCase(AnalyzeResultsController.PBIL)){
+						parsedResults_PBIL.put(prob, results);
+					} else if (algorithm.equalsIgnoreCase(AnalyzeResultsController.SA)){
+						parsedResults_SA.put(prob, results);
+					} else if (algorithm.equalsIgnoreCase(AnalyzeResultsController.SAGA)){
+						parsedResults_SAGA.put(prob, results);
+					} else if (algorithm.equalsIgnoreCase(AnalyzeResultsController.SAPBIL)){
+						parsedResults_SAPBIL.put(prob, results);
+					}
 				}
 			}
 			catch(FileNotFoundException e) {
@@ -466,78 +411,78 @@ public class AnalyzeResults {
 		}
 	}
 	
-	/* Find out which problems are unused, if any, because of some unfinished experiments.
-	 * NOTE: When all problems are used, it means they are used for both algorithms combined,
-	 * 		 so each of the algorithms may not have used all the problems. 
-	 */
-	public void printUnusedProblems() throws IOException {
-		HashSet<String> setOfUsedProblems = new HashSet<String>();
-				
-		for (File file : resultsFiles) {
-			String resultFilePath = getFilePath(file);
-			
-			if (!file.getName().equalsIgnoreCase(".DS_Store")) {
-				try {
-					BufferedReader bufferReader = new BufferedReader(new FileReader(resultFilePath));
-					String problemFileName = getProblemName(bufferReader.readLine());
-					// Add to set.
-					setOfUsedProblems.add(problemFileName.trim());
-					bufferReader.close();
-				} 
-				catch(FileNotFoundException e) {
-					printFileNotFound(resultFilePath);
-				}
-			} 
-		}
-		
-		boolean hasUnused = false;
-		for (int i = 0; i < MAXSATProblems.length; i++) {
-			String problem = MAXSATProblems[i];
-			if (!setOfUsedProblems.contains(problem)) {
-				hasUnused = true;
-				System.out.println(problem + " is unused");
-			}
-		}
-		if (!hasUnused) {
-			System.out.println("All MAXSAT problems are used.");
-		}
-	}
+//	/* Find out which problems are unused, if any, because of some unfinished experiments.
+//	 * NOTE: When all problems are used, it means they are used for both algorithms combined,
+//	 * 		 so each of the algorithms may not have used all the problems. 
+//	 */
+//	public void printUnusedProblems() throws IOException {
+//		HashSet<String> setOfUsedProblems = new HashSet<String>();
+//				
+//		for (File file : resultsFiles) {
+//			String resultFilePath = getFilePath(file);
+//			
+//			if (!file.getName().equalsIgnoreCase(".DS_Store")) {
+//				try {
+//					BufferedReader bufferReader = new BufferedReader(new FileReader(resultFilePath));
+//					String problemFileName = getProblemName(bufferReader.readLine());
+//					// Add to set.
+//					setOfUsedProblems.add(problemFileName.trim());
+//					bufferReader.close();
+//				} 
+//				catch(FileNotFoundException e) {
+//					printFileNotFound(resultFilePath);
+//				}
+//			} 
+//		}
+//		
+//		boolean hasUnused = false;
+//		for (int i = 0; i < MAXSATProblems.length; i++) {
+//			String problem = MAXSATProblems[i];
+//			if (!setOfUsedProblems.contains(problem)) {
+//				hasUnused = true;
+//				System.out.println(problem + " is unused");
+//			}
+//		}
+//		if (!hasUnused) {
+//			System.out.println("All MAXSAT problems are used.");
+//		}
+//	}
 	
-	// There are 5 problems used by PBIL but not GA. 
-	private ArrayList<Integer> indicesOfProblemsUsedByBothAlgorithms() {
-		ArrayList<Integer> usedIndices = new ArrayList<Integer>();
-		for (int i = 0; i < TestController.files.length; i++) {
-			String problem = TestController.files[i];
-			if (!problem.equals("140v/s2v140c1600-10.cnf") &&
-					!problem.equals("5SAT/HG-5SAT-V100-C1800-100.cnf") &&
-					!problem.equals("60v/s3v60c1000-1.cnf") &&
-					!problem.equals("5SAT/HG-5SAT-V50-C900-5.cnf") &&
-					!problem.equals("maxcut-140-630-0.8/maxcut-140-630-0.8-9.cnf")) {
-				usedIndices.add(i);
-			}
-		}
-		return usedIndices;
-	}
-	
-	// We want to delete the problems used by PBIL but not GA.
-	private String[] deleteProblemsUnusedByGA() {
-		String[] problemsUsedByBothAlgorithms = new String[indicesOfProblemsUsed.size()];
-		int index = 0;
-		for (Integer i: indicesOfProblemsUsed) {
-			problemsUsedByBothAlgorithms[index] = TestController.files[i];
-			index++;
-		}
-		return problemsUsedByBothAlgorithms;
-	}
-	
-	// We also want to delete the solutions corresponding to the deleted problems.
-	private int[] deleteSolutionsUnusedByGA() {
-		int[] solutionsUsedByBothAlgorithms = new int[indicesOfProblemsUsed.size()];
-		int index = 0;
-		for (Integer i: indicesOfProblemsUsed) {
-			solutionsUsedByBothAlgorithms[index] = TestController.maxValues[i];
-			index++;
-		}
-		return solutionsUsedByBothAlgorithms;
-	}
+//	// There are 5 problems used by PBIL but not GA. 
+//	private ArrayList<Integer> indicesOfProblemsUsedByBothAlgorithms() {
+//		ArrayList<Integer> usedIndices = new ArrayList<Integer>();
+//		for (int i = 0; i < TestController.files.length; i++) {
+//			String problem = TestController.files[i];
+//			if (!problem.equals("140v/s2v140c1600-10.cnf") &&
+//					!problem.equals("5SAT/HG-5SAT-V100-C1800-100.cnf") &&
+//					!problem.equals("60v/s3v60c1000-1.cnf") &&
+//					!problem.equals("5SAT/HG-5SAT-V50-C900-5.cnf") &&
+//					!problem.equals("maxcut-140-630-0.8/maxcut-140-630-0.8-9.cnf")) {
+//				usedIndices.add(i);
+//			}
+//		}
+//		return usedIndices;
+//	}
+//	
+//	// We want to delete the problems used by PBIL but not GA.
+//	private String[] deleteProblemsUnusedByGA() {
+//		String[] problemsUsedByBothAlgorithms = new String[indicesOfProblemsUsed.size()];
+//		int index = 0;
+//		for (Integer i: indicesOfProblemsUsed) {
+//			problemsUsedByBothAlgorithms[index] = TestController.files[i];
+//			index++;
+//		}
+//		return problemsUsedByBothAlgorithms;
+//	}
+//	
+//	// We also want to delete the solutions corresponding to the deleted problems.
+//	private int[] deleteSolutionsUnusedByGA() {
+//		int[] solutionsUsedByBothAlgorithms = new int[indicesOfProblemsUsed.size()];
+//		int index = 0;
+//		for (Integer i: indicesOfProblemsUsed) {
+//			solutionsUsedByBothAlgorithms[index] = TestController.maxValues[i];
+//			index++;
+//		}
+//		return solutionsUsedByBothAlgorithms;
+//	}
 }

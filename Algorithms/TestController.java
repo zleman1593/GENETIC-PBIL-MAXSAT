@@ -49,14 +49,11 @@ public class TestController {
 	// Set these for SAPBIL experiments
 	public static int[] SAPBIL_samples = {50, 76, 100, 150, /* end pop*/ 76, 76, 76, /*end lr*/ 76, 76, 76, /*end mutProb*/ 76, 76, 76};
 	public static double[] SAPBIL_learningRate = {0.1, 0.1, 0.1, 0.1, /* end pop*/ 0.01, 0.1, 0.3, /*end lr*/ 0.1, 0.1, 0.1, /*end mutProb*/0.1, 0.1, 0.1 };
-	public static double[] SAPBIL_negLearningRate = {0.02, 0.02, 0.02, 0.02, /* end pop*/ 0.02, 0.02, 0.02, /*end lr*/  0.02, 0.02, 0.02 /*end mutProb*/};
+	public static double[] SAPBIL_negLearningRate = {0.02, 0.02, 0.02, 0.02, /* end pop*/ 0.02, 0.02, 0.02, /*end lr*/  0.02, 0.02, 0.02, /*end mutProb*/0.02, 0.02, 0.02};
 	public static double[] SAPBIL_mutProb = {0.02, 0.02, 0.02, 0.02, /* end pop*/ 0.02, 0.02, 0.02, /*end lr*/ 0.1, 0.3, 0.5, /*end mutProb*/0.02, 0.02, 0.02};
 	public static double[] SAPBIL_mutShift = {0.05, 0.05, 0.05, 0.05, /* end pop*/ 0.05, 0.05, 0.05, /*end lr*/ 0.05, 0.05, 0.05, /*end mutProb*/ 0.05, 0.05, 0.05};
 	public static int[] SAPBIL_howOftenToIntroduceSA = {100,100,100,100,/**/ 100, 100, 100,/**/ 100, 100, 100,/**/50,200,500};
 	public static int SAPBIL_maxIterations = Integer.MAX_VALUE;
-
-
-
 
 	//
 	public static void main(String[] args) throws IOException {

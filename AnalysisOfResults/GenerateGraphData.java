@@ -51,11 +51,11 @@ public class GenerateGraphData {
 		writeGraphData_sortedByLiterals(algorithm);
 
 		// Parameter graphs are only based on the number of literals; general graphs look at both.
-		if (!isParameterGraph) {
-			// x-axis is the number of clauses.		
-			initializeArrayList(algorithm, AnalyzeResults.NUM_CLAUSES);
-			writeGraphData_sortedByClauses(algorithm);
-		}
+//		if (!isParameterGraph) {
+//			// x-axis is the number of clauses.		
+//			initializeArrayList(algorithm, AnalyzeResults.NUM_CLAUSES);
+//			writeGraphData_sortedByClauses(algorithm);
+//		}
 	}
 
 	private void initializeArrayList(String algorithm, String sortedKey) {

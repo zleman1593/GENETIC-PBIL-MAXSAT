@@ -41,11 +41,15 @@ public class AnalyzeResultsController {
 	public static void main(String[] args) throws IOException {
 		// Delete all files in the directory.
 		File folder = new File(folderPath);
-		for (File file : folder.listFiles()) {
-			try {
-			    file.delete();
-			} catch (Exception e) {
-				System.out.println("Cannot delete file: " + file.getName());
+		if (!folder.exists()) {
+			folder.mkdir();
+		} else {
+			for (File file : folder.listFiles()) {
+				try {
+				    file.delete();
+				} catch (Exception e) {
+					System.out.println("Cannot delete file: " + file.getName());
+				}
 			}
 		}
 		
@@ -61,15 +65,15 @@ public class AnalyzeResultsController {
 		new GenerateGraphData(results_PBIL, PBIL, false, null, null);
 		// SA.
 		AnalyzeResults analyzeResults_SA = new AnalyzeResults(SA, NO_DATA, null);
-		results_PBIL = analyzeResults_SA.getParsedResults(SA);
+		results_SA = analyzeResults_SA.getParsedResults(SA);
 		new GenerateGraphData(results_SA, SA, false, null, null);
-		// SA.
+		// SAGA.
 		AnalyzeResults analyzeResults_SAGA = new AnalyzeResults(SAGA, NO_DATA, null);
-		results_PBIL = analyzeResults_SAGA.getParsedResults(SAGA);
+		results_SAGA = analyzeResults_SAGA.getParsedResults(SAGA);
 		new GenerateGraphData(results_SAGA, SAGA, false, null, null);
-		// SA.
+		// SAPBIL.
 		AnalyzeResults analyzeResults_SAPBIL = new AnalyzeResults(SAPBIL, NO_DATA, null);
-		results_PBIL = analyzeResults_SAPBIL.getParsedResults(SAPBIL);
+		results_SAPBIL = analyzeResults_SAPBIL.getParsedResults(SAPBIL);
 		new GenerateGraphData(results_SAPBIL, SAPBIL, false, null, null);
 		
 		// End time calculation.
@@ -98,6 +102,14 @@ public class AnalyzeResultsController {
 		initializeParameters_SAPBIL();
 		generateParamGraph(SAPBIL, results_Parameters_SAPBIL, parameters_SAPBIL);
 		
+		
+		//DEBUGGING
+		System.out.println("Param SA: " + parameters_SA.keySet());
+		System.out.println("Param SAGA: " + parameters_SAGA.keySet());
+		System.out.println("Param SAGA: " + parameters_SAGA.values());
+		System.out.println("Param SAPBIL: " + parameters_SAPBIL.keySet());
+		System.out.println("Param SAPBIL: " + parameters_SAPBIL.values());
+		
 		// End time calculation.
 		long duration_p = System.currentTimeMillis() - startTime_p;
 		System.out.println("Finished writing all graph data for parameter analysis.");
@@ -107,9 +119,10 @@ public class AnalyzeResultsController {
 	
 	public static void generateParamGraph(String algorithm, HashMap<String, HashMap<String, String>> results_Parameters, 
 			HashMap<Integer, ArrayList<String>> parameters) throws IOException {
-		AnalyzeResults analyzeResultsDefaultParameters = new AnalyzeResults(algorithm, DEFAULT, "parameter values");
-		results_Parameters = analyzeResultsDefaultParameters.getParsedResults(algorithm);
-		new GenerateGraphData(results_Parameters, algorithm, true, "Default", "parameter values");
+		// Get graph data for the default experiments. 
+//		AnalyzeResults analyzeResultsDefaultParameters = new AnalyzeResults(algorithm, DEFAULT, "parameter values");
+//		results_Parameters = analyzeResultsDefaultParameters.getParsedResults(algorithm);
+//		new GenerateGraphData(results_Parameters, algorithm, true, "Default", "parameter values");
 
 		// Get graph data for the rest of the experiments.
 		for (Integer lineNum : parameters.keySet()) {
@@ -141,37 +154,86 @@ public class AnalyzeResultsController {
 			double crossoverProb = TestController.crossoverProb[i];
 			double mutationProb = TestController.mutationProb[i];
 			
-			ArrayList<String> values = new ArrayList<String>();
+			ArrayList<String> valuesGA = new ArrayList<String>();
 			if (popSize != defaultPopSize) {
 				if (parameters_GA.containsKey(LineNumberGA.POP_SIZE.getNumVal())) {
-					values = parameters_GA.get(LineNumberGA.POP_SIZE.getNumVal());
+					valuesGA = parameters_GA.get(LineNumberGA.POP_SIZE.getNumVal());
 				}
-				values.add(String.valueOf(popSize));
-				parameters_GA.put(LineNumberGA.POP_SIZE.getNumVal(), values);
+				valuesGA.add(String.valueOf(popSize));
+				parameters_GA.put(LineNumberGA.POP_SIZE.getNumVal(), valuesGA);
 			} else if (!selectionType.equalsIgnoreCase(defaultSelectionType)) {
 				if (parameters_GA.containsKey(LineNumberGA.SELECTION_TYPE.getNumVal())) {
-					values = parameters_GA.get(LineNumberGA.SELECTION_TYPE.getNumVal());
+					valuesGA = parameters_GA.get(LineNumberGA.SELECTION_TYPE.getNumVal());
 				}
-				values.add(selectionType);
-				parameters_GA.put(LineNumberGA.SELECTION_TYPE.getNumVal(), values);
+				valuesGA.add(selectionType);
+				parameters_GA.put(LineNumberGA.SELECTION_TYPE.getNumVal(), valuesGA);
 			} else if (!crossoverType.equalsIgnoreCase(defaultCrossoverType)) {
 				if (parameters_GA.containsKey(LineNumberGA.CROSSOVER_TYPE.getNumVal())) {
-					values = parameters_GA.get(LineNumberGA.CROSSOVER_TYPE.getNumVal());
+					valuesGA = parameters_GA.get(LineNumberGA.CROSSOVER_TYPE.getNumVal());
 				}
-				values.add(crossoverType);
-				parameters_GA.put(LineNumberGA.CROSSOVER_TYPE.getNumVal(), values);
+				valuesGA.add(crossoverType);
+				parameters_GA.put(LineNumberGA.CROSSOVER_TYPE.getNumVal(), valuesGA);
 			} else if (differentDouble(crossoverProb, defaultCrossoverProb)) {
 				if (parameters_GA.containsKey(LineNumberGA.CROSSOVER_PROB.getNumVal())) {
-					values = parameters_GA.get(LineNumberGA.CROSSOVER_PROB.getNumVal());
+					valuesGA = parameters_GA.get(LineNumberGA.CROSSOVER_PROB.getNumVal());
 				}
-				values.add(String.valueOf(crossoverProb));
-				parameters_GA.put(LineNumberGA.CROSSOVER_PROB.getNumVal(), values);
+				valuesGA.add(String.valueOf(crossoverProb));
+				parameters_GA.put(LineNumberGA.CROSSOVER_PROB.getNumVal(), valuesGA);
 			} else if (differentDouble(mutationProb, defaultMutationProb)) {
 				if (parameters_GA.containsKey(LineNumberGA.MUTATION_PROB.getNumVal())) {
-					values = parameters_GA.get(LineNumberGA.MUTATION_PROB.getNumVal());
+					valuesGA = parameters_GA.get(LineNumberGA.MUTATION_PROB.getNumVal());
 				}
-				values.add(String.valueOf(mutationProb));
-				parameters_GA.put(LineNumberGA.MUTATION_PROB.getNumVal(), values);
+				valuesGA.add(String.valueOf(mutationProb));
+				parameters_GA.put(LineNumberGA.MUTATION_PROB.getNumVal(), valuesGA);
+			}
+		}
+	}
+	
+	public static void initializeParameters_SAGA() {
+		// Initialize HashMap.
+		parameters_SAGA = new HashMap<Integer, ArrayList<String>>();
+		
+		// Fixed values.
+		int defaultPopSize = TestController.SAGA_popSize[0];
+		double defaultCrossoverProb = TestController.SAGA_crossoverProb[0]; 
+		double defaultMutationProb = TestController.SAGA_mutationProb[0];
+		int defaultWithoutImprovement = TestController.SAGA_numberOfGAIterationsWithoutImprovement[0];
+		
+		// Find the values that varied.
+		for (int i = 0; i < TestController.SAGA_popSize.length; i++) {
+			int popSize = TestController.SAGA_popSize[i];
+			double crossoverProb = TestController.SAGA_crossoverProb[i];
+			double mutationProb = TestController.SAGA_mutationProb[i];
+			int withoutImprovement = TestController.SAGA_numberOfGAIterationsWithoutImprovement[i];
+			
+			ArrayList<String> valuesPopSize = new ArrayList<String>();
+			ArrayList<String> valuesCrossoverProb = new ArrayList<String>();
+			ArrayList<String> valuesMutProb = new ArrayList<String>();
+			ArrayList<String> valuesWithoutImprov = new ArrayList<String>();
+			/*if (popSize != defaultPopSize) {
+				if (parameters_SAGA.containsKey(LineNumberSAGA.POP_SIZE.getNumVal())) {
+					valuesPopSize = parameters_SAGA.get(LineNumberSAGA.POP_SIZE.getNumVal());
+				}
+				valuesPopSize.add(String.valueOf(popSize));
+				parameters_SAGA.put(LineNumberSAGA.POP_SIZE.getNumVal(), valuesPopSize);
+			} else */ if (differentDouble(crossoverProb, defaultCrossoverProb)) {
+				if (parameters_SAGA.containsKey(LineNumberSAGA.CROSSOVER_PROB.getNumVal())) {
+					valuesCrossoverProb = parameters_SAGA.get(LineNumberSAGA.CROSSOVER_PROB.getNumVal());
+				}
+				valuesCrossoverProb.add(String.valueOf(crossoverProb));
+				parameters_SAGA.put(LineNumberSAGA.CROSSOVER_PROB.getNumVal(), valuesCrossoverProb);
+			} else if (differentDouble(mutationProb, defaultMutationProb)) {
+				if (parameters_SAGA.containsKey(LineNumberSAGA.MUTATION_PROB.getNumVal())) {
+					valuesMutProb = parameters_SAGA.get(LineNumberSAGA.MUTATION_PROB.getNumVal());
+				}
+				valuesMutProb.add(String.valueOf(mutationProb));
+				parameters_SAGA.put(LineNumberSAGA.MUTATION_PROB.getNumVal(), valuesMutProb);
+			} else if (withoutImprovement != defaultWithoutImprovement) {
+				if (parameters_SAGA.containsKey(LineNumberSAGA.WITHOUT_IMPROVEMENT.getNumVal())) {
+					valuesWithoutImprov = parameters_SAGA.get(LineNumberSAGA.WITHOUT_IMPROVEMENT.getNumVal());
+				}
+				valuesWithoutImprov.add(String.valueOf(withoutImprovement));
+				parameters_SAGA.put(LineNumberSAGA.WITHOUT_IMPROVEMENT.getNumVal(), valuesWithoutImprov);
 			}
 		}
 	}
@@ -240,7 +302,7 @@ public class AnalyzeResultsController {
 		double defaultNegLearningRate = TestController.SAPBIL_negLearningRate[0];
 		double defaultMutationProb = TestController.SAPBIL_mutProb[0]; 
 		double defaultMutationShift = TestController.SAPBIL_mutShift[0];
-		int defaultSAFrequency = TestController.SAPBIL_howOftenToIntroduceSA[0];
+//		int defaultSAFrequency = TestController.SAPBIL_howOftenToIntroduceSA[0];
 		
 		// Find the values that varied.
 		for (int i = 0; i < TestController.SAPBIL_samples.length; i++) {
@@ -249,16 +311,16 @@ public class AnalyzeResultsController {
 			double negLearningRate = TestController.SAPBIL_negLearningRate[i];
 			double mutationProb = TestController.SAPBIL_mutProb[i];
 			double mutationShift = TestController.SAPBIL_mutShift[i];
-			double SAFrequency = TestController.SAPBIL_howOftenToIntroduceSA[i];
+//			double SAFrequency = TestController.SAPBIL_howOftenToIntroduceSA[i];
 			
 			ArrayList<String> values = new ArrayList<String>();
-			if (sampleSize != defaultSampleSize) {
+			/*if (sampleSize != defaultSampleSize) {
 				if (parameters_SAPBIL.containsKey(LineNumberSAPBIL.SAMPLES.getNumVal())) {
 					values = parameters_SAPBIL.get(LineNumberSAPBIL.SAMPLES.getNumVal());
 				}
 				values.add(String.valueOf(sampleSize));
 				parameters_SAPBIL.put(LineNumberSAPBIL.SAMPLES.getNumVal(), values);
-			} else if (differentDouble(learningRate, defaultLearningRate)) {
+			} else */ if (differentDouble(learningRate, defaultLearningRate)) {
 				if (parameters_SAPBIL.containsKey(LineNumberSAPBIL.LEARNING_RATE.getNumVal())) {
 					values = parameters_SAPBIL.get(LineNumberSAPBIL.LEARNING_RATE.getNumVal());
 				}
@@ -282,19 +344,19 @@ public class AnalyzeResultsController {
 				}
 				values.add(String.valueOf(mutationShift));				
 				parameters_SAPBIL.put(LineNumberSAPBIL.MUTATION_SHIFT.getNumVal(), values);
-			} else if (SAFrequency == defaultSAFrequency){
-				if (parameters_SAPBIL.containsKey(LineNumberSAPBIL.SA_FREQUENCY.getNumVal())) {
-					values = parameters_SAPBIL.get(LineNumberSAPBIL.SA_FREQUENCY.getNumVal());
-				}
-				values.add(String.valueOf(SAFrequency));				
-				parameters_SAPBIL.put(LineNumberSAPBIL.SA_FREQUENCY.getNumVal(), values);
+//			} else if (SAFrequency == defaultSAFrequency){
+//				if (parameters_SAPBIL.containsKey(LineNumberSAPBIL.SA_FREQUENCY.getNumVal())) {
+//					values = parameters_SAPBIL.get(LineNumberSAPBIL.SA_FREQUENCY.getNumVal());
+//				}
+//				values.add(String.valueOf(SAFrequency));				
+//				parameters_SAPBIL.put(LineNumberSAPBIL.SA_FREQUENCY.getNumVal(), values);
 			}
 		}
 	}
 	
 	public static void initializeParameters_SA() {
 		// Initialize HashMap.
-		parameters_GA = new HashMap<Integer, ArrayList<String>>();
+		parameters_SA = new HashMap<Integer, ArrayList<String>>();
 		
 		// Fixed values.
 		double defaultMinTemp = TestController.SA_minTemp[0];
@@ -322,7 +384,6 @@ public class AnalyzeResultsController {
 		}
 	}
 	
-	
 	// Returns true if the two doubles are different, false otherwise.
 	private static boolean differentDouble(double a, double b) {
 		return Math.abs(a - b) > EPSILON;
@@ -331,7 +392,7 @@ public class AnalyzeResultsController {
 	// Returns the name of the parameter given the algorithm and its line number in results file.
 	public static String getParameterName(String algorithm, int line) 
 		throws InvalidParameterException {
-		if (algorithm.equalsIgnoreCase("GA")) {
+		if (algorithm.equalsIgnoreCase(GA)) {
 			if (line == LineNumberGA.POP_SIZE.getNumVal()) {
 				return "Population Size";
 			} else if (line == LineNumberGA.SELECTION_TYPE.getNumVal()) {
@@ -345,7 +406,7 @@ public class AnalyzeResultsController {
 			} else {
 				throw new InvalidParameterException("Invalid line number for " + algorithm);
 			}
-		} else {
+		} else if (algorithm.equalsIgnoreCase(PBIL) || algorithm.equalsIgnoreCase(SAPBIL)) {
 			if (line == LineNumberPBIL.POP_SIZE.getNumVal()) {
 				return "Population Size";
 			} else if (line == LineNumberPBIL.LEARNING_RATE.getNumVal()) {
@@ -359,7 +420,29 @@ public class AnalyzeResultsController {
 			} else {
 				throw new InvalidParameterException("Invalid line number for " + algorithm);
 			}
-		} 
+		} else if (algorithm.equalsIgnoreCase(SAGA)) {
+			if (line == LineNumberSAGA.POP_SIZE.getNumVal()) {
+				return "Population Size";
+			} else if (line == LineNumberSAGA.CROSSOVER_PROB.getNumVal()) {
+				return "Crossover Probability";
+			} else if (line == LineNumberSAGA.MUTATION_PROB.getNumVal()) {
+				return "Mutation Probability";
+			} else if (line == LineNumberSAGA.WITHOUT_IMPROVEMENT.getNumVal()) {
+				return "Without Improvement";
+			} else {
+				throw new InvalidParameterException("Invalid line number for " + algorithm);
+			}
+		} else if (algorithm.equalsIgnoreCase(SA)) {
+			if (line == LineNumberSA.MIN_TEMP.getNumVal()) {
+				return "Min Temp";
+			} else if (line == LineNumberSA.MAX_TEMP.getNumVal()) {
+				return "Max Temp";
+			} else {
+				throw new InvalidParameterException("Invalid line number for " + algorithm);
+			}
+		} else {
+			throw new InvalidParameterException("Invalid algorithm name: " + algorithm);
+		}
 	}
 	
 	// Print out the fields in the results objects.
