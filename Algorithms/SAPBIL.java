@@ -90,7 +90,7 @@ public class SAPBIL extends EvolAlgorithms {
 
 					boolean backwards;
 					//Determine if SA should run forward or backward
-					if( randomGenerator.nextDouble() <= 0.5) {backwards = true;} else { backwards = true;} 
+					backwards =  randomGenerator.nextDouble() <= 0.5 ?  true : false; 
 
 					SimulatedAnnealing anneal = new SimulatedAnnealing(probVector.length,satProblem,optimalUnsat,minTemp,maxTemp,toObject(bestVector),backwards);
 					Results resultOfSecondAnneal = anneal.anneal();
