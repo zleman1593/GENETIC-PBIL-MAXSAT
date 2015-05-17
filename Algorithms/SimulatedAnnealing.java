@@ -142,6 +142,7 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 
 		boolean flippedToOne = true;
 		boolean accept = true;
+		int fitnessBeforeBitFlip = evaluateCandidate(currentCandidate);
 		//Do the bit flip
 		for (int j = 0; j < currentCandidate.size(); j++) {
 			if (currentCandidate.get(j) == 1) {
@@ -154,8 +155,8 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 
 			//Check fitness
 			int fitness = evaluateCandidate(currentCandidate);
-			double increase =  fitness - maxFitnessSoFar;
-			boolean better = fitness < maxFitnessSoFar;
+			double increase =  fitness - fitnessBeforeBitFlip;
+			boolean better = fitness < fitnessBeforeBitFlip;
 			double acceptMutationProb =   1.0 / ( 1 + Math.exp(-1 * (increase / temperature)));//Accept probability
 			accept = randomGenerator.nextDouble() < acceptMutationProb;//Accept or not
 			updateMaxFitness(fitness);
