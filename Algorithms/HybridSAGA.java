@@ -3,17 +3,15 @@ package Algorithms;
 import java.util.*;
 
 public class HybridSAGA extends GeneticSuper {
-	private int fitnessOfPop1;
-	private int fitnessOfPop2;
-	private ArrayList<Integer> firstMember = null;
+	private ArrayList<Integer> saSeed = null;
 	private int literalNumber;
-	
+
 	private  double minTemp;
 	private double maxTemp;
 	private int populationSize;//defaulted 60
 	private int numberOfGAIterationsWithoutImprovement = 100;
 
-	
+
 	// Constructor for preview
 	public HybridSAGA( int literalNumber, int maxIteration, double crossOverProb,
 			double mutateProb, ArrayList<ArrayList<Integer>> satProblem, double minTemp, double maxTemp, int optimalUnSat,int populationSize, int numberOfGAIterationsWithoutImprovement) {
@@ -22,7 +20,7 @@ public class HybridSAGA extends GeneticSuper {
 		this.maxIteration = maxIteration;
 		this.crossOverProb = crossOverProb;
 		this.mutateProb = mutateProb;
-	
+
 		this.optimalUnSat = optimalUnSat;
 		this.literalNumber = literalNumber;
 		this.sample =  populationSize / 2;
@@ -55,7 +53,7 @@ public class HybridSAGA extends GeneticSuper {
 		long executionTime = -1;
 
 		for (int i = 0; i < maxIteration && !foundSATSolution; i++) {
-			 currentGeneration = i;
+			currentGeneration = i;
 			//SA cycle
 			sa(minTemp,maxTemp);
 
@@ -95,13 +93,14 @@ public class HybridSAGA extends GeneticSuper {
 
 	}
 
+	//Generates a population by crossing over the best result of SA with a random individual
 	private void generateChildren(int popSize) {
 		Results resultOfSecondAnneal = new Results();
 		for (int i = 0; i < popSize/2; i++) {
 			// Pick cross over location
 			int crossOverLocation = randomGenerator.nextInt(literalNumber);
 
-			ArrayList<Integer> newSibling1 =  (ArrayList<Integer>) firstMember.clone();
+			ArrayList<Integer> newSibling1 =  (ArrayList<Integer>) saSeed.clone();
 			ArrayList<Integer> newSibling2 =   initStartingCandidate();
 
 			// Copy first part of A into C
@@ -122,89 +121,81 @@ public class HybridSAGA extends GeneticSuper {
 		}
 
 	}
-	
-	
-	
-//	private void generateChildren(int popSize) {
-//		for (int i = 0; i < popSize; i++) {
-//	
-//			ArrayList<Integer> newSibling1 =  (ArrayList<Integer>) firstMember.clone();
-//
-//			population.add(newSibling1);
-//	
-//		}
-//
-//	}
-//	
-	
 
 
-
+	//The SA part of the algorithm
 	void sa(double minTemp, double maxTemp){
 
-		int fitnessOfFirstMember = 0;
-
+		int maxFitness = 0;
 		boolean increment = true;
 		int numberOfConsecutiveNoImprovements = 0;
 
 		while (numberOfConsecutiveNoImprovements <= 10 ){
-			
+
 			int currentUnsat = satProblem.size() - maxFitnessSoFar;
+			//Update best solution 
 			if (currentUnsat <= optimalUnSat) {
 				foundSATSolution = true;
 				break;
 			}
 
 			boolean backwards;
-			if( randomGenerator.nextDouble() <= 0.5) {backwards = true;} else { backwards = true;} 
-			SimulatedAnnealing anneal1 = new SimulatedAnnealing(literalNumber,satProblem,2,minTemp,maxTemp,firstMember,backwards);
-			Results resultOfFirstAnneal = anneal1.anneal();
-			int fitnessOfFirstResult = (resultOfFirstAnneal.numClauses - resultOfFirstAnneal.numUnsatisifiedClauses);
-
-			if (fitnessOfFirstResult > fitnessOfFirstMember) {
-				firstMember =  resultOfFirstAnneal.rawAssignment;
-				increment = false;
-				fitnessOfFirstMember = fitnessOfFirstResult;
-
-			} 
+			backwards =  randomGenerator.nextDouble() <= 0.5 ?  true : false; 
 			
+			
+			//Run SA with last and Best result from SA run
+			SimulatedAnnealing anneal1 = new SimulatedAnnealing(literalNumber,satProblem,2,minTemp,maxTemp,saSeed,backwards);
+			Results resultOfFirstAnneal = anneal1.anneal();
+			
+			int fitnessOfResult = (resultOfFirstAnneal.numClauses - resultOfFirstAnneal.numUnsatisifiedClauses);
+
+			if (fitnessOfResult > maxFitness) {
+				saSeed =  resultOfFirstAnneal.rawAssignment;
+				increment = false;
+				maxFitness = fitnessOfResult;
+			} 
+
 			if (increment) {numberOfConsecutiveNoImprovements++;}
 			increment = true;
-			updateMaxFitness(fitnessOfFirstMember, firstMember);
+			updateMaxFitness(maxFitness, saSeed);
 		}
 
 
-	
-		fitnessOfPop1 = fitnessOfFirstMember;
-		
+
 	}
 
 
 
 	void ga(){
-		
+
 		int counter = 0;
 		population = new ArrayList< ArrayList<Integer>>();
+		//Get a population based of the best solution so far
 		generateChildren(populationSize);
+		//While a certain number of generations have not gone by without an improvement 
 		while(counter <= numberOfGAIterationsWithoutImprovement){
 
 			if (foundSATSolution) {
 				System.out.println("Fully Satisfied All Clauses");
 				break;
 			}
+			//Mutate
 			mutate(mutateProb);
+			//Crossover members of the population
 			singlePointCrossover(crossOverProb);
+			//Extreme case of tournament select where half the pop is put into tournament each time and a single member is selected as a winner for each tournament 
 			tournamentSelect();
 
-			//Make this more efficient
+			//Get most fit individual
 			ArrayList<ArrayWithFitness> allIndividualsWithFitness = getFitnessForAllIndividuals();
-			fitnessOfPop2 = allIndividualsWithFitness.get(allIndividualsWithFitness.size() - 1).fitness;
-			if (fitnessOfPop2 > fitnessOfPop1){
+			int fitnessOfNewPop = allIndividualsWithFitness.get(allIndividualsWithFitness.size() - 1).fitness;
+			
+			if (fitnessOfNewPop > maxFitnessSoFar){
 				//update seeds for SA
-				firstMember = allIndividualsWithFitness.get(allIndividualsWithFitness.size() - 1).individual;
+				saSeed = allIndividualsWithFitness.get(allIndividualsWithFitness.size() - 1).individual;
 				//reset counter
 				counter = 0;
-				fitnessOfPop1 = fitnessOfPop2;
+				maxFitnessSoFar = fitnessOfNewPop;
 			} else{
 				//increment the iteration number
 				counter++;
@@ -215,7 +206,7 @@ public class HybridSAGA extends GeneticSuper {
 	}
 
 
-	
+
 	private ArrayList<Integer> initStartingCandidate(){
 
 		ArrayList<Integer> individual = new ArrayList<Integer>();

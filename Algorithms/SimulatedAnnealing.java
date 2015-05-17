@@ -5,7 +5,6 @@ import java.util.*;
 public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitness function and some MAXSAT output conversion functions
 
 
-
 	// Maximum fitness found so far in any generation
 	private int maxFitnessSoFar = 0;
 	// Individual Solution with Maximum fitness found so far in any generation
@@ -31,23 +30,23 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 		this.maxTemp = maxTemp;
 		this.decayRate = 1.0 / (double) currentCandidate.size();
 	}
-	
+
 	// Constructor
-		public SimulatedAnnealing(int literalNumber, ArrayList<ArrayList<Integer>> satProblem, int optimalUnSat,double minTemp, double maxTemp, ArrayList<Integer> seed,boolean op) {
-			this.satProblem = satProblem;
-			if (seed == null){
+	public SimulatedAnnealing(int literalNumber, ArrayList<ArrayList<Integer>> satProblem, int optimalUnSat,double minTemp, double maxTemp, ArrayList<Integer> seed,boolean op) {
+		this.satProblem = satProblem;
+		if (seed == null){
 			this.currentCandidate = initStartingCandidate(literalNumber);
-			}else{
-				this.currentCandidate = seed;
-			}
-			this.optimalUnSat = optimalUnSat;
-			this.minTemp = minTemp;
-			this.maxTemp = maxTemp;
-			this.decayRate = 1.0 / (double) currentCandidate.size();
-			this.op = op;
+		}else{
+			this.currentCandidate = seed;
 		}
-		
-		
+		this.optimalUnSat = optimalUnSat;
+		this.minTemp = minTemp;
+		this.maxTemp = maxTemp;
+		this.decayRate = 1.0 / (double) currentCandidate.size();
+		this.op = op;
+	}
+
+
 
 
 
@@ -55,21 +54,22 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 		long startTime = System.currentTimeMillis();
 		long executionTime = -1;
 		double  temperature = maxTemp; 
-		
-		while ( !foundSATSolution && temperature >= minTemp && iteration < 9000) {
-				if (iteration == 8999){
-					System.out.println("Error: Iteration limit is limiting factor");
-				}
-			iteration++;
-			
-			temperature = maxTemp * Math.exp(-1 * (iteration * decayRate));
-			
-			
-			if(!op){
-			mutate(temperature);
-			}else{
 
-			mutateOp(temperature);
+		while ( !foundSATSolution && temperature >= minTemp /*&& iteration < 9000*/) {
+
+			//				if (iteration == 8999){
+			//					System.out.println("Error: Iteration limit is limiting factor");
+			//				}
+			iteration++;
+			//Decrease Temp
+			temperature = maxTemp * Math.exp(-1 * (iteration * decayRate));
+
+			//If the algorithm should move from bit in position 0 forward
+			if(!op){
+				mutate(temperature);
+			//Or start at the last bit and move in the opposite direction
+			}else{
+				mutateOp(temperature);
 			}
 
 
@@ -86,6 +86,7 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 			}
 		}
 
+		//Create results
 		double percent = ((double) maxFitnessSoFar * 100 / (double) satProblem.size());
 
 		System.out.println("Simulated Annealing Output:");
@@ -119,11 +120,11 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 				foundSATSolution = true;
 			}
 			endTime = System.currentTimeMillis();//Time to find best solution
-
 		}
 
 	}
 
+	/*Creates a random initial Candidate*/
 	private ArrayList<Integer> initStartingCandidate(int literalNumber){
 
 		ArrayList<Integer> individual = new ArrayList<Integer>();
@@ -136,11 +137,12 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 		return individual;
 	}
 
+	//bit flip move forward
 	private void mutate(double temperature) {
-		
+
 		boolean flippedToOne = true;
 		boolean accept = true;
-
+		//Do the bit flip
 		for (int j = 0; j < currentCandidate.size(); j++) {
 			if (currentCandidate.get(j) == 1) {
 				currentCandidate.set(j, 0);
@@ -153,11 +155,12 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 			//Check fitness
 			int fitness = evaluateCandidate(currentCandidate);
 			double increase =  fitness - maxFitnessSoFar;
-			double acceptMutationProb =   1.0 / ( 1 + Math.exp(-1 * (increase / temperature)));
-			accept = randomGenerator.nextDouble() < acceptMutationProb;
+			boolean better = fitness < maxFitnessSoFar;
+			double acceptMutationProb =   1.0 / ( 1 + Math.exp(-1 * (increase / temperature)));//Accept probability
+			accept = randomGenerator.nextDouble() < acceptMutationProb;//Accept or not
 			updateMaxFitness(fitness);
 
-
+			//Revert change if it will not be accepted
 			if ( !accept && flippedToOne) {
 				//revert change
 				currentCandidate.set(j, 0);
@@ -169,12 +172,13 @@ public class SimulatedAnnealing extends EvolAlgorithms {//Just inherits the fitn
 		}
 
 	}
-	
-private void mutateOp(double temperature) {
-		
+	//bit flip move backwards
+	private void mutateOp(double temperature) {
+
 		boolean flippedToOne = true;
 		boolean accept = true;
 
+		//Do the bit flip
 		for (int j = currentCandidate.size() - 1; j >= 0; j--) {
 			if (currentCandidate.get(j) == 1) {
 				currentCandidate.set(j, 0);
@@ -184,14 +188,17 @@ private void mutateOp(double temperature) {
 				flippedToOne = true;
 			}
 
+	
 			//Check fitness
 			int fitness = evaluateCandidate(currentCandidate);
+			boolean better = fitness < maxFitnessSoFar;
 			double increase =  fitness - maxFitnessSoFar;
-			double acceptMutationProb =   1.0 / ( 1 + Math.exp(-1 * (increase / temperature)));
-			accept = randomGenerator.nextDouble() < acceptMutationProb;
+			double acceptMutationProb =   1.0 / ( 1 + Math.exp(-1 * (increase / temperature)));//Accept probability
+			accept = better || randomGenerator.nextDouble() < acceptMutationProb;//Accept or not
 			updateMaxFitness(fitness);
 
-
+			
+			//Revert change if it will not be accepted
 			if ( !accept && flippedToOne) {
 				//revert change
 				currentCandidate.set(j, 0);

@@ -24,12 +24,12 @@ public class SAPBIL extends EvolAlgorithms {
 	private long endTime;
 	private double maxTemp;
 	private double minTemp;
-	
+
 	//Make parameter
 	private int howOftenToIntroduceSA = 100;
-	
 
-	// Constructorfor preview
+
+	// Constructor for preview
 	public SAPBIL(int samples, double learningRate, double negLearningRate, int length, double mutProb, double mutShift,
 			int maxIterations, ArrayList<ArrayList<Integer>> satProblem, int optimalUnsat,int howOftenToIntroduceSA,double minTemp, double maxTemp) {
 		this.samples = samples;
@@ -47,7 +47,7 @@ public class SAPBIL extends EvolAlgorithms {
 		this.minTemp = minTemp;
 		this.maxTemp = maxTemp;
 	}
-	
+
 	// Constructor with optimal unsat value and timeout
 	public SAPBIL(int samples, double learningRate, double negLearningRate, int length, double mutProb, double mutShift,
 			int maxIterations, ArrayList<ArrayList<Integer>> satProblem, int optimalUnsat,int howOftenToIntroduceSA) {
@@ -66,8 +66,8 @@ public class SAPBIL extends EvolAlgorithms {
 		this.minTemp = 0.0001;
 		this.maxTemp = 0.5;
 	}
-	
-	
+
+
 
 	// Initialize probability vector.
 	public void initProbVector() {
@@ -78,7 +78,6 @@ public class SAPBIL extends EvolAlgorithms {
 	}
 
 	public Results evolve() {
-
 		long startTime = System.currentTimeMillis();
 		int iterations = 0;
 		while (iterations < maxIterations) {
@@ -86,16 +85,20 @@ public class SAPBIL extends EvolAlgorithms {
 			// Generate all individuals and evaluate them.
 			for (int i = 0; i < samples; i++) {
 				int[] individual;
-
+				//Run SA
 				if ((iterations % howOftenToIntroduceSA == 0) && i ==  (samples - 1)){
 
 					boolean backwards;
-					if( randomGenerator.nextDouble() <= 0.5) {backwards = true;} else { backwards = true;} 
+					//Determine if SA should run forward or backward
+					backwards =  randomGenerator.nextDouble() <= 0.5 ?  true : false; 
 
 					SimulatedAnnealing anneal = new SimulatedAnnealing(probVector.length,satProblem,optimalUnsat,minTemp,maxTemp,toObject(bestVector),backwards);
 					Results resultOfSecondAnneal = anneal.anneal();
+					
 					Object[] holder = resultOfSecondAnneal.rawAssignment.toArray();
+					//Get individual
 					individual = tointarray(holder);
+				
 				} else{
 
 					individual = generateSampleVector(probVector);
