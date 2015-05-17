@@ -208,10 +208,10 @@ public class AnalyzeResults {
 			}
 			
 			if (!foundExperiment) {
-//				System.out.println("Couldn't find experiment:");
-//				System.out.println("Algorithm: " + algorithm);
-//				System.out.println("Parameter Line Number: " + paramLineNum);
-//				System.out.println("Target Value: " + targetValue);
+				System.out.println("Couldn't find experiment:");
+				System.out.println("Algorithm: " + algorithm);
+				System.out.println("Parameter Line Number: " + paramLineNum);
+				System.out.println("Target Value: " + targetValue);
 				return;
 			}
 		} 
@@ -233,6 +233,7 @@ public class AnalyzeResults {
 		int totalUnsatClauses = 0;
 		int totalUnsatClauses_TimeOut = 0;
 		double percentage = 0;
+		double bestPercentage = 0;
 		
 		// Iterate through all files associated with this problem.
 		for (int i = 0; i < files.size(); i++) {
@@ -320,6 +321,9 @@ public class AnalyzeResults {
 							totalNumTimeOutTrials += num;
 						} else if (lineNum == LineNumber.AVG_PERCENT_SAT.getNumVal()) {
 							percentage = Double.parseDouble(line);
+							if (percentage > bestPercentage) {
+								bestPercentage =  percentage;
+							}
 						}
 						
 						lineNum++;
@@ -338,8 +342,8 @@ public class AnalyzeResults {
 					int avgBestGeneration_TimeOut = NO_DATA; 
 					double avgPercentage = NO_DATA;
 					double avgPercentage_TimeOut = NO_DATA;
-					double bestPercentage = NO_DATA;
-					double bestPercentage_TimeOut = NO_DATA;
+//					double bestPercentage = NO_DATA;
+//					double bestPercentage_TimeOut = NO_DATA;
 					// Calculate.
 					if (numExperimentsWithNonTimeOutTrials > 0) {
 						avgBestGeneration = totalBestGeneration / numExperimentsWithNonTimeOutTrials;
@@ -354,25 +358,11 @@ public class AnalyzeResults {
 						} else {
 							double averageSatClauses = numClauses - totalUnsatClauses / numExperiments;
 							avgPercentage = averageSatClauses / (double)bestKnownSatClauses;
-							bestPercentage = (double)(numClauses - fewestUnsatClauses)/ (double)bestKnownSatClauses;
+//							bestPercentage = (double)(numClauses - fewestUnsatClauses)/ (double)bestKnownSatClauses;
 						}
 					}
-//					if (totalNumTimeOutTrials > 0) {
-						double averageSatClauses_TimeOut = numClauses - totalUnsatClauses_TimeOut / numExperiments;
-						
-//						double averageUnsatClauses_TimeOut = unsatClauses / numTimeouts;
-//						averagePercentSatisfiedClausesT = (double) (totalNumClauses - averageUnsatisfiedClausesT)
-//								/ (double) (totalNumClauses - maxValue);
-						
-//						avgPercentage_TimeOut = percentage;
-//						if (avgPercentage_TimeOut == -1.0) {
-//							avgPercentage_TimeOut = (numClauses - totalUnsatClauses) / numClauses;	
-//						}
-						
-						avgPercentage_TimeOut = averageSatClauses_TimeOut / (double)bestKnownSatClauses;
-
-						bestPercentage_TimeOut = (double)(numClauses - fewestUnsatClauses_TimeOut)/ (double)bestKnownSatClauses;
-//					}
+					double averageSatClauses_TimeOut = numClauses - totalUnsatClauses_TimeOut / numExperiments;
+					avgPercentage_TimeOut = averageSatClauses_TimeOut / (double)bestKnownSatClauses;
 					
 					// Push values to HashMap.
 					HashMap<String, String> results = new HashMap<String, String>();
@@ -387,7 +377,7 @@ public class AnalyzeResults {
 					results.put(AVG_BEST_GENERATION, String.valueOf(avgBestGeneration));
 					results.put(AVG_BEST_GENERATION_TIMEOUT, String.valueOf(avgBestGeneration_TimeOut));
 					results.put(BEST_PERCENTAGE, String.valueOf(bestPercentage));
-					results.put(BEST_PERCENTAGE_TIMEOUT, String.valueOf(bestPercentage_TimeOut));
+					results.put(BEST_PERCENTAGE_TIMEOUT, String.valueOf(bestPercentage));
 					results.put(AVG_PERCENTAGE, String.valueOf(avgPercentage));
 					results.put(AVG_PERCENTAGE_TIMEOUT, String.valueOf(avgPercentage_TimeOut));
 					

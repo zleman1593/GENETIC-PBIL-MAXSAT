@@ -101,15 +101,7 @@ public class AnalyzeResultsController {
 		// SAPBIL.
 		initializeParameters_SAPBIL();
 		generateParamGraph(SAPBIL, results_Parameters_SAPBIL, parameters_SAPBIL);
-		
-		
-		//DEBUGGING
-		System.out.println("Param SA: " + parameters_SA.keySet());
-		System.out.println("Param SAGA: " + parameters_SAGA.keySet());
-		System.out.println("Param SAGA: " + parameters_SAGA.values());
-		System.out.println("Param SAPBIL: " + parameters_SAPBIL.keySet());
-		System.out.println("Param SAPBIL: " + parameters_SAPBIL.values());
-		
+	
 		// End time calculation.
 		long duration_p = System.currentTimeMillis() - startTime_p;
 		System.out.println("Finished writing all graph data for parameter analysis.");
@@ -210,13 +202,13 @@ public class AnalyzeResultsController {
 			ArrayList<String> valuesCrossoverProb = new ArrayList<String>();
 			ArrayList<String> valuesMutProb = new ArrayList<String>();
 			ArrayList<String> valuesWithoutImprov = new ArrayList<String>();
-			/*if (popSize != defaultPopSize) {
+			if (popSize != defaultPopSize) {
 				if (parameters_SAGA.containsKey(LineNumberSAGA.POP_SIZE.getNumVal())) {
 					valuesPopSize = parameters_SAGA.get(LineNumberSAGA.POP_SIZE.getNumVal());
 				}
 				valuesPopSize.add(String.valueOf(popSize));
 				parameters_SAGA.put(LineNumberSAGA.POP_SIZE.getNumVal(), valuesPopSize);
-			} else */ if (differentDouble(crossoverProb, defaultCrossoverProb)) {
+			} else if (differentDouble(crossoverProb, defaultCrossoverProb)) {
 				if (parameters_SAGA.containsKey(LineNumberSAGA.CROSSOVER_PROB.getNumVal())) {
 					valuesCrossoverProb = parameters_SAGA.get(LineNumberSAGA.CROSSOVER_PROB.getNumVal());
 				}
@@ -314,13 +306,13 @@ public class AnalyzeResultsController {
 //			double SAFrequency = TestController.SAPBIL_howOftenToIntroduceSA[i];
 			
 			ArrayList<String> values = new ArrayList<String>();
-			/*if (sampleSize != defaultSampleSize) {
+			if (sampleSize != defaultSampleSize) {
 				if (parameters_SAPBIL.containsKey(LineNumberSAPBIL.SAMPLES.getNumVal())) {
 					values = parameters_SAPBIL.get(LineNumberSAPBIL.SAMPLES.getNumVal());
 				}
 				values.add(String.valueOf(sampleSize));
 				parameters_SAPBIL.put(LineNumberSAPBIL.SAMPLES.getNumVal(), values);
-			} else */ if (differentDouble(learningRate, defaultLearningRate)) {
+			} else if (differentDouble(learningRate, defaultLearningRate)) {
 				if (parameters_SAPBIL.containsKey(LineNumberSAPBIL.LEARNING_RATE.getNumVal())) {
 					values = parameters_SAPBIL.get(LineNumberSAPBIL.LEARNING_RATE.getNumVal());
 				}
